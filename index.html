@@ -6,21 +6,21 @@
     <title>Freestyle Elite league | Season 2</title>
     <style>
         :root {
-            --bg: #0b0f17;
-            --surface: #141b2a;
-            --surface-2: #1b2438;
-            --accent: #ff3b5c;
-            --accent-2: #38bdf8;
-            --text: #e8eef7;
-            --muted: #8a94a6;
-            --border: #25304a;
+            --bg: #070d0f;
+            --surface: #0e1a1d;
+            --surface-2: #142629;
+            --accent: #2fd6b0;
+            --accent-2: #56e6c4;
+            --text: #e6f3f0;
+            --muted: #7ea09a;
+            --border: #1c3a38;
             --good: #34d399;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: system-ui, sans-serif;
-            background: radial-gradient(1200px 600px at 80% -10%, #1b2a4a 0%, transparent 60%),
-                        radial-gradient(1000px 600px at -10% 110%, #2a1635 0%, transparent 55%),
+            background: radial-gradient(1200px 600px at 80% -10%, #12302b 0%, transparent 60%),
+                        radial-gradient(1000px 600px at -10% 110%, #0f2e24 0%, transparent 55%),
                         var(--bg);
             color: var(--text);
             min-height: 100vh;
@@ -40,7 +40,7 @@
             justify-content: space-between;
             gap: 1rem;
             padding: 0.9rem 2rem;
-            background: rgba(11, 15, 23, 0.85);
+            background: rgba(7, 13, 15, 0.85);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border);
         }
@@ -55,11 +55,11 @@
             width: 30px; height: 30px; border-radius: 50%;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.8rem; font-weight: 700; color: #fff;
+            font-size: 0.8rem; font-weight: 700; color: #06322a;
         }
         .signin {
             background: var(--accent);
-            color: #fff;
+            color: #06322a;
             border: none;
             padding: 0.5rem 1.1rem;
             border-radius: 8px;
@@ -68,7 +68,7 @@
             cursor: pointer;
             transition: transform 0.15s, box-shadow 0.15s;
         }
-        .signin:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255, 59, 92, 0.4); }
+        .signin:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(47, 214, 176, 0.4); }
         .changelog {
             display: flex; align-items: center; gap: 0.45rem;
             font-size: 0.8rem; color: var(--muted);
@@ -80,29 +80,57 @@
 
         main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 100%; }
 
-        /* Match card */
-        .match-card {
+        /* Home brand: logo + region */
+        .home-brand { display: flex; align-items: center; justify-content: center; gap: 0.9rem; margin-bottom: 1.5rem; }
+        .logo {
+            width: 56px; height: 56px; border-radius: 16px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 800; color: #06322a;
+            box-shadow: 0 8px 24px rgba(47, 214, 176, 0.35);
+        }
+        .region { font-size: 0.75rem; color: var(--muted); letter-spacing: 1px; }
+
+        /* Fixture tabs + box */
+        .fixture-tabs { display: flex; gap: 0.6rem; margin-bottom: 0.8rem; }
+        .fixture-tabs button {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .fixture-tabs button:hover { border-color: var(--accent); }
+        .fixture-tabs button.active { background: var(--accent); color: #06322a; border-color: var(--accent); }
+
+        .fixture-box {
             background: linear-gradient(135deg, var(--surface-2), var(--surface));
             border: 1px solid var(--border);
             border-radius: 18px;
             padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
-        .match-card .label { font-size: 0.8rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; }
+        .fixture-box .label { font-size: 0.8rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; }
+        .fixture-box .corner { position: absolute; top: 0.8rem; left: 1rem; font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; }
+        .fixture-box { position: relative; }
         .match-row { display: flex; align-items: center; justify-content: center; gap: 1.5rem; font-size: 1.1rem; }
         .team { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; }
         .crest {
             width: 42px; height: 42px; border-radius: 50%;
             background: linear-gradient(135deg, var(--accent), var(--accent-2));
             display: flex; align-items: center; justify-content: center;
-            font-weight: 800; color: #fff;
+            font-weight: 800; color: #06322a;
         }
         .score { font-size: 2rem; font-weight: 800; color: #fff; padding: 0 1rem; border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
 
         /* Stats */
-        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
         .stat {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -115,32 +143,61 @@
         .stat .num { font-size: 2.2rem; font-weight: 800; background: linear-gradient(135deg, var(--accent-2), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .stat .txt { margin-top: 0.3rem; color: var(--muted); font-size: 0.9rem; }
 
-        /* Week box */
-        .week {
+        /* Discord button */
+        .discord {
+            display: block;
+            width: 100%;
+            background: #5865f2;
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 1.5rem 0;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .discord:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(88, 101, 242, 0.4); }
+
+        /* Tabs: Highlights / Activity */
+        .section-tabs { display: flex; gap: 0.6rem; margin-bottom: 1rem; }
+        .section-tabs button {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1.4rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .section-tabs button:hover { border-color: var(--accent); }
+        .section-tabs button.active { background: var(--accent); color: #06322a; border-color: var(--accent); }
+
+        /* Highlights cards */
+        .panel { display: none; }
+        .panel.active { display: block; }
+        .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.7rem; }
+        .hl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .hl-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 1.5rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+            border-radius: 14px;
+            padding: 1.2rem;
+            transition: transform 0.15s, border-color 0.15s;
         }
-        .week h3 { font-size: 1.3rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-        .week h3 .tag { font-size: 0.75rem; background: var(--accent-2); color: #06121a; padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 700; }
-        .week-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-        .week-item {
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1rem;
-        }
-        .week-item .k { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-        .week-item .v { font-size: 1.4rem; font-weight: 700; margin-top: 0.25rem; }
+        .hl-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+        .hl-card .k { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .hl-card .v { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, var(--accent-2), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
         footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); }
 
         @media (max-width: 720px) {
             header { flex-wrap: wrap; padding: 0.9rem 1rem; }
             nav.menu { order: 3; width: 100%; justify-content: space-around; }
-            .stats, .week-grid { grid-template-columns: 1fr; }
+            .stats, .week-grid, .hl-grid { grid-template-columns: 1fr; }
             .match-row { flex-direction: column; gap: 0.5rem; }
             .score { border: none; padding: 0.2rem 0; }
         }
@@ -164,13 +221,9 @@
     </header>
 
     <main>
-        <div class="match-card">
-            <div class="label">Next Match</div>
-            <div class="match-row">
-                <div class="team"><span class="crest">N</span>None</div>
-                <div class="score">0 - 0</div>
-                <div class="team">None<span class="crest">N</span></div>
-            </div>
+        <div class="home-brand">
+            <div class="logo">F</div>
+            <span class="region">EU/NA</span>
         </div>
 
         <div class="stats">
@@ -179,18 +232,82 @@
             <div class="stat"><div class="num">8</div><div class="txt">Game Weeks</div></div>
         </div>
 
-        <div class="week">
-            <h3>Week <span class="tag">Current</span></h3>
-            <div class="week-grid">
-                <div class="week-item"><div class="k">Matches</div><div class="v">0</div></div>
-                <div class="week-item"><div class="k">Goals</div><div class="v">0</div></div>
-                <div class="week-item"><div class="k">Transfer</div><div class="v">0</div></div>
+        <div class="fixture-tabs">
+            <button class="fixture-tab active" data-fixture="1">1. LEF</button>
+            <button class="fixture-tab" data-fixture="2">2. LEF</button>
+            <button class="fixture-tab" data-fixture="3">3. LEF</button>
+        </div>
+
+        <div class="fixture-box" id="fixtureBox">
+            <span class="corner" id="fixtureCorner">1. LEF</span>
+            <div class="label">Next Match</div>
+            <div class="match-row">
+                <div class="team"><span class="crest">N</span>None</div>
+                <div class="score">0 - 0</div>
+                <div class="team">None<span class="crest">N</span></div>
             </div>
+        </div>
+
+        <button class="discord">Join Our Discord</button>
+
+        <div class="section-tabs">
+            <button class="section-tab active" data-panel="highlights">Highlights</button>
+            <button class="section-tab" data-panel="activity">Activity</button>
+        </div>
+
+        <div id="highlights" class="panel active">
+            <div class="section-title">Season Highlights</div>
+            <div class="hl-grid">
+                <div class="hl-card"><div class="k">Biggest Win</div><div class="v">--</div></div>
+                <div class="hl-card"><div class="k">Top Scorer</div><div class="v">--</div></div>
+                <div class="hl-card"><div class="k">Most Assists</div><div class="v">--</div></div>
+            </div>
+        </div>
+
+        <div id="activity" class="panel">
+            <div class="section-title">Activity</div>
+            <p style="color:var(--muted)">No recent activity yet.</p>
         </div>
     </main>
 
     <footer>
-        <p>Freestyle Elite league &mdash; Season 2 &middot; Dark Edition</p>
+        <p>Freestyle Elite league &mdash; Season 2 &middot; Dark Palette</p>
     </footer>
+
+    <script>
+        const fixtureData = {
+            1: { home: 'None', away: 'None', score: '0 - 0' },
+            2: { home: 'None', away: 'None', score: '0 - 0' },
+            3: { home: 'None', away: 'None', score: '0 - 0' }
+        };
+
+        function renderFixture(id) {
+            const d = fixtureData[id];
+            document.getElementById('fixtureCorner').textContent = id + '. LEF';
+            document.getElementById('fixtureBox').querySelector('.match-row').innerHTML =
+                '<div class="team"><span class="crest">' + d.home.charAt(0) + '</span>' + d.home + '</div>' +
+                '<div class="score">' + d.score + '</div>' +
+                '<div class="team">' + d.away + '<span class="crest">' + d.away.charAt(0) + '</span></div>';
+        }
+
+        document.querySelectorAll('.fixture-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.fixture-tab').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                renderFixture(btn.dataset.fixture);
+            });
+        });
+
+        document.querySelectorAll('.section-tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.section-tab').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                document.getElementById(btn.dataset.panel).classList.add('active');
+            });
+        });
+
+        renderFixture(1);
+    </script>
 </body>
 </html>
