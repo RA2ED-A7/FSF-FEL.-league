@@ -200,9 +200,17 @@
         .records .hl-card { text-align: center; }
 
         /* Unique decorative shapes */
-        .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.7rem; position: relative; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .section-title::before { content: ''; width: 6px; height: 22px; background: linear-gradient(180deg, var(--accent), var(--accent-2)); border-radius: 3px; }
-        .section-title::after { content: ''; position: absolute; left: 0; bottom: -6px; width: 100%; height: 3px; border-radius: 3px; background: linear-gradient(90deg, var(--accent), transparent); }
+        .section-title {
+            font-size: 1.15rem; font-weight: 800; margin-bottom: 0.9rem;
+            position: relative; display: inline-flex; align-items: center; gap: 0.6rem;
+            padding: 0.35rem 1rem; border-radius: 999px;
+            background: linear-gradient(135deg, rgba(47,214,176,0.12), rgba(20,107,90,0.12));
+            border: 1px solid rgba(47,214,176,0.35);
+            color: #eafff7;
+            text-shadow: 0 0 14px rgba(47,214,176,0.35);
+        }
+        .section-title::before { content: '◆'; color: var(--accent); font-size: 0.7rem; }
+        .section-title::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -7px; width: 60%; height: 3px; border-radius: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
 
         .hl-card {
             position: relative;
@@ -249,12 +257,56 @@
         .gw-card .res { font-weight: 800; color: var(--text); min-width: 70px; text-align: right; }
         .gw-card .res.tbd { color: var(--muted); }
 
+        /* Standings */
+        .standings { margin-top: 2.5rem; }
+        .podium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
+        .p-card {
+            position: relative; overflow: hidden;
+            background: linear-gradient(145deg, var(--surface-2), var(--surface));
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 1.4rem;
+            text-align: center;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .p-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+        .p-card::before {
+            content: ''; position: absolute; top: -34px; right: -34px;
+            width: 100px; height: 100px; border-radius: 50%;
+        }
+        .p-1::before { background: radial-gradient(circle, rgba(255,215,0,0.45), transparent 70%); }
+        .p-2::before { background: radial-gradient(circle, rgba(192,192,192,0.4), transparent 70%); }
+        .p-3::before { background: radial-gradient(circle, rgba(205,127,50,0.4), transparent 70%); }
+        .p-card .rank { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 0.5rem; }
+        .p-card .t-name { display: block; font-weight: 700; margin-bottom: 0.4rem; }
+        .p-card .pts {
+            display: inline-block; font-weight: 800; font-size: 1.3rem;
+            background: linear-gradient(135deg, var(--accent-2), var(--accent));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .rest { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+        .r-card {
+            display: flex; align-items: center; gap: 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.9rem 1.1rem;
+        }
+        .r-card .r-rank {
+            width: 30px; height: 30px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; font-weight: 800; font-size: 0.95rem;
+            background: var(--surface-2); color: var(--muted);
+        }
+        .r-card .t-name { flex: 1; font-weight: 600; }
+        .r-card .pts { font-weight: 800; color: var(--text); }
+
         footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); }
 
         @media (max-width: 720px) {
             header { flex-wrap: wrap; padding: 0.9rem 1rem; }
             nav.menu { order: 3; width: 100%; justify-content: space-around; }
-            .stats, .week-grid, .hl-grid, .records-grid { grid-template-columns: 1fr; }
+            .stats, .week-grid, .hl-grid, .records-grid, .podium, .rest { grid-template-columns: 1fr; }
             .match-row { flex-direction: column; gap: 0.5rem; }
             .score { border: none; padding: 0.2rem 0; }
         }
@@ -343,10 +395,25 @@
         </div>
 
         <div class="gw">
-            <div class="section-title">Game Week 2 · Recent Results</div>
-            <div class="gw-card"><span class="felm">1. FEL</span><span class="teams">Team Name <span style="color:var(--text)">2 - 1</span> Team Name</span><span class="res">FT</span></div>
-            <div class="gw-card"><span class="felm">2. FEL</span><span class="teams">Team Name <span style="color:var(--text)">0 - 0</span> Team Name</span><span class="res">FT</span></div>
-            <div class="gw-card"><span class="felm">3. FEL</span><span class="teams">Team Name <span style="color:var(--text)">3 - 2</span> Team Name</span><span class="res">FT</span></div>
+            <div class="section-title">Recent Results</div>
+            <div class="gw-card"><span class="felm">1. FEL</span><span class="teams">Team Name <span style="color:var(--text)">2 - 1</span> Team Name</span><span class="res tbd">Date</span></div>
+            <div class="gw-card"><span class="felm">2. FEL</span><span class="teams">Team Name <span style="color:var(--text)">0 - 0</span> Team Name</span><span class="res tbd">Date</span></div>
+            <div class="gw-card"><span class="felm">3. FEL</span><span class="teams">Team Name <span style="color:var(--text)">3 - 2</span> Team Name</span><span class="res tbd">Date</span></div>
+        </div>
+
+        <div class="standings">
+            <div class="section-title">Top 3 Teams · By Points (PTs)</div>
+            <div class="podium">
+                <div class="p-card p-1"><span class="rank">1st</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
+                <div class="p-card p-2"><span class="rank">2nd</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
+                <div class="p-card p-3"><span class="rank">3rd</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
+            </div>
+            <div class="rest">
+                <div class="r-card"><span class="r-rank">4</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
+                <div class="r-card"><span class="r-rank">5</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
+                <div class="r-card"><span class="r-rank">6</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
+                <div class="r-card"><span class="r-rank">7</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
+            </div>
         </div>
     </main>
 
