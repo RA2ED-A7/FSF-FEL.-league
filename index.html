@@ -729,7 +729,13 @@
         // ===== Auth state =====
         async function refreshAuth() {
             if (!initSupabase()) return;
-            const { data } = await supabaseClient.auth.getSession();
+            const { data, error } = await supabaseClient.auth.getSession();
+            if (error) {
+                console.error('Session error:', error);
+                const msg = document.getElementById('signMsg');
+                if (msg) { msg.className = 'sign-msg err'; msg.textContent = 'Session error: ' + error.message; }
+                return;
+            }
             if (data.session) {
                 signedIn = true;
                 renderUser();
