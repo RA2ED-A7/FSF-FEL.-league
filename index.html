@@ -49,6 +49,27 @@
         nav.menu { display: flex; gap: 1.75rem; font-size: 0.95rem; }
         nav.menu a { color: var(--text); opacity: 0.85; }
         nav.menu a:hover { opacity: 1; color: var(--accent); text-decoration: none; }
+        .menu-item { position: relative; }
+        .menu-item > a { color: var(--text); opacity: 0.85; }
+        .menu-item > a:hover { opacity: 1; color: var(--accent); text-decoration: none; }
+        .dropdown {
+            position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            margin-top: 0.6rem; min-width: 170px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.5rem;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+        }
+        .menu-item:hover .dropdown { opacity: 1; visibility: visible; }
+        .dropdown a {
+            display: block; padding: 0.55rem 0.8rem;
+            border-radius: 8px; color: var(--text); font-size: 0.9rem;
+        }
+        .dropdown a:hover { background: var(--surface-2); color: var(--accent); text-decoration: none; }
+        .caret { font-size: 0.6rem; margin-left: 0.2rem; opacity: 0.6; }
         .header-right { display: flex; align-items: center; gap: 1rem; }
         .user { display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; }
         .avatar {
@@ -301,6 +322,24 @@
         .r-card .t-name { flex: 1; font-weight: 600; }
         .r-card .pts { font-weight: 800; color: var(--text); }
 
+        /* 404 page */
+        .nf {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; padding: 3rem 1.5rem;
+        }
+        .nf .code { font-size: 5rem; font-weight: 800; background: linear-gradient(135deg, var(--accent-2), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; line-height: 1; }
+        .nf h2 { margin: 1rem 0 0.5rem; font-size: 1.6rem; }
+        .nf p { color: var(--muted); max-width: 420px; line-height: 1.6; margin-bottom: 1.5rem; }
+        .nf .back {
+            background: var(--accent); color: #06322a;
+            border: none; padding: 0.7rem 1.6rem; border-radius: 10px;
+            font-size: 1rem; font-weight: 700; cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .nf .back:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(47,214,176,0.4); }
+        .nf-page { display: none; }
+
         footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); }
 
         @media (max-width: 720px) {
@@ -317,9 +356,30 @@
         <div class="brand">Freestyle Elite league <span class="season">| Season 2</span></div>
         <nav class="menu">
             <a href="#">Home</a>
-            <a href="#">Teams</a>
-            <a href="#">Players</a>
-            <a href="#">Fixtures</a>
+            <div class="menu-item">
+                <a href="#notfound">Competition<span class="caret">&#9662;</span></a>
+                <div class="dropdown">
+                    <a href="#notfound">Placeholder 1</a>
+                    <a href="#notfound">Placeholder 2</a>
+                    <a href="#notfound">Placeholder 3</a>
+                </div>
+            </div>
+            <div class="menu-item">
+                <a href="#notfound">Teams<span class="caret">&#9662;</span></a>
+                <div class="dropdown">
+                    <a href="#notfound">Placeholder 1</a>
+                    <a href="#notfound">Placeholder 2</a>
+                    <a href="#notfound">Placeholder 3</a>
+                </div>
+            </div>
+            <div class="menu-item">
+                <a href="#notfound">Market<span class="caret">&#9662;</span></a>
+                <div class="dropdown">
+                    <a href="#notfound">Placeholder 1</a>
+                    <a href="#notfound">Placeholder 2</a>
+                    <a href="#notfound">Placeholder 3</a>
+                </div>
+            </div>
             <a href="#">Standings</a>
         </nav>
         <div class="header-right">
@@ -329,7 +389,7 @@
         </div>
     </header>
 
-    <main>
+    <main id="home">
         <div class="home-brand">
             <div class="logo">F</div>
             <span class="region">EU/NA</span>
@@ -417,8 +477,17 @@
         </div>
     </main>
 
+    <section class="nf-page">
+        <div class="nf">
+            <div class="code">404</div>
+            <h2>Page Not Found</h2>
+            <p>This page is still under construction, or it doesn't exist. Head back home to keep exploring the Freestyle Elite league.</p>
+            <button class="back" onclick="location.hash='home'">Back to Home</button>
+        </div>
+    </section>
+
     <footer>
-        <p>Freestyle Elite league &mdash; Season 2 &middot; Dark Palette</p>
+        <p>Freestyle Elite league &mdash; Season 2 &middot; By A7M | .vortex700</p>
     </footer>
 
     <script>
@@ -455,6 +524,20 @@
         });
 
         renderFixture(1);
+
+        // Hash router: any non-home route shows the 404 page
+        function route() {
+            const page = location.hash.replace('#', '') || '';
+            const isHome = page === '' || page === 'home';
+            document.getElementById('home').style.display = isHome ? '' : 'none';
+            document.querySelector('.nf-page').style.display = isHome ? 'none' : '';
+            if (!isHome) window.scrollTo(0, 0);
+        }
+        window.addEventListener('hashchange', route);
+        document.querySelectorAll('a[href="#notfound"]').forEach(l => {
+            l.addEventListener('click', () => setTimeout(route, 0));
+        });
+        route();
     </script>
 </body>
 </html>
