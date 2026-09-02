@@ -191,13 +191,19 @@
         .hl-card:hover { transform: translateY(-3px); border-color: var(--accent); }
         .hl-card .k { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
         .hl-card .v { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, var(--accent-2), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hl-card .d { margin-top: 0.4rem; font-size: 0.85rem; color: var(--muted); }
+
+        /* League records */
+        .records { margin-top: 1.5rem; }
+        .records .section-title { margin-top: 1.5rem; }
+        .records-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
 
         footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); }
 
         @media (max-width: 720px) {
             header { flex-wrap: wrap; padding: 0.9rem 1rem; }
             nav.menu { order: 3; width: 100%; justify-content: space-around; }
-            .stats, .week-grid, .hl-grid { grid-template-columns: 1fr; }
+            .stats, .week-grid, .hl-grid, .records-grid { grid-template-columns: 1fr; }
             .match-row { flex-direction: column; gap: 0.5rem; }
             .score { border: none; padding: 0.2rem 0; }
         }
@@ -258,9 +264,17 @@
         <div id="highlights" class="panel active">
             <div class="section-title">Season Highlights</div>
             <div class="hl-grid">
-                <div class="hl-card"><div class="k">Biggest Win</div><div class="v">--</div></div>
-                <div class="hl-card"><div class="k">Top Scorer</div><div class="v">--</div></div>
-                <div class="hl-card"><div class="k">Most Assists</div><div class="v">--</div></div>
+                <div class="hl-card"><div class="k">Biggest Win</div><div class="v">--</div><div class="d">Game Week 1</div></div>
+                <div class="hl-card"><div class="k">Top Scorer</div><div class="v">--</div><div class="d">0 goals</div></div>
+                <div class="hl-card"><div class="k">Most Assists</div><div class="v">--</div><div class="d">0 assists</div></div>
+            </div>
+
+            <div class="records">
+                <div class="section-title">League Records</div>
+                <div class="records-grid">
+                    <div class="hl-card"><div class="k">First Goal</div><div class="v">--</div><div class="d">TBD</div></div>
+                    <div class="hl-card"><div class="k">First Assist</div><div class="v">--</div><div class="d">TBD</div></div>
+                </div>
             </div>
         </div>
 
