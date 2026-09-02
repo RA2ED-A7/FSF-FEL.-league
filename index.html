@@ -628,11 +628,15 @@
         // ===== Supabase configuration =====
         // SUPABASE_URL and SUPABASE_ANON_KEY are set.
         // Remaining setup in the Supabase dashboard:
-        // Authentication > Providers > enable "Discord" and add your Discord app's
-        // Client ID / Client Secret. Also add your site URL + redirect URL
-        // (Settings > Auth) for the sign-in to redirect back correctly.
+        // Authentication > URL Configuration:
+        //   Site URL:     https://ra2ed-a7.github.io/FSF-FEL.-league/
+        //   Redirect URLs:
+        //     https://ra2ed-a7.github.io/FSF-FEL.-league/
+        //     https://ra2ed-a7.github.io/FSF-FEL.-league/index.html
+        // Authentication > Providers > enable "Discord" with your Discord app ID/secret.
         const SUPABASE_URL = 'https://tbakdwfoxxthohekwgzn.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_I-6nGMy9xhh7P71gYLarfQ_Fh6GGWLM';
+        const REDIRECT_URL = 'https://ra2ed-a7.github.io/FSF-FEL.-league/index.html';
 
         let supabaseClient = null;
         let signedIn = false;
@@ -705,7 +709,7 @@
                 try {
                     const { error } = await supabaseClient.auth.signInWithOAuth({
                         provider: 'discord',
-                        options: { redirectTo: window.location.href.split('#')[0] }
+                        options: { redirectTo: REDIRECT_URL }
                     });
                     if (error) {
                         msg.className = 'sign-msg err';
