@@ -461,6 +461,18 @@
             } catch (e) { return false; }
         }
 
+        function getDiscordName(u) {
+            const m = u?.user_metadata || {};
+            const idData = u?.identities?.[0]?.identity_data || {};
+            return m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || idData.global_name || idData.username || idData.full_name || m.email || u?.email || u?.identities?.[0]?.user_name || 'User';
+        }
+
+        function getDiscordUserName(u) {
+            const m = u?.user_metadata || {};
+            const idData = u?.identities?.[0]?.identity_data || {};
+            return m.user_name || m.username || idData.username || idData.discord_username || idData.global_name || m.preferred_username || m.prefered_username || getDiscordName(u).toLowerCase().replace(/\s+/g, '') || 'player';
+        }
+
         function renderUser(userOverride) {
             const nameBox = document.getElementById('userName');
             const btn = document.getElementById('signinBtn');
@@ -469,8 +481,7 @@
             if (signedIn && u) {
                 const m = u.user_metadata || {};
                 console.log('[auth] user_metadata:', m);
-                const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || m.email || u.email || u.identities?.[0]?.user_name || 'User';
-                nameBox.textContent = name;
+                nameBox.textContent = getDiscordName(u);
                 btn.textContent = 'Sign Out';
                 if (adminLine) adminLine.style.display = (u.id === ADMIN_USER_ID) ? 'block' : 'none';
             } else {
@@ -486,8 +497,8 @@
             const id = u?.identities?.[0] || {};
             const idData = id.identity_data || {};
             const discordId = id.provider === 'discord' ? (id.id || idData.sub || '') : '';
-            const name = m.full_name || m.name || idData.full_name || m.user_name || m.username || idData.username || idData.global_name || idData.discord_username || m.custom_claims?.username || (u ? u.email : '') || 'Player';
-            const username = m.user_name || m.username || idData.username || idData.discord_username || m.preferred_username || name.toLowerCase().replace(/\s+/g, '') || 'player';
+            const name = getDiscordName(u);
+            const username = getDiscordUserName(u);
             const avatarHash = idData.avatar;
             const avatar = m.avatar_url || m.picture || idData.avatar_url || (avatarHash && discordId ? 'https://cdn.discordapp.com/avatars/' + discordId + '/' + avatarHash + (avatarHash.startsWith('a_') ? '.gif' : '.png') : '') || '';
             document.getElementById('careerName').textContent = name;
