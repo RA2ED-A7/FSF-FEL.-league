@@ -545,9 +545,9 @@
                 const { error } = await supabaseClient.from('Player').insert({
                     id: user.id,
                     display_name: displayName,
-                    team: '', position: '', rank: '',
+                    team: '', position: 'None', rank: 'Unranked',
                     goals: 0, assists: 0, saves: 0, matches: 0,
-                    Wins: 0, Loses: 0, "Market Value": 0, "MVP_Awards": 0
+                    Wins: 0, Loses: 0, "Market Value": 5000000, "MVP_Awards": 0
                 });
                 if (error) console.warn('[player] create row failed:', error.message);
             } catch (e) {
@@ -581,9 +581,9 @@
                     const displayName = m.full_name || m.user_name || m.name || u.email || 'Player';
                     const { error: insertErr } = await supabaseClient.from('Player').insert({
                         id: u.id, display_name: displayName,
-                        team: '', position: '', rank: '',
+                        team: '', position: 'None', rank: 'Unranked',
                         goals: 0, assists: 0, saves: 0, matches: 0,
-                        Wins: 0, Loses: 0, "Market Value": 0, "MVP_Awards": 0
+                        Wins: 0, Loses: 0, "Market Value": 5000000, "MVP_Awards": 0
                     });
                     if (insertErr) { sel.innerHTML = '<option>Error creating player</option>'; console.warn('[admin] insert error:', insertErr); return; }
                     players = [{ id: u.id, display_name: displayName }];
