@@ -178,7 +178,41 @@
             <p>Season 1 · skill ladder by tier &amp; position</p>
         </div>
 
-        <div class="rank-ladder">
+        <div class="lb-toolbar">
+            <div class="lb-search">
+                <input type="text" id="lbSearch" placeholder="Search by name..." class="lb-input">
+            </div>
+            <div class="lb-filters-row">
+                <select id="lbTierFilter" class="lb-select">
+                    <option value="all">All Ranks</option>
+                    <option value="5">★★★★★ Platinum</option>
+                    <option value="4">★★★★ Gold</option>
+                    <option value="3">★★★ Silver</option>
+                    <option value="2">★★ Bronze</option>
+                    <option value="1">★ New Star</option>
+                    <option value="0">Unranked</option>
+                </select>
+                <select id="lbPosFilter" class="lb-select">
+                    <option value="all">All Positions</option>
+                    <option value="Forward">Forward</option>
+                    <option value="Midfielder">Midfielder</option>
+                    <option value="Defender">Defender</option>
+                    <option value="Goalkeeper">Goalkeeper</option>
+                </select>
+                <select id="lbTeamFilter" class="lb-select">
+                    <option value="all">All Teams</option>
+                    <option value="Team Name">Team Name</option>
+                </select>
+                <select id="lbValFilter" class="lb-select">
+                    <option value="all">Any Value</option>
+                    <option value="high">High (€5M+)</option>
+                    <option value="mid">Mid (€1M–5M)</option>
+                    <option value="low">Low (&lt;€1M)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="rank-ladder" id="rankLadder">
             <div class="rung r5">
                 <div class="rung-head">
                     <span class="rung-stars">★★★★★</span>
@@ -186,10 +220,10 @@
                     <span class="rung-medal">👑</span>
                 </div>
                 <div class="rung-roster">
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="5" data-pos="Forward" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="5" data-pos="Midfielder" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="5" data-pos="Defender" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="5" data-pos="Goalkeeper" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
                 </div>
             </div>
 
@@ -200,10 +234,10 @@
                     <span class="rung-medal">🥇</span>
                 </div>
                 <div class="rung-roster">
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="4" data-pos="Forward" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="4" data-pos="Midfielder" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="4" data-pos="Defender" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="4" data-pos="Goalkeeper" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
                 </div>
             </div>
 
@@ -214,10 +248,10 @@
                     <span class="rung-medal">🥈</span>
                 </div>
                 <div class="rung-roster">
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="3" data-pos="Forward" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="3" data-pos="Midfielder" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="3" data-pos="Defender" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="3" data-pos="Goalkeeper" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
                 </div>
             </div>
 
@@ -228,10 +262,10 @@
                     <span class="rung-medal">🥉</span>
                 </div>
                 <div class="rung-roster">
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="2" data-pos="Forward" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="2" data-pos="Midfielder" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="2" data-pos="Defender" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="2" data-pos="Goalkeeper" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
                 </div>
             </div>
 
@@ -242,10 +276,10 @@
                     <span class="rung-medal">🌱</span>
                 </div>
                 <div class="rung-roster">
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="1" data-pos="Forward" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="1" data-pos="Midfielder" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="1" data-pos="Defender" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="1" data-pos="Goalkeeper" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
                 </div>
             </div>
 
@@ -256,12 +290,18 @@
                     <span class="rung-medal">⚪</span>
                 </div>
                 <div class="rung-roster">
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
-                    <div class="rp"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="0" data-pos="Forward" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Forward</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="0" data-pos="Midfielder" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Midfielder</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="0" data-pos="Defender" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Defender</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
+                    <div class="rp" data-tier="0" data-pos="Goalkeeper" data-team="Team Name" data-val="5000000" data-name="Player Name"><div class="rp-left"><span class="rp-name">Player Name</span><span class="rp-pos">Goalkeeper</span></div><div class="rp-right"><span class="rp-team">Team Name</span><span class="rp-val">€5,000,000</span></div></div>
                 </div>
             </div>
+        </div>
+
+        <div class="lb-pagination" id="lbPagination">
+            <button class="lb-page-btn" id="lbPrev" disabled>&laquo; Prev</button>
+            <span class="lb-page-info" id="lbPageInfo">Page 1</span>
+            <button class="lb-page-btn" id="lbNext">Next &raquo;</button>
         </div>
     </section>
 
@@ -458,6 +498,83 @@
         document.querySelectorAll('a[href="#notfound"], .menu-item > a, .dropdown a, nav.menu a[href="#"]:not(.menu-item a)').forEach(l => {
             if (l.getAttribute('href') === '#notfound') l.addEventListener('click', () => setTimeout(route, 0));
         });
+
+        // ===== Leaderboard filters + pagination =====
+        (function() {
+            const PER_PAGE = 10;
+            let currentPage = 1;
+            let filteredRows = [];
+
+            const searchEl = document.getElementById('lbSearch');
+            const tierEl = document.getElementById('lbTierFilter');
+            const posEl = document.getElementById('lbPosFilter');
+            const teamEl = document.getElementById('lbTeamFilter');
+            const valEl = document.getElementById('lbValFilter');
+            const prevBtn = document.getElementById('lbPrev');
+            const nextBtn = document.getElementById('lbNext');
+            const pageInfo = document.getElementById('lbPageInfo');
+            const allRows = Array.from(document.querySelectorAll('#rankLadder .rp'));
+            const allRungs = Array.from(document.querySelectorAll('#rankLadder .rung'));
+
+            function applyFilters() {
+                const q = searchEl.value.toLowerCase().trim();
+                const tier = tierEl.value;
+                const pos = posEl.value;
+                const team = teamEl.value;
+                const val = valEl.value;
+
+                filteredRows = allRows.filter(r => {
+                    if (q && !r.dataset.name.toLowerCase().includes(q)) return false;
+                    if (tier !== 'all' && r.dataset.tier !== tier) return false;
+                    if (pos !== 'all' && r.dataset.pos !== pos) return false;
+                    if (team !== 'all' && r.dataset.team !== team) return false;
+                    if (val !== 'high' && val !== 'mid' && val !== 'low' && val !== 'all') return false;
+                    if (val === 'high' && Number(r.dataset.val) < 5000000) return false;
+                    if (val === 'mid' && (Number(r.dataset.val) < 1000000 || Number(r.dataset.val) >= 5000000)) return false;
+                    if (val === 'low' && Number(r.dataset.val) >= 1000000) return false;
+                    return true;
+                });
+
+                currentPage = 1;
+                renderPage();
+            }
+
+            function renderPage() {
+                const total = filteredRows.length;
+                const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+                if (currentPage > totalPages) currentPage = totalPages;
+
+                const start = (currentPage - 1) * PER_PAGE;
+                const end = start + PER_PAGE;
+                const visible = new Set(filteredRows.slice(start, end));
+
+                allRungs.forEach(rung => {
+                    const roster = rung.querySelector('.rung-roster');
+                    const rows = roster.querySelectorAll('.rp');
+                    let anyVisible = false;
+                    rows.forEach(r => {
+                        const show = visible.has(r);
+                        r.style.display = show ? '' : 'none';
+                        if (show) anyVisible = true;
+                    });
+                    rung.classList.toggle('hidden', !anyVisible);
+                });
+
+                prevBtn.disabled = currentPage <= 1;
+                nextBtn.disabled = currentPage >= totalPages;
+                pageInfo.textContent = 'Page ' + currentPage + ' of ' + totalPages + ' (' + total + ' players)';
+            }
+
+            searchEl.addEventListener('input', applyFilters);
+            tierEl.addEventListener('change', applyFilters);
+            posEl.addEventListener('change', applyFilters);
+            teamEl.addEventListener('change', applyFilters);
+            valEl.addEventListener('change', applyFilters);
+            prevBtn.addEventListener('click', () => { currentPage--; renderPage(); });
+            nextBtn.addEventListener('click', () => { currentPage++; renderPage(); });
+
+            applyFilters();
+        })();
 
         renderFixture(1);
         watchAuth();
