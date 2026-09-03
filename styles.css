@@ -309,44 +309,60 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .r-card .t-name { flex: 1; font-weight: 600; }
 .r-card .pts { font-weight: 800; color: var(--text); }
 
-/* Rankings tiers */
-.rank-tiers { display: flex; flex-direction: column; gap: 1rem; }
-.tier {
+/* Rankings leaderboard */
+.lb-filters { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.2rem; }
+.lb-tiers, .lb-pos { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.lb-tiltab, .lb-postab {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.lb-tiltab:hover, .lb-postab:hover { border-color: var(--accent); }
+.lb-tiltab.active { background: var(--accent); color: #06322a; border-color: var(--accent); }
+.lb-postab.active { background: var(--surface-2); color: var(--accent-2); border-color: var(--accent); }
+
+.lb-board {
     background: linear-gradient(145deg, var(--surface-2), var(--surface));
     border: 1px solid var(--border);
     border-radius: 18px;
     overflow: hidden;
 }
-.tier-head {
-    display: flex; align-items: center; gap: 1rem;
-    padding: 0.9rem 1.3rem;
+.lb-head, .lb-row {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.9rem 1.2rem;
 }
-.tier-head.p0, .tier-head.p1, .tier-head.p2, .tier-head.p3, .tier-head.p4, .tier-head.p5 {
+.lb-head {
+    color: var(--muted); font-size: 0.72rem; text-transform: uppercase;
+    letter-spacing: 1px;
+    background: rgba(255,255,255,0.02);
     border-bottom: 1px solid var(--border);
 }
-.stars { font-size: 1rem; letter-spacing: 1px; min-width: 90px; }
-.tier .p0 .stars { color: var(--muted); }
-.tier-name { flex: 1; font-weight: 800; font-size: 1.1rem; }
-.tier-count { font-weight: 800; color: var(--muted); font-size: 0.95rem; }
-.tier-pos {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    gap: 0.6rem; padding: 0.9rem 1.3rem 1.1rem;
+.lb-row { border-bottom: 1px solid var(--border); background: transparent; }
+.lb-row:last-child { border-bottom: none; }
+.lb-row:hover { background: rgba(47,214,176,0.05); }
+.c-rank, .v-rank { flex: 0 0 34px; text-align: center; font-weight: 800; }
+.v-rank {
+    color: var(--text);
 }
-.pos {
-    text-align: center; font-size: 0.78rem; text-transform: uppercase;
-    letter-spacing: 0.5px; color: var(--muted);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.55rem 0.3rem;
-    transition: transform 0.15s, border-color 0.15s, color 0.15s;
-}
-.pos:hover { transform: translateY(-2px); border-color: var(--accent); color: var(--accent-2); }
-.p5 .stars { color: #9fe8ff; }
-.p4 .stars { color: #ffd700; }
-.p3 .stars { color: #c8d4e0; }
-.p2 .stars { color: #cd7f32; }
-.p1 .stars { color: #ffe9b0; }
+.lb-row:nth-child(1) .v-rank { color: #ffd700; }
+.lb-row:nth-child(2) .v-rank { color: #cdcbd1; }
+.lb-row:nth-child(3) .v-rank { color: #cd7f32; }
+.c-player, .v-player { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.c-tier, .v-tier { flex: 0 0 92px; text-align: left; font-weight: 700; font-size: 0.9rem; color: var(--accent-2); }
+.lb-row[data-tier="5"] .v-tier, .lb-row[data-tier="4"] .v-tier { color: #ffd700; }
+.lb-row[data-tier="3"] .v-tier { color: #c8d4e0; }
+.lb-row[data-tier="2"] .v-tier { color: #cd7f32; }
+.lb-row[data-tier="1"] .v-tier { color: #ffe9b0; }
+.lb-row[data-tier="0"] .v-tier { color: var(--muted); }
+.c-pos, .v-pos { flex: 0 0 96px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.4px; color: var(--muted); }
+.c-pts, .v-pts { flex: 0 0 60px; text-align: right; font-weight: 800; color: var(--text); }
+.lb-empty { padding: 2rem; text-align: center; color: var(--muted); }
 
 /* 404 page */
 .nf {
@@ -444,4 +460,7 @@ footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.
     .stats, .week-grid, .hl-grid, .records-grid, .podium, .rest { grid-template-columns: 1fr; }
     .match-row { flex-direction: column; gap: 0.5rem; }
     .score { border: none; padding: 0.2rem 0; }
+    .c-tier, .v-tier { display: none; }
+    .c-pos, .v-pos { flex: 0 0 84px; font-size: 0.7rem; }
+    .lb-head, .lb-row { padding: 0.7rem 0.8rem; gap: 0.5rem; }
 }
