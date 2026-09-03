@@ -611,6 +611,7 @@
                     const roster = document.querySelector('.rung-roster[data-tier="' + tier + '"]');
                     if (roster) roster.insertAdjacentHTML('beforeend', html);
                 });
+                if (window.applyRankingFilters) window.applyRankingFilters();
             } catch (e) {
                 console.warn('[rankings] error:', e);
             }
@@ -1012,6 +1013,8 @@
                 pageInfo.textContent = 'Page ' + currentPage + ' of ' + totalPages + ' (' + total + ' players)';
             }
 
+            window.applyRankingFilters = applyFilters;
+
             searchEl.addEventListener('input', applyFilters);
             tierEl.addEventListener('change', applyFilters);
             posEl.addEventListener('change', applyFilters);
@@ -1023,26 +1026,14 @@
             document.getElementById('lbRefresh').addEventListener('click', async () => {
                 const btn = document.getElementById('lbRefresh');
                 btn.classList.add('spinning');
-                allRows = [];
-                document.querySelectorAll('.rung-roster').forEach(r => r.innerHTML = '');
-                try {
-                    const { data: players, error } = await supabaseClient.from('Player').select('*');
-                    if (!error && players) {
-                        players.forEach(p => {
-                            const tier = TIER_MAP[(p.rank || '').toLowerCase()] ?? 0;
-                            const pos = POS_MAP[(p.position || '').toUpperCase()] || 'Other';
-                            allRows.push({ name: p.display_name || 'Unknown', team: p.team || '', position: p.position || '', rank: p.rank || 'Unranked', goals: p.goals || 0, wins: p.Wins || 0, value: p["Market Value"] || 0, tier, pos, id: p.id });
-                        });
-                    }
-                } catch (e) { console.warn('[rankings] refresh error:', e); }
-                applyFilters();
+                await renderRankings();
                 btn.classList.remove('spinning');
             });
 
             applyFilters();
         })();
 
-        const SITE_VERSION = '1.2';
+        const SITE_VERSION = '1.1';
         const savedVersion = localStorage.getItem('fel-site-version');
         if (savedVersion && savedVersion !== SITE_VERSION) {
             document.getElementById('updatePopup').style.display = 'flex';
