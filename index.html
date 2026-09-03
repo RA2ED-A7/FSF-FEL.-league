@@ -847,6 +847,8 @@
         watchAuth();
         route();
         refreshAuth().then(() => { route(); renderCareer(); });
+
+        window.admin = function() { location.hash = 'admin'; };
     </script>
 </body>
 </html>
