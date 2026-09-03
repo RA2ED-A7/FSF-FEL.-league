@@ -486,38 +486,6 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 }
 .career-badge.accent { color: var(--accent); border-color: rgba(47,214,176,0.35); }
 
-.career-roblox-prompt {
-    text-align: center; padding: 1.5rem; margin-bottom: 1.5rem;
-    background: linear-gradient(145deg, var(--surface-2), var(--surface));
-    border: 1px solid var(--border); border-radius: 14px;
-}
-.career-roblox-prompt p { color: var(--muted); margin-bottom: 0.8rem; font-size: 0.9rem; }
-.career-roblox-input-row { display: flex; gap: 0.5rem; justify-content: center; }
-.career-roblox-input {
-    padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid var(--border);
-    background: var(--surface); color: var(--text); font-size: 0.9rem; width: 260px;
-}
-.career-roblox-input:focus { outline: none; border-color: var(--accent); }
-.career-roblox-btn {
-    padding: 0.6rem 1.2rem; border-radius: 8px; border: none;
-    background: var(--accent); color: #06322a; font-weight: 700; font-size: 0.9rem;
-    cursor: pointer; transition: opacity 0.15s;
-}
-.career-roblox-btn:hover { opacity: 0.85; }
-.career-roblox-msg { display: block; margin-top: 0.5rem; font-size: 0.8rem; }
-
-.career-roblox-linked {
-    margin-bottom: 1.5rem;
-}
-.career-roblox-linked-row {
-    display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem;
-    padding: 0.8rem 1rem;
-    background: linear-gradient(145deg, var(--surface-2), var(--surface));
-    border: 1px solid var(--border); border-radius: 14px;
-}
-.career-rblx-label { color: var(--muted); }
-.career-rblx-user { color: var(--accent-2); font-weight: 600; }
-
 .career-stats {
     display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 2rem;
 }
