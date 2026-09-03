@@ -715,8 +715,6 @@
                 location.hash = 'home';
                 return;
             }
-                return;
-            }
             const sel = document.getElementById('adminPlayerSelect');
             try {
                 let { data, error } = await supabaseClient.from('Player').select('id, display_name').order('display_name');
@@ -1044,7 +1042,7 @@
             applyFilters();
         })();
 
-        const SITE_VERSION = '1.1';
+        const SITE_VERSION = '1.2';
         const savedVersion = localStorage.getItem('fel-site-version');
         if (savedVersion && savedVersion !== SITE_VERSION) {
             document.getElementById('updatePopup').style.display = 'flex';
