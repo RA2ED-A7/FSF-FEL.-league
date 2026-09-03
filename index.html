@@ -557,13 +557,20 @@
             }
             const sel = document.getElementById('adminPlayerSelect');
             try {
-                const { data, error } = await supabaseClient.from('Player').select('id, display_name').eq('id', u.id);
-                if (error || !data) { sel.innerHTML = '<option>Error loading</option>'; return; }
-                const players = Array.isArray(data) ? data : [data];
+                let { data, error } = await supabaseClient.from('Player').select('id, display_name').eq('id', u.id);
+                if (error) { sel.innerHTML = '<option>Error loading</option>'; return; }
+                let players = Array.isArray(data) ? data : (data ? [data] : []);
                 if (players.length === 0) {
-                    sel.innerHTML = '<option value="">No player record found</option>';
-                    document.getElementById('adminForm').style.display = 'none';
-                    return;
+                    const m = u.user_metadata || {};
+                    const displayName = m.full_name || m.user_name || m.name || u.email || 'Player';
+                    const { error: insertErr } = await supabaseClient.from('Player').insert({
+                        id: u.id, display_name: displayName,
+                        team: '', position: '', rank: '',
+                        goals: 0, assists: 0, saves: 0, matches: 0,
+                        Wins: 0, Loses: 0, "Market Value": 0, "MVP_Awards": 0
+                    });
+                    if (insertErr) { sel.innerHTML = '<option>Error creating player</option>'; return; }
+                    players = [{ id: u.id, display_name: displayName }];
                 }
                 sel.innerHTML = players.map(p => '<option value="' + p.id + '">' + (p.display_name || p.id) + '</option>').join('');
                 sel.onchange = () => { if (sel.value) loadAdminPlayer(sel.value); else document.getElementById('adminForm').style.display = 'none'; };
