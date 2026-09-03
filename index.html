@@ -483,10 +483,13 @@
         async function renderCareer() {
             const u = signedIn ? (supabaseClient?.auth?._currentUser || null) : null;
             const m = u ? (u.user_metadata || {}) : {};
-            const idData = u?.identities?.[0]?.identity_data || {};
-            const name = m.full_name || m.name || idData.full_name || m.user_name || m.username || idData.username || m.custom_claims?.username || (u ? u.email : '') || 'Player';
-            const username = m.user_name || m.username || idData.username || m.preferred_username || name.toLowerCase().replace(/\s+/g, '') || 'player';
-            const avatar = m.avatar_url || m.picture || idData.avatar_url || (idData.avatar ? 'https://cdn.discordapp.com/avatars/' + u.id + '/' + idData.avatar + '.png' : '') || '';
+            const id = u?.identities?.[0] || {};
+            const idData = id.identity_data || {};
+            const discordId = id.provider === 'discord' ? (id.id || idData.sub || '') : '';
+            const name = m.full_name || m.name || idData.full_name || m.user_name || m.username || idData.username || idData.global_name || idData.discord_username || m.custom_claims?.username || (u ? u.email : '') || 'Player';
+            const username = m.user_name || m.username || idData.username || idData.discord_username || m.preferred_username || name.toLowerCase().replace(/\s+/g, '') || 'player';
+            const avatarHash = idData.avatar;
+            const avatar = m.avatar_url || m.picture || idData.avatar_url || (avatarHash && discordId ? 'https://cdn.discordapp.com/avatars/' + discordId + '/' + avatarHash + (avatarHash.startsWith('a_') ? '.gif' : '.png') : '') || '';
             document.getElementById('careerName').textContent = name;
             document.getElementById('careerTag').textContent = '@' + username;
             const img = document.getElementById('careerAvatar');
@@ -522,6 +525,26 @@
         }
 
         const ADMIN_USER_ID = 'dc542b03-1512-4d64-b537-141253adf553';
+
+        async function ensurePlayerRow(user) {
+            if (!user || !supabaseClient) return;
+            try {
+                const { data: existing } = await supabaseClient.from('Player').select('id').eq('id', user.id).maybeSingle();
+                if (existing) return;
+                const m = user.user_metadata || {};
+                const displayName = m.full_name || m.user_name || m.name || user.email || 'Player';
+                const { error } = await supabaseClient.from('Player').insert({
+                    id: user.id,
+                    display_name: displayName,
+                    team: '', position: '', rank: '',
+                    goals: 0, assists: 0, saves: 0, matches: 0,
+                    Wins: 0, Loses: 0, "Market Value": 0, "MVP_Awards": 0
+                });
+                if (error) console.warn('[player] create row failed:', error.message);
+            } catch (e) {
+                console.warn('[player] ensurePlayerRow error:', e);
+            }
+        }
 
         async function loadAdminPanel() {
             if (!initSupabase()) return;
@@ -704,6 +727,7 @@
             if (data.session) {
                 signedIn = true;
                 renderUser(data.session.user);
+                await ensurePlayerRow(data.session.user);
                 renderCareer();
                 if (location.hash.replace('#', '').toLowerCase() === 'admin') loadAdminPanel();
             } else {
@@ -719,7 +743,7 @@
                 if (event === 'SIGNED_IN' && session) {
                     signedIn = true;
                     renderUser(session.user);
-                    renderCareer();
+                    ensurePlayerRow(session.user).then(() => { renderCareer(); });
                     if (location.hash.replace('#', '').toLowerCase() === 'admin') loadAdminPanel();
                 } else if (event === 'SIGNED_OUT') {
                     signedIn = false;
