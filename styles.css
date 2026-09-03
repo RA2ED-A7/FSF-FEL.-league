@@ -577,9 +577,16 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 
 /* Shared page wrappers */
 .change-page, .sign-page, .rank-page { display: none; flex: 1; max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 3rem; width: 100%; }
-.cl-page-head { text-align: center; margin-bottom: 2.5rem; }
-.cl-main-title { font-size: 1.6rem; }
+.cl-page-head { margin-bottom: 2.5rem; }
+.cl-main-title { font-size: 1.6rem; text-align: left; }
 .cl-page-head p { color: var(--muted); margin-top: 0.4rem; }
+.cl-timeline {
+    display: flex; gap: 1.5rem; overflow-x: auto;
+    padding-bottom: 1rem; scroll-snap-type: x mandatory;
+}
+.cl-timeline::-webkit-scrollbar { height: 6px; }
+.cl-timeline::-webkit-scrollbar-track { background: var(--surface-2); border-radius: 3px; }
+.cl-timeline::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
 /* Update log boxes */
 .cl-box {
@@ -587,7 +594,9 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
     border: 1px solid var(--border);
     border-radius: 18px;
     padding: 1.5rem;
-    margin-bottom: 1.2rem;
+    min-width: 320px; max-width: 360px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
     position: relative; overflow: hidden;
 }
 .cl-box::before {
