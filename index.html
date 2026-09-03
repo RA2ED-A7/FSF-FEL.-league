@@ -453,7 +453,7 @@
             <a href="#">Standings</a>
         </nav>
         <div class="header-right">
-            <div class="user" id="userBox"><span class="avatar">U</span><span id="userName">Username</span></div>
+            <div class="user" id="userBox"><span class="avatar" id="userAvatar">U</span><span id="userName">Username</span></div>
             <button class="signin" id="signinBtn">Sign In</button>
             <a class="changelog" href="#changelog"><span class="dot"></span>Update Log</a>
         </div>
@@ -655,6 +655,7 @@
 
         function renderUser(userOverride) {
             const nameBox = document.getElementById('userName');
+            const avatar = document.getElementById('userAvatar');
             const btn = document.getElementById('signinBtn');
             const u = userOverride || supabaseClient?.auth?._currentUser || null;
             if (signedIn && u) {
@@ -662,9 +663,11 @@
                 console.log('[auth] user_metadata:', m);
                 const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || m.email || u.email || u.identities?.[0]?.user_name || 'User';
                 nameBox.textContent = name;
+                avatar.textContent = name.charAt(0).toUpperCase();
                 btn.textContent = 'Sign Out';
             } else {
                 nameBox.textContent = 'Username';
+                avatar.textContent = 'U';
                 btn.textContent = 'Sign In';
             }
         }
