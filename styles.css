@@ -414,6 +414,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .rp-right { display: flex; align-items: center; gap: 1.4rem; flex-shrink: 0; }
 .rp-name { font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 1rem; }
 .rp-pos { font-size: 0.8rem; color: var(--muted); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.3px; }
+.rp-sub { color: var(--muted); opacity: 0.6; text-transform: uppercase; font-weight: 400; }
 .rp-team { font-size: 0.85rem; color: var(--muted); font-weight: 500; white-space: nowrap; }
 .rp-val { font-size: 0.85rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
 
