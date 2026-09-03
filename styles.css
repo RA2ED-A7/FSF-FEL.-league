@@ -694,6 +694,8 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
     display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem;
     margin-bottom: 1rem; max-height: 60vh; overflow-y: auto;
     padding-right: 0.5rem;
+    width: 100vw; margin-left: calc(-50vw + 50%);
+    padding-left: 3rem; padding-right: 3rem;
 }
 .admin-content-editor::-webkit-scrollbar { width: 6px; }
 .admin-content-editor::-webkit-scrollbar-track { background: var(--surface-2); border-radius: 3px; }
