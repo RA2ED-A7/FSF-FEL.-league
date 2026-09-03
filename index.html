@@ -520,6 +520,11 @@
                 await supabaseClient.auth.updateUser({
                     data: { roblox_id: info.robloxId, roblox_username: info.robloxUsername }
                 });
+                const { data } = await supabaseClient.auth.getSession();
+                if (data.session) {
+                    signedIn = true;
+                    renderUser(data.session.user);
+                }
             }
         }
 
@@ -612,7 +617,6 @@
                 signedIn = false;
                 renderUser();
             }
-            if (location.hash.replace('#', '').toLowerCase() === 'career') renderCareer();
         }
 
         // React to auth changes (e.g. right after the OAuth redirect completes)
@@ -731,7 +735,14 @@
         renderFixture(1);
         watchAuth();
         route();
-        refreshAuth().then(() => { route(); });
+        refreshAuth().then(() => {
+            const u = supabaseClient?.auth?._currentUser || null;
+            if (signedIn && u) {
+                linkRobloxToUser(u).then(() => { route(); renderCareer(); });
+            } else {
+                route();
+            }
+        });
     </script>
 </body>
 </html>
