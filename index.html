@@ -315,7 +315,9 @@
                 <span class="career-tag" id="profileTeam">No Team</span>
                 <div class="career-badges">
                     <span class="career-badge" id="profilePosition">None</span>
-                    <span class="career-badge accent" id="profileRank">Unranked</span>
+                    <span class="career-badge" id="profileRank">Unranked</span>
+                    <span class="career-badge" id="profileStars"></span>
+                    <span class="career-badge" id="profileWinRate">0%</span>
                 </div>
             </div>
         </div>
@@ -378,7 +380,7 @@
     <section class="admin-page" id="adminPage" style="display:none;">
         <h2 class="admin-title">Admin Panel</h2>
         <p class="muted" style="margin-bottom:1.5rem;">Edit player stats. Only visible to you.</p>
-        <p class="muted" style="font-size:0.75rem;margin-bottom:1.5rem;">Admin Panel Version 1.0</p>
+        <p class="muted" style="font-size:0.75rem;margin-bottom:1.5rem;">Admin Panel Version 1.2</p>
         <div class="admin-player-select">
             <label>Select Player:</label>
             <select id="adminPlayerSelect" class="admin-select">
@@ -399,6 +401,7 @@
                 <div class="admin-field"><label>Losses</label><input id="afLosses" type="number" min="0"></div>
                 <div class="admin-field"><label>Market Value</label><select id="afValue"><option value="0">€0</option><option value="5000000">€5,000,000</option><option value="10000000">€10,000,000</option><option value="15000000">€15,000,000</option><option value="20000000">€20,000,000</option><option value="30000000">€30,000,000</option><option value="40000000">€40,000,000</option><option value="50000000">€50,000,000</option><option value="60000000">€60,000,000</option><option value="70000000">€70,000,000</option><option value="80000000">€80,000,000</option><option value="90000000">€90,000,000</option><option value="100000000">€100,000,000</option></select></div>
                 <div class="admin-field"><label>MVP Awards</label><input id="afMVP" type="number" min="0"></div>
+                <div class="admin-field"><label>Win Rate %</label><input id="afWinRate" type="number" min="0" max="100"></div>
             </div>
             <div class="admin-actions">
                 <button class="admin-save-btn" onclick="saveAdminPlayer()">Save</button>
@@ -634,6 +637,15 @@
             }
         }
 
+        const RANK_COLORS = {
+            'platinum': '#7ec4ff', 'gold': '#ffd700', 'silver': '#c8d4e0',
+            'bronze': '#cd7f32', 'new star': '#ffe9b0', 'unranked': '#888'
+        };
+        const RANK_STARS = {
+            'platinum': '★★★★★', 'gold': '★★★★', 'silver': '★★★',
+            'bronze': '★★', 'new star': '★', 'unranked': '—'
+        };
+
         async function loadPlayerProfile() {
             initSupabase();
             if (!supabaseClient) return;
@@ -647,7 +659,19 @@
                 document.getElementById('profileName').textContent = p.display_name || 'Player';
                 document.getElementById('profileTeam').textContent = p.team || 'No Team';
                 document.getElementById('profilePosition').textContent = p.position || 'None';
-                document.getElementById('profileRank').textContent = p.rank || 'Unranked';
+                const rank = (p.rank || 'Unranked').toLowerCase();
+                const rankEl = document.getElementById('profileRank');
+                rankEl.textContent = p.rank || 'Unranked';
+                rankEl.style.color = RANK_COLORS[rank] || '#888';
+                rankEl.style.borderColor = RANK_COLORS[rank] || '#888';
+                rankEl.style.background = (RANK_COLORS[rank] || '#888') + '15';
+                const starsEl = document.getElementById('profileStars');
+                starsEl.textContent = RANK_STARS[rank] || '—';
+                starsEl.style.color = RANK_COLORS[rank] || '#888';
+                const matches = p.matches || 0;
+                const wins = p.Wins || 0;
+                const winRate = matches > 0 ? Math.round(wins / matches * 100) : 0;
+                document.getElementById('profileWinRate').textContent = winRate + '% Win Rate';
                 const s = (v, d) => v != null ? v : d;
                 document.getElementById('pStatMatches').textContent = s(p.matches, 0);
                 document.getElementById('pStatGoals').textContent = s(p.goals, 0);
@@ -722,6 +746,7 @@
                 document.getElementById('afLosses').value = data.Loses || 0;
                 document.getElementById('afValue').value = data["Market Value"] || 0;
                 document.getElementById('afMVP').value = data.MVP_Awards || 0;
+                document.getElementById('afWinRate').value = data.win_rate || 0;
                 form.style.display = '';
                 form.dataset.playerId = id;
             } catch (e) {
@@ -749,7 +774,8 @@
                     Wins: parseInt(document.getElementById('afWins').value) || 0,
                     Loses: parseInt(document.getElementById('afLosses').value) || 0,
                     "Market Value": parseInt(document.getElementById('afValue').value) || 0,
-                    MVP_Awards: parseInt(document.getElementById('afMVP').value) || 0
+                    MVP_Awards: parseInt(document.getElementById('afMVP').value) || 0,
+                    win_rate: parseInt(document.getElementById('afWinRate').value) || 0
                 }).eq('id', id);
                 if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
                 msg.textContent = 'Saved!';
