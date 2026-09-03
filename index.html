@@ -529,9 +529,12 @@
         const POS_MAP = { CB: 'Defender', CF: 'Forward', RWB: 'Defender', LWB: 'Defender', CAM: 'Midfielder', LW: 'Forward', RW: 'Forward', CDM: 'Midfielder', CM: 'Midfielder', GK: 'Goalkeeper' };
 
         async function renderRankings() {
-            if (!supabaseClient) return;
+            initSupabase();
+            if (!supabaseClient) { console.warn('[rankings] no supabase client'); return; }
             try {
+                console.log('[rankings] fetching players...');
                 const { data: players, error } = await supabaseClient.from('Player').select('*').order('display_name');
+                console.log('[rankings] result:', players, error);
                 if (error || !players) { console.warn('[rankings] query error:', error); return; }
                 document.querySelectorAll('.rung-roster').forEach(r => r.innerHTML = '');
                 players.forEach(p => {
