@@ -177,50 +177,6 @@
             <div class="section-title">Rankings</div>
             <p>Season 1 player leaderboard by skill tier and position.</p>
         </div>
-
-        <div class="lb-filters">
-            <div class="lb-tiers">
-                <button class="lb-tiltab active" data-tier="all">All</button>
-                <button class="lb-tiltab" data-tier="5">5★ Platinum</button>
-                <button class="lb-tiltab" data-tier="4">4★ Gold</button>
-                <button class="lb-tiltab" data-tier="3">3★ Silver</button>
-                <button class="lb-tiltab" data-tier="2">2★ Bronze</button>
-                <button class="lb-tiltab" data-tier="1">1★ New Star</button>
-                <button class="lb-tiltab" data-tier="0">Unranked</button>
-            </div>
-            <div class="lb-pos">
-                <button class="lb-postab active" data-pos="all">All</button>
-                <button class="lb-postab" data-pos="forward">Forward</button>
-                <button class="lb-postab" data-pos="midfielder">Midfielder</button>
-                <button class="lb-postab" data-pos="defender">Defender</button>
-                <button class="lb-postab" data-pos="goalkeeper">Goalkeeper</button>
-            </div>
-        </div>
-
-        <div class="lb-board">
-            <div class="lb-head">
-                <span class="c-rank">#</span>
-                <span class="c-player">Player</span>
-                <span class="c-tier">Tier</span>
-                <span class="c-pos">Position</span>
-                <span class="c-pts">Points</span>
-            </div>
-
-            <div class="lb-rows" id="lbRows">
-                <div class="lb-row" data-tier="5" data-pos="forward"><span class="v-rank">1</span><span class="v-player">Player Name</span><span class="v-tier">★★★★★</span><span class="v-pos">Forward</span><span class="v-pts">--</span></div>
-                <div class="lb-row" data-tier="5" data-pos="midfielder"><span class="v-rank">2</span><span class="v-player">Player Name</span><span class="v-tier">★★★★★</span><span class="v-pos">Midfielder</span><span class="v-pts">--</span></div>
-                <div class="lb-row" data-tier="5" data-pos="defender"><span class="v-rank">3</span><span class="v-player">Player Name</span><span class="v-tier">★★★★★</span><span class="v-pos">Defender</span><span class="v-pts">--</span></div>
-                <div class="lb-row" data-tier="5" data-pos="goalkeeper"><span class="v-rank">4</span><span class="v-player">Player Name</span><span class="v-tier">★★★★★</span><span class="v-pos">Goalkeeper</span><span class="v-pts">--</span></div>
-                <div class="lb-row" data-tier="4" data-pos="forward"><span class="v-rank">5</span><span class="v-player">Player Name</span><span class="v-tier">★★★★</span><span class="v-pos">Forward</span><span class="v-pts">--</span></div>
-                <div class="lb-row" data-tier="4" data-pos="midfielder"><span class="v-rank">6</span><span class="v-player">Player Name</span><span class="v-tier">★★★★</span><span class="v-pos">Midfielder</span><span class="v-pts">--</span></div>
-                <div class="lb-row" data-tier="3" data-pos="forward"><span class="v-rank">7</span><span class="v-player">Player Name</span><span class="v-tier">★★★</span><span class="v-pos">Forward</span><span class="v-pts">--</span></div>
-                <div class="lb-row" data-tier="2" data-pos="midfielder"><span class="v-rank">8</span><span class="v-player">Player Name</span><span class="v-tier">★★</span><span class="v-pos">Midfielder</span><span class="v-pts">--</span></div>
-                <div class="lb-row" data-tier="1" data-pos="defender"><span class="v-rank">9</span><span class="v-player">Player Name</span><span class="v-tier">★</span><span class="v-pos">Defender</span><span class="v-pts">--</span></div>
-                <div class="lb-row" data-tier="0" data-pos="goalkeeper"><span class="v-rank">10</span><span class="v-player">Player Name</span><span class="v-tier">Unranked</span><span class="v-pos">Goalkeeper</span><span class="v-pts">--</span></div>
-            </div>
-
-            <div class="lb-empty" id="lbEmpty" style="display:none;">No players in this category yet.</div>
-        </div>
     </section>
 
     <footer>
@@ -415,39 +371,6 @@
 
         document.querySelectorAll('a[href="#notfound"], .menu-item > a, .dropdown a, nav.menu a[href="#"]:not(.menu-item a)').forEach(l => {
             if (l.getAttribute('href') === '#notfound') l.addEventListener('click', () => setTimeout(route, 0));
-        });
-
-        // ===== Leaderboard filters =====
-        let lbTier = 'all';
-        let lbPos = 'all';
-
-        function applyLeaderboardFilter() {
-            const rows = document.querySelectorAll('#lbRows .lb-row');
-            let visible = 0;
-            rows.forEach(r => {
-                const show = (lbTier === 'all' || r.dataset.tier === lbTier) &&
-                             (lbPos === 'all' || r.dataset.pos === lbPos);
-                r.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-            document.getElementById('lbEmpty').style.display = visible ? 'none' : '';
-        }
-
-        document.querySelectorAll('.lb-tiltab').forEach(b => {
-            b.addEventListener('click', () => {
-                document.querySelectorAll('.lb-tiltab').forEach(x => x.classList.remove('active'));
-                b.classList.add('active');
-                lbTier = b.dataset.tier;
-                applyLeaderboardFilter();
-            });
-        });
-        document.querySelectorAll('.lb-postab').forEach(b => {
-            b.addEventListener('click', () => {
-                document.querySelectorAll('.lb-postab').forEach(x => x.classList.remove('active'));
-                b.classList.add('active');
-                lbPos = b.dataset.pos;
-                applyLeaderboardFilter();
-            });
         });
 
         renderFixture(1);
