@@ -576,7 +576,8 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .nf-page { display: none; }
 
 /* Shared page wrappers */
-.change-page, .sign-page, .rank-page { display: none; flex: 1; max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 3rem; width: 100%; }
+.change-page { display: none; flex: 1; max-width: 100%; margin: 0; padding: 2rem 3rem 3rem; width: 100%; }
+.sign-page, .rank-page { display: none; flex: 1; max-width: 760px; margin: 0 auto; padding: 2rem 1.5rem 3rem; width: 100%; }
 .cl-page-head { margin-bottom: 2.5rem; }
 .cl-main-title { font-size: 1.6rem; text-align: left; }
 .cl-page-head p { color: var(--muted); margin-top: 0.4rem; }
