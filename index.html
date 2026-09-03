@@ -26,15 +26,7 @@
                 </div>
             </div>
             <div class="menu-item">
-                <a href="#notfound">Teams<span class="caret">&#9662;</span></a>
-                <div class="dropdown">
-                    <a href="#rankings">Rankings</a>
-                    <a href="#notfound">Manchester City</a>
-                    <a href="#notfound">FC Barcelona</a>
-                    <a href="#notfound">Bayern Munich</a>
-                    <a href="#notfound">Paris Saint Germain</a>
-                    <a href="#notfound">Real Madrid</a>
-                </div>
+                <a href="#rosters">Rosters</a>
             </div>
             <div class="menu-item">
                 <a href="#notfound">Market<span class="caret">&#9662;</span></a>
@@ -291,6 +283,39 @@
         </div>
     </section>
 
+    <section class="rosters-page" id="rostersPage" style="display:none;">
+        <div class="page-head">
+            <h2>Team Rosters</h2>
+            <p class="muted">All registered players sorted by team</p>
+        </div>
+        <div class="rosters-grid" id="rostersGrid"></div>
+    </section>
+
+    <section class="player-profile-page" id="playerProfilePage" style="display:none;">
+        <button class="back-btn" onclick="history.back()">&larr; Back</button>
+        <div class="profile-header">
+            <div class="profile-avatar-wrap">
+                <img class="profile-avatar" id="profileAvatar" src="" alt="Avatar">
+            </div>
+            <div class="profile-info">
+                <h1 class="profile-name" id="profileName">Player</h1>
+                <span class="profile-team" id="profileTeam">No Team</span>
+                <span class="profile-position" id="profilePosition">None</span>
+                <span class="profile-rank" id="profileRank">Unranked</span>
+            </div>
+        </div>
+        <div class="profile-stats">
+            <div class="stat-card"><div class="stat-val" id="pStatMatches">0</div><div class="stat-lbl">Matches</div></div>
+            <div class="stat-card"><div class="stat-val" id="pStatGoals">0</div><div class="stat-lbl">Goals</div></div>
+            <div class="stat-card"><div class="stat-val" id="pStatAssists">0</div><div class="stat-lbl">Assists</div></div>
+            <div class="stat-card"><div class="stat-val" id="pStatWins">0</div><div class="stat-lbl">Wins</div></div>
+            <div class="stat-card"><div class="stat-val" id="pStatLosses">0</div><div class="stat-lbl">Losses</div></div>
+            <div class="stat-card"><div class="stat-val" id="pStatValue">€0</div><div class="stat-lbl">Market Value</div></div>
+            <div class="stat-card"><div class="stat-val" id="pStatSaves">0</div><div class="stat-lbl">Saves</div></div>
+            <div class="stat-card"><div class="stat-val" id="pStatMVP">0</div><div class="stat-lbl">MVP Awards</div></div>
+        </div>
+    </section>
+
     <section class="career-page" id="careerPage">
         <div class="career-profile" id="careerProfile">
             <div class="career-header">
@@ -336,6 +361,7 @@
     <section class="admin-page" id="adminPage" style="display:none;">
         <h2 class="admin-title">Admin Panel</h2>
         <p class="muted" style="margin-bottom:1.5rem;">Edit player stats. Only visible to you.</p>
+        <p class="muted" style="font-size:0.75rem;margin-bottom:1.5rem;">Admin Panel Version 1.0</p>
         <div class="admin-player-select">
             <label>Select Player:</label>
             <select id="adminPlayerSelect" class="admin-select">
@@ -545,12 +571,68 @@
                     const team = p.team || 'No Team';
                     const val = p["Market Value"] || 0;
                     const name = p.display_name || 'Player';
-                    const html = '<div class="rp" data-tier="' + tier + '" data-pos="' + pos + '" data-team="' + team + '" data-val="' + val + '" data-name="' + name + '"><div class="rp-left"><span class="rp-name">' + name + '</span><span class="rp-pos">' + posCat + ' · <span class="rp-sub">' + (pos || 'None') + '</span></span></div><div class="rp-right"><span class="rp-team">' + team + '</span><span class="rp-val">€' + val.toLocaleString() + '</span></div></div>';
+                    const html = '<div class="rp" data-tier="' + tier + '" data-pos="' + pos + '" data-team="' + team + '" data-val="' + val + '" data-name="' + name + '" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer"><div class="rp-left"><span class="rp-name">' + name + '</span><span class="rp-pos">' + posCat + ' · <span class="rp-sub">' + (pos || 'None') + '</span></span></div><div class="rp-right"><span class="rp-team">' + team + '</span><span class="rp-val">€' + val.toLocaleString() + '</span></div></div>';
                     const roster = document.querySelector('.rung-roster[data-tier="' + tier + '"]');
                     if (roster) roster.insertAdjacentHTML('beforeend', html);
                 });
             } catch (e) {
                 console.warn('[rankings] error:', e);
+            }
+        }
+
+        const TEAMS = ['Manchester City', 'FC Barcelona', 'Bayern Munich', 'Paris Saint Germain', 'Real Madrid'];
+
+        async function renderRosters() {
+            initSupabase();
+            if (!supabaseClient) return;
+            try {
+                const { data: players, error } = await supabaseClient.from('Player').select('*').order('display_name');
+                if (error || !players) return;
+                const grid = document.getElementById('rostersGrid');
+                grid.innerHTML = '';
+                TEAMS.forEach(team => {
+                    const teamPlayers = players.filter(p => p.team === team);
+                    const sorted = teamPlayers.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
+                    let html = '<div class="roster-team"><h3 class="roster-team-name">' + team + '</h3><div class="roster-list">';
+                    sorted.forEach((p, i) => {
+                        const val = p["Market Value"] || 0;
+                        html += '<div class="roster-player" onclick="location.hash=\'player?id=' + p.id + '\'"><span class="roster-rank">#' + (i + 1) + '</span><span class="roster-name">' + (p.display_name || 'Player') + '</span><span class="roster-pos">' + (p.position || 'None') + '</span><span class="roster-val">€' + val.toLocaleString() + '</span></div>';
+                    });
+                    if (teamPlayers.length === 0) html += '<div class="roster-empty">No players yet</div>';
+                    html += '</div></div>';
+                    grid.insertAdjacentHTML('beforeend', html);
+                });
+            } catch (e) {
+                console.warn('[rosters] error:', e);
+            }
+        }
+
+        async function loadPlayerProfile() {
+            initSupabase();
+            if (!supabaseClient) return;
+            const hash = location.hash;
+            const idMatch = hash.match(/id=([^&]+)/);
+            if (!idMatch) return;
+            const playerId = idMatch[1];
+            try {
+                const { data: p, error } = await supabaseClient.from('Player').select('*').eq('id', playerId).single();
+                if (error || !p) return;
+                document.getElementById('profileName').textContent = p.display_name || 'Player';
+                document.getElementById('profileTeam').textContent = p.team || 'No Team';
+                document.getElementById('profilePosition').textContent = p.position || 'None';
+                document.getElementById('profileRank').textContent = p.rank || 'Unranked';
+                const s = (v, d) => v != null ? v : d;
+                document.getElementById('pStatMatches').textContent = s(p.matches, 0);
+                document.getElementById('pStatGoals').textContent = s(p.goals, 0);
+                document.getElementById('pStatAssists').textContent = s(p.assists, 0);
+                document.getElementById('pStatWins').textContent = s(p.Wins, 0);
+                document.getElementById('pStatLosses').textContent = s(p.Loses, 0);
+                document.getElementById('pStatValue').textContent = '€' + (s(p["Market Value"], 0)).toLocaleString();
+                document.getElementById('pStatSaves').textContent = s(p.saves, 0);
+                document.getElementById('pStatMVP').textContent = s(p.MVP_Awards, 0);
+                document.getElementById('profileAvatar').style.display = 'none';
+            } catch (e) {
+                console.warn('[player] error:', e);
             }
         }
 
@@ -661,7 +743,9 @@
                 signin: 'sign-page',
                 rankings: 'rank-page',
                 career: 'careerPage',
-                admin: 'adminPage'
+                admin: 'adminPage',
+                rosters: 'rostersPage',
+                player: 'playerProfilePage'
             };
             const isKnown = Object.prototype.hasOwnProperty.call(pages, page) && page !== '';
             const homeEl = document.getElementById('home');
@@ -671,6 +755,8 @@
             const rkEl = document.querySelector('.rank-page');
             const crEl = document.getElementById('careerPage');
             const adEl = document.getElementById('adminPage');
+            const roEl = document.getElementById('rostersPage');
+            const prEl = document.getElementById('playerProfilePage');
 
             homeEl.style.display = 'none';
             nfEl.style.display = 'none';
@@ -679,6 +765,8 @@
             rkEl.style.display = 'none';
             crEl.style.display = 'none';
             adEl.style.display = 'none';
+            roEl.style.display = 'none';
+            prEl.style.display = 'none';
 
             if (page === '' || page === 'home') {
                 homeEl.style.display = '';
@@ -688,6 +776,12 @@
             } else if (page === 'admin') {
                 adEl.style.display = '';
                 loadAdminPanel();
+            } else if (page === 'rosters') {
+                roEl.style.display = '';
+                renderRosters();
+            } else if (page === 'player') {
+                prEl.style.display = '';
+                loadPlayerProfile();
             } else if (isKnown) {
                 const el = page === 'changelog' ? clEl : (page === 'signin' ? siEl : rkEl);
                 el.style.display = 'flex';
