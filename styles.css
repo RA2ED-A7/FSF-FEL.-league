@@ -584,11 +584,16 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .cl-timeline {
     display: flex; gap: 0; overflow-x: auto;
     padding-bottom: 1rem; scroll-snap-type: x mandatory;
+    align-items: center;
 }
 .cl-timeline::-webkit-scrollbar { height: 6px; }
 .cl-timeline::-webkit-scrollbar-track { background: var(--surface-2); border-radius: 3px; }
 .cl-timeline::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-.cl-timeline .cl-box + .cl-box { border-left: 1px solid var(--border); }
+.cl-timeline .cl-box + .cl-box::before {
+    content: ''; position: absolute; left: -20px; top: 50%;
+    width: 20px; height: 2px; background: var(--border);
+    transform: translateY(-50%);
+}
 
 /* Update log boxes */
 .cl-box {
