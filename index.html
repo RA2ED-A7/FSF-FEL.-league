@@ -62,18 +62,36 @@
         </div>
 
         <div class="fixture-tabs">
-            <button class="fixture-tab active" data-fixture="1">1. FEL</button>
-            <button class="fixture-tab" data-fixture="2">2. FEL</button>
-            <button class="fixture-tab" data-fixture="3">3. FEL</button>
+            <button class="fixture-tab active" data-fixture="1" onclick="switchFixture(1)">1. FEL</button>
+            <button class="fixture-tab" data-fixture="2" onclick="switchFixture(2)">2. FEL</button>
+            <button class="fixture-tab" data-fixture="3" onclick="switchFixture(3)">3. FEL</button>
         </div>
 
-        <div class="fixture-box" id="fixtureBox">
-            <span class="corner" id="fixtureCorner">1. FEL</span>
+        <div class="fixture-box" id="fixture1">
+            <span class="corner">1. FEL</span>
             <div class="label">Next Match</div>
             <div class="match-row">
-                <div class="team"><span class="crest">N</span><span id="fxTeam1">None</span></div>
-                <div class="score" id="fxScore">0 - 0</div>
-                <div class="team"><span id="fxTeam2">None</span><span class="crest">N</span></div>
+                <div class="team"><span class="crest">N</span><span id="fx1Team1">None</span></div>
+                <div class="score" id="fx1Score">0 - 0</div>
+                <div class="team"><span id="fx1Team2">None</span><span class="crest">N</span></div>
+            </div>
+        </div>
+        <div class="fixture-box" id="fixture2" style="display:none;">
+            <span class="corner">2. FEL</span>
+            <div class="label">Next Match</div>
+            <div class="match-row">
+                <div class="team"><span class="crest">N</span><span id="fx2Team1">None</span></div>
+                <div class="score" id="fx2Score">0 - 0</div>
+                <div class="team"><span id="fx2Team2">None</span><span class="crest">N</span></div>
+            </div>
+        </div>
+        <div class="fixture-box" id="fixture3" style="display:none;">
+            <span class="corner">3. FEL</span>
+            <div class="label">Next Match</div>
+            <div class="match-row">
+                <div class="team"><span class="crest">N</span><span id="fx3Team1">None</span></div>
+                <div class="score" id="fx3Score">0 - 0</div>
+                <div class="team"><span id="fx3Team2">None</span><span class="crest">N</span></div>
             </div>
         </div>
 
@@ -454,28 +472,13 @@
     </div>
 
     <script>
-        const fixtureData = {
-            1: { home: 'None', away: 'None', score: '0 - 0' },
-            2: { home: 'None', away: 'None', score: '0 - 0' },
-            3: { home: 'None', away: 'None', score: '0 - 0' }
-        };
-
-        function renderFixture(id) {
-            const d = fixtureData[id];
-            document.getElementById('fixtureCorner').textContent = id + '. FEL';
-            document.getElementById('fixtureBox').querySelector('.match-row').innerHTML =
-                '<div class="team"><span class="crest">' + d.home.charAt(0) + '</span>' + d.home + '</div>' +
-                '<div class="score">' + d.score + '</div>' +
-                '<div class="team">' + d.away + '<span class="crest">' + d.away.charAt(0) + '</span></div>';
+        function switchFixture(id) {
+            document.querySelectorAll('.fixture-tab').forEach(b => b.classList.remove('active'));
+            document.querySelector('.fixture-tab[data-fixture="' + id + '"]').classList.add('active');
+            document.getElementById('fixture1').style.display = id == 1 ? '' : 'none';
+            document.getElementById('fixture2').style.display = id == 2 ? '' : 'none';
+            document.getElementById('fixture3').style.display = id == 3 ? '' : 'none';
         }
-
-        document.querySelectorAll('.fixture-tab').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.fixture-tab').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                renderFixture(btn.dataset.fixture);
-            });
-        });
 
         document.querySelectorAll('.section-tab').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -827,7 +830,9 @@
 
         // ===== Site Content Editor =====
         const DEFAULT_CONTENT = {
-            'fx1': 'None', 'fx-score': '0 - 0', 'fx2': 'None',
+            'fx1': 'None', 'fx-score1': '0 - 0', 'fx2': 'None',
+            'f2x1': 'None', 'f2x-score': '0 - 0', 'f2x2': 'None',
+            'f3x1': 'None', 'f3x-score': '0 - 0', 'f3x2': 'None',
             'hl-bigwin': '--', 'hl-bigwin-desc': 'Game Week 1',
             'hl-scorer': '--', 'hl-scorer-desc': '0 goals',
             'hl-assists': '--', 'hl-assists-desc': '0 assists',
@@ -873,7 +878,9 @@
         function applySiteContent(map) {
             const c = Object.assign({}, DEFAULT_CONTENT, map);
             const s = (id, t) => { const el = document.getElementById(id); if (el && t !== undefined) el.textContent = t; };
-            s('fxTeam1', c['fx1']); s('fxScore', c['fx-score']); s('fxTeam2', c['fx2']);
+            s('fx1Team1', c['fx1']); s('fx1Score', c['fx-score1']); s('fx1Team2', c['fx2']);
+            s('fx2Team1', c['f2x1']); s('fx2Score', c['f2x-score']); s('fx2Team2', c['f2x2']);
+            s('fx3Team1', c['f3x1']); s('fx3Score', c['f3x-score']); s('fx3Team2', c['f3x2']);
             s('hlBigWin', c['hl-bigwin']); s('hlBigWinDesc', c['hl-bigwin-desc']);
             s('hlTopScorer', c['hl-scorer']); s('hlTopScorerDesc', c['hl-scorer-desc']);
             s('hlMostAssists', c['hl-assists']); s('hlMostAssistsDesc', c['hl-assists-desc']);
@@ -1199,7 +1206,7 @@
         }
         localStorage.setItem('fel-site-version', SITE_VERSION);
 
-        renderFixture(1);
+        switchFixture(1);
         loadSiteContent();
         watchAuth();
         route();
