@@ -493,7 +493,11 @@
             const img = document.getElementById('careerAvatar');
             img.style.display = 'none';
             if (!signedIn || !supabaseClient) { console.log('[career] no auth'); return; }
-            const u = supabaseClient.auth._currentUser;
+            let u = supabaseClient.auth._currentUser;
+            if (!u) {
+                const { data: sess } = await supabaseClient.auth.getSession();
+                if (sess.session) u = sess.session.user;
+            }
             if (!u) { console.log('[career] no user'); return; }
             console.log('[career] user id:', u.id);
             try {
