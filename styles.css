@@ -310,27 +310,34 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .r-card .pts { font-weight: 800; color: var(--text); }
 
 /* Rankings leaderboard */
-.rank-page { text-align: center; max-width: 880px; margin: 0 auto; }
-.rank-page .page-head { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; margin-bottom: 1.6rem; }
+.rank-page { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+.rank-page .page-head { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; margin-bottom: 2rem; width: 100%; }
 .rank-page .page-head p { color: var(--muted); font-size: 0.9rem; letter-spacing: 0.5px; }
 
 .rank-title {
-    width: min(420px, 92%);
-    font-size: 1.5rem; font-weight: 900;
-    letter-spacing: 4px;
+    width: 100%; max-width: 560px;
+    font-size: 1.8rem; font-weight: 900;
+    letter-spacing: 6px;
     text-transform: uppercase;
-    padding: 0.7rem 1.5rem;
-    border-radius: 999px;
-    background: linear-gradient(135deg, rgba(47,214,176,0.16), rgba(20,107,90,0.16));
-    border: 1px solid rgba(47,214,176,0.45);
+    padding: 1rem 2rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(47,214,176,0.1), rgba(20,107,90,0.1));
+    border: 1px solid rgba(47,214,176,0.35);
     color: #eafff7;
-    text-shadow: 0 0 18px rgba(47,214,176,0.5);
-    box-shadow: 0 0 0 4px rgba(47,214,176,0.08), inset 0 0 18px rgba(47,214,176,0.08);
+    text-shadow: 0 0 24px rgba(47,214,176,0.5);
+    box-shadow: 0 0 0 4px rgba(47,214,176,0.06), 0 0 0 8px rgba(47,214,176,0.03), inset 0 0 24px rgba(47,214,176,0.08);
+    position: relative;
 }
+.rank-title::before, .rank-title::after {
+    content: ''; position: absolute; top: 50%; width: 60px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.rank-title::before { right: 100%; margin-right: 12px; }
+.rank-title::after { left: 100%; margin-left: 12px; }
 
 .rank-ladder {
     display: flex; flex-direction: column; gap: 1rem;
-    max-width: 760px; margin: 0 auto; text-align: left;
+    width: 100%; max-width: 1000px; text-align: left;
 }
 
 .rung {
@@ -492,7 +499,8 @@ footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.
     .stats, .week-grid, .hl-grid, .records-grid, .podium, .rest { grid-template-columns: 1fr; }
     .match-row { flex-direction: column; gap: 0.5rem; }
     .score { border: none; padding: 0.2rem 0; }
-    .rank-title { width: 92%; font-size: 1.2rem; letter-spacing: 2px; }
+    .rank-title { font-size: 1.2rem; letter-spacing: 3px; padding: 0.8rem 1.2rem; }
+    .rank-title::before, .rank-title::after { display: none; }
     .rung-head { padding: 0.7rem 1rem 0.7rem 1.3rem; gap: 0.5rem; }
     .rung-stars { min-width: 72px; font-size: 0.9rem; }
     .rung-name { font-size: 0.95rem; }
