@@ -488,6 +488,41 @@
             }
         }
 
+        async function fetchRobloxInfo(discordUserId) {
+            try {
+                const res = await fetch('https://api.bloxlink.com/v1/user/' + discordUserId);
+                if (!res.ok) return null;
+                const data = await res.json();
+                if (data.status === 'ok' && data.primaryAccount) {
+                    const robloxId = data.primaryAccount;
+                    const userRes = await fetch('https://users.roblox.com/v1/users/' + robloxId);
+                    let robloxUsername = '';
+                    if (userRes.ok) {
+                        const userData = await userRes.json();
+                        robloxUsername = userData.name || '';
+                    }
+                    return { robloxId, robloxUsername };
+                }
+                return null;
+            } catch (e) {
+                console.warn('[roblox] Bloxlink fetch failed:', e);
+                return null;
+            }
+        }
+
+        async function linkRobloxToUser(user) {
+            if (!user || !supabaseClient) return;
+            const discordId = user.id;
+            const m = user.user_metadata || {};
+            if (m.roblox_id) return;
+            const info = await fetchRobloxInfo(discordId);
+            if (info) {
+                await supabaseClient.auth.updateUser({
+                    data: { roblox_id: info.robloxId, roblox_username: info.robloxUsername }
+                });
+            }
+        }
+
         // ===== Hash router =====
         function route() {
             const page = (location.hash.replace('#', '') || '').toLowerCase();
@@ -572,6 +607,7 @@
             if (data.session) {
                 signedIn = true;
                 renderUser(data.session.user);
+                linkRobloxToUser(data.session.user).then(() => { renderCareer(); });
             } else {
                 signedIn = false;
                 renderUser();
@@ -586,7 +622,7 @@
                 if (event === 'SIGNED_IN' && session) {
                     signedIn = true;
                     renderUser(session.user);
-                    renderCareer();
+                    linkRobloxToUser(session.user).then(() => { renderCareer(); });
                 } else if (event === 'SIGNED_OUT') {
                     signedIn = false;
                     renderUser();
