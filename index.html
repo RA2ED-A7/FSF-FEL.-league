@@ -830,26 +830,48 @@
 
         // ===== Site Content Editor =====
         const DEFAULT_CONTENT = {
-            'fx1': 'None', 'fx-score1': '0 - 0', 'fx2': 'None',
-            'f2x1': 'None', 'f2x-score': '0 - 0', 'f2x2': 'None',
-            'f3x1': 'None', 'f3x-score': '0 - 0', 'f3x2': 'None',
-            'hl-bigwin': '--', 'hl-bigwin-desc': 'Game Week 1',
-            'hl-scorer': '--', 'hl-scorer-desc': '0 goals',
-            'hl-assists': '--', 'hl-assists-desc': '0 assists',
-            'rec-goal': '--', 'rec-goal-desc': 'TBD',
-            'rec-assist': '--', 'rec-assist-desc': 'TBD',
-            'rec-save': '--', 'rec-save-desc': 'TBD',
-            'gw1-teams': 'Team Name VS Team Name', 'gw1-result': 'TBD',
-            'gw2-teams': 'Team Name VS Team Name', 'gw2-result': 'TBD',
-            'gw3-teams': 'Team Name VS Team Name', 'gw3-result': 'TBD',
-            'rr1-teams': 'Team Name', 'rr1-score': '2 - 1', 'rr1-teams2': 'Team Name', 'rr1-date': 'Date',
-            'rr2-teams': 'Team Name', 'rr2-score': '0 - 0', 'rr2-teams2': 'Team Name', 'rr2-date': 'Date',
-            'rr3-teams': 'Team Name', 'rr3-score': '3 - 2', 'rr3-teams2': 'Team Name', 'rr3-date': 'Date',
-            'pod1-team': 'Team Name', 'pod1-pts': '--',
-            'pod2-team': 'Team Name', 'pod2-pts': '--',
-            'pod3-team': 'Team Name', 'pod3-pts': '--',
-            'transfer-text': 'No transfers yet.',
-            'matches-text': 'No matches played yet. Join a team to get started!'
+            'FEL 1 - Team 1': 'None', 'FEL 1 - Score': '0 - 0', 'FEL 1 - Team 2': 'None',
+            'FEL 2 - Team 1': 'None', 'FEL 2 - Score': '0 - 0', 'FEL 2 - Team 2': 'None',
+            'FEL 3 - Team 1': 'None', 'FEL 3 - Score': '0 - 0', 'FEL 3 - Team 2': 'None',
+            'Biggest Win': '--', 'Biggest Win Desc': 'Game Week 1',
+            'Top Scorer': '--', 'Top Scorer Desc': '0 goals',
+            'Most Assists': '--', 'Most Assists Desc': '0 assists',
+            'First Goal': '--', 'First Goal Desc': 'TBD',
+            'First Assist': '--', 'First Assist Desc': 'TBD',
+            'First Save': '--', 'First Save Desc': 'TBD',
+            'GW1 Teams': 'Team Name VS Team Name', 'GW1 Result': 'TBD',
+            'GW2 Teams': 'Team Name VS Team Name', 'GW2 Result': 'TBD',
+            'GW3 Teams': 'Team Name VS Team Name', 'GW3 Result': 'TBD',
+            'Result 1 - Team A': 'Team Name', 'Result 1 - Score': '2 - 1', 'Result 1 - Team B': 'Team Name', 'Result 1 - Date': 'Date',
+            'Result 2 - Team A': 'Team Name', 'Result 2 - Score': '0 - 0', 'Result 2 - Team B': 'Team Name', 'Result 2 - Date': 'Date',
+            'Result 3 - Team A': 'Team Name', 'Result 3 - Score': '3 - 2', 'Result 3 - Team B': 'Team Name', 'Result 3 - Date': 'Date',
+            '1st Place Team': 'Team Name', '1st Place Pts': '--',
+            '2nd Place Team': 'Team Name', '2nd Place Pts': '--',
+            '3rd Place Team': 'Team Name', '3rd Place Pts': '--',
+            'Transfer Text': 'No transfers yet.',
+            'Matches Text': 'No matches played yet. Join a team to get started!'
+        };
+
+        const CONTENT_KEY_MAP = {
+            'FEL 1 - Team 1': 'fx1', 'FEL 1 - Score': 'fx-score1', 'FEL 1 - Team 2': 'fx2',
+            'FEL 2 - Team 1': 'f2x1', 'FEL 2 - Score': 'f2x-score', 'FEL 2 - Team 2': 'f2x2',
+            'FEL 3 - Team 1': 'f3x1', 'FEL 3 - Score': 'f3x-score', 'FEL 3 - Team 2': 'f3x2',
+            'Biggest Win': 'hl-bigwin', 'Biggest Win Desc': 'hl-bigwin-desc',
+            'Top Scorer': 'hl-scorer', 'Top Scorer Desc': 'hl-scorer-desc',
+            'Most Assists': 'hl-assists', 'Most Assists Desc': 'hl-assists-desc',
+            'First Goal': 'rec-goal', 'First Goal Desc': 'rec-goal-desc',
+            'First Assist': 'rec-assist', 'First Assist Desc': 'rec-assist-desc',
+            'First Save': 'rec-save', 'First Save Desc': 'rec-save-desc',
+            'GW1 Teams': 'gw1-teams', 'GW1 Result': 'gw1-result',
+            'GW2 Teams': 'gw2-teams', 'GW2 Result': 'gw2-result',
+            'GW3 Teams': 'gw3-teams', 'GW3 Result': 'gw3-result',
+            'Result 1 - Team A': 'rr1-teams', 'Result 1 - Score': 'rr1-score', 'Result 1 - Team B': 'rr1-teams2', 'Result 1 - Date': 'rr1-date',
+            'Result 2 - Team A': 'rr2-teams', 'Result 2 - Score': 'rr2-score', 'Result 2 - Team B': 'rr2-teams2', 'Result 2 - Date': 'rr2-date',
+            'Result 3 - Team A': 'rr3-teams', 'Result 3 - Score': 'rr3-score', 'Result 3 - Team B': 'rr3-teams2', 'Result 3 - Date': 'rr3-date',
+            '1st Place Team': 'pod1-team', '1st Place Pts': 'pod1-pts',
+            '2nd Place Team': 'pod2-team', '2nd Place Pts': 'pod2-pts',
+            '3rd Place Team': 'pod3-team', '3rd Place Pts': 'pod3-pts',
+            'Transfer Text': 'transfer-text', 'Matches Text': 'matches-text'
         };
 
         async function loadSiteContent() {
@@ -904,25 +926,25 @@
             const editor = document.getElementById('siteContentEditor');
             if (!editor) return;
             editor.innerHTML = '';
-            const allKeys = Object.keys(DEFAULT_CONTENT);
-            const map = {};
-            data.forEach(r => { map[r.key] = r.value; });
-            allKeys.forEach(key => {
-                const val = map[key] || DEFAULT_CONTENT[key] || '';
-                addContentRow(editor, key, val);
+            const dbMap = {};
+            data.forEach(r => { dbMap[r.key] = r.value; });
+            Object.keys(DEFAULT_CONTENT).forEach(label => {
+                const realKey = CONTENT_KEY_MAP[label] || label;
+                const val = dbMap[realKey] || DEFAULT_CONTENT[label] || '';
+                addContentRow(editor, label, val);
             });
         }
 
         function addContentRow(container, key, val) {
             const row = document.createElement('div');
             row.className = 'admin-content-row';
-            row.innerHTML = '<input class="admin-content-key" value="' + key.replace(/"/g, '&quot;') + '" readonly title="Field key">' +
+            row.dataset.realKey = CONTENT_KEY_MAP[key] || key;
+            row.innerHTML = '<span class="admin-content-key">' + key + '</span>' +
                 '<input class="admin-content-val" value="' + val.replace(/"/g, '&quot;') + '" placeholder="Enter text...">' +
                 '<button class="admin-content-del" title="Reset to default">&times;</button>';
             row.querySelector('.admin-content-del').addEventListener('click', () => {
                 const input = row.querySelector('.admin-content-val');
-                const keyInput = row.querySelector('.admin-content-key').value;
-                input.value = DEFAULT_CONTENT[keyInput] || '';
+                input.value = DEFAULT_CONTENT[key] || '';
             });
             container.appendChild(row);
         }
@@ -941,7 +963,7 @@
             const rows = document.querySelectorAll('.admin-content-row');
             const updates = [];
             rows.forEach(row => {
-                const key = row.querySelector('.admin-content-key').value.trim();
+                const key = row.dataset.realKey;
                 const value = row.querySelector('.admin-content-val').value;
                 if (key) updates.push({ key, value });
             });

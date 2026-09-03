@@ -700,11 +700,11 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .admin-content-editor::-webkit-scrollbar { width: 6px; }
 .admin-content-editor::-webkit-scrollbar-track { background: var(--surface-2); border-radius: 3px; }
 .admin-content-editor::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-.admin-content-row { display: flex; gap: 0.4rem; align-items: center; flex-direction: column; }
+.admin-content-row { display: flex; gap: 0.4rem; align-items: center; }
 .admin-content-key {
-    width: 100%; padding: 0.4rem 0.6rem; background: var(--surface-2); color: var(--accent);
+    width: 140px; padding: 0.4rem 0.6rem; background: var(--surface-2); color: var(--accent);
     border: 1px solid var(--border); border-radius: 8px; font-size: 0.72rem; font-weight: 600;
-    outline: none; text-align: center;
+    outline: none; text-align: left; flex-shrink: 0;
 }
 .admin-content-val {
     width: 100%; padding: 0.4rem 0.6rem; background: var(--surface-2); color: var(--text);
@@ -777,6 +777,7 @@ footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.
     .career-stats { grid-template-columns: repeat(2, 1fr); }
     .career-boxes { grid-template-columns: 1fr; width: 100%; margin-left: 0; padding: 0 1.5rem; }
     .admin-content-editor { grid-template-columns: 1fr; max-height: 50vh; }
+    .admin-content-key { width: 100px; }
     .admin-grid { grid-template-columns: repeat(2, 1fr); }
     .rosters-grid { flex-wrap: wrap; }
     .roster-team { min-width: 100%; }
