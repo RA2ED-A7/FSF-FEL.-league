@@ -186,6 +186,7 @@
         <div class="lb-toolbar">
             <div class="lb-search">
                 <input type="text" id="lbSearch" placeholder="Search by name..." class="lb-input">
+                <button class="lb-refresh-btn" id="lbRefresh" title="Refresh rankings">&#8635;</button>
             </div>
             <div class="lb-filters-row">
                 <select id="lbTierFilter" class="lb-select">
@@ -365,13 +366,15 @@
                 <div class="stat-card"><div class="stat-val" id="statMVP">0</div><div class="stat-lbl">MVP Awards</div></div>
                 <div class="stat-card"><div class="stat-val" id="statWinRate">0%</div><div class="stat-lbl">Win Rate</div></div>
             </div>
-            <div class="career-section">
-                <h3>Transfer History</h3>
-                <p class="muted">No transfers yet.</p>
-            </div>
-            <div class="career-section">
-                <h3>Recent Matches</h3>
-                <p class="muted">No matches played yet. Join a team to get started!</p>
+            <div class="career-boxes">
+                <div class="career-section career-box-large">
+                    <h3>Transfer History</h3>
+                    <p class="muted">No transfers yet.</p>
+                </div>
+                <div class="career-section career-box-large">
+                    <h3>Recent Matches</h3>
+                    <p class="muted">No matches played yet. Join a team to get started!</p>
+                </div>
             </div>
         </div>
     </section>
@@ -413,6 +416,16 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Update Notification -->
+    <div class="update-popup" id="updatePopup" style="display:none;">
+        <div class="update-popup-inner">
+            <div class="update-popup-icon">🔔</div>
+            <h3>New Update Available!</h3>
+            <p>A new version of the site is ready. Click below to refresh.</p>
+            <button class="update-popup-btn" onclick="location.reload(true)">Refresh Now</button>
+        </div>
+    </div>
+
     <script>
         const fixtureData = {
             1: { home: 'None', away: 'None', score: '0 - 0' },
@@ -1007,8 +1020,34 @@
             prevBtn.addEventListener('click', () => { currentPage--; renderPage(); });
             nextBtn.addEventListener('click', () => { currentPage++; renderPage(); });
 
+            document.getElementById('lbRefresh').addEventListener('click', async () => {
+                const btn = document.getElementById('lbRefresh');
+                btn.classList.add('spinning');
+                allRows = [];
+                document.querySelectorAll('.rung-roster').forEach(r => r.innerHTML = '');
+                try {
+                    const { data: players, error } = await supabaseClient.from('Player').select('*');
+                    if (!error && players) {
+                        players.forEach(p => {
+                            const tier = TIER_MAP[(p.rank || '').toLowerCase()] ?? 0;
+                            const pos = POS_MAP[(p.position || '').toUpperCase()] || 'Other';
+                            allRows.push({ name: p.display_name || 'Unknown', team: p.team || '', position: p.position || '', rank: p.rank || 'Unranked', goals: p.goals || 0, wins: p.Wins || 0, value: p["Market Value"] || 0, tier, pos, id: p.id });
+                        });
+                    }
+                } catch (e) { console.warn('[rankings] refresh error:', e); }
+                applyFilters();
+                btn.classList.remove('spinning');
+            });
+
             applyFilters();
         })();
+
+        const SITE_VERSION = '1.1';
+        const savedVersion = localStorage.getItem('fel-site-version');
+        if (savedVersion && savedVersion !== SITE_VERSION) {
+            document.getElementById('updatePopup').style.display = 'flex';
+        }
+        localStorage.setItem('fel-site-version', SITE_VERSION);
 
         renderFixture(1);
         watchAuth();
