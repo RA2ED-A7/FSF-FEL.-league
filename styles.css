@@ -690,22 +690,29 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
     transition: color 0.15s, border-color 0.15s;
 }
 .admin-add-btn:hover { color: var(--accent); border-color: var(--accent); }
-.admin-content-editor { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1rem; }
-.admin-content-row { display: flex; gap: 0.6rem; align-items: center; }
+.admin-content-editor {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem;
+    margin-bottom: 1rem; max-height: 60vh; overflow-y: auto;
+    padding-right: 0.5rem;
+}
+.admin-content-editor::-webkit-scrollbar { width: 6px; }
+.admin-content-editor::-webkit-scrollbar-track { background: var(--surface-2); border-radius: 3px; }
+.admin-content-editor::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+.admin-content-row { display: flex; gap: 0.4rem; align-items: center; flex-direction: column; }
 .admin-content-key {
-    width: 200px; padding: 0.5rem 0.8rem; background: var(--surface-2); color: var(--accent);
-    border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; font-weight: 600;
-    outline: none; flex-shrink: 0;
+    width: 100%; padding: 0.4rem 0.6rem; background: var(--surface-2); color: var(--accent);
+    border: 1px solid var(--border); border-radius: 8px; font-size: 0.72rem; font-weight: 600;
+    outline: none; text-align: center;
 }
 .admin-content-val {
-    flex: 1; padding: 0.5rem 0.8rem; background: var(--surface-2); color: var(--text);
-    border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; outline: none;
+    width: 100%; padding: 0.4rem 0.6rem; background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; outline: none;
     transition: border-color 0.15s;
 }
 .admin-content-val:focus { border-color: var(--accent); }
 .admin-content-del {
-    background: none; border: none; color: #f55; font-size: 1.1rem; cursor: pointer;
-    padding: 0.3rem; transition: opacity 0.15s; flex-shrink: 0;
+    background: none; border: none; color: #f55; font-size: 1rem; cursor: pointer;
+    padding: 0.2rem; transition: opacity 0.15s; align-self: flex-end;
 }
 .admin-content-del:hover { opacity: 0.7; }
 
@@ -767,6 +774,7 @@ footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.
     .career-badges { justify-content: center; }
     .career-stats { grid-template-columns: repeat(2, 1fr); }
     .career-boxes { grid-template-columns: 1fr; width: 100%; margin-left: 0; padding: 0 1.5rem; }
+    .admin-content-editor { grid-template-columns: 1fr; max-height: 50vh; }
     .admin-grid { grid-template-columns: repeat(2, 1fr); }
     .rosters-grid { flex-wrap: wrap; }
     .roster-team { min-width: 100%; }
