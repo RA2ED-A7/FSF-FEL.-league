@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <div class="brand">Freestyle Elite league <span class="season">| Season 2</span></div>
+        <div class="brand">Freestyle Elite league <span class="season">| Season 1</span></div>
         <nav class="menu">
             <a href="#">Home</a>
             <div class="menu-item">
@@ -22,7 +22,7 @@
             <div class="menu-item">
                 <a href="#notfound">Teams<span class="caret">&#9662;</span></a>
                 <div class="dropdown">
-                    <a href="#notfound">Placeholder 1</a>
+                    <a href="#rankings">Rankings</a>
                     <a href="#notfound">Placeholder 2</a>
                     <a href="#notfound">Placeholder 3</a>
                 </div>
@@ -72,7 +72,7 @@
             </div>
         </div>
 
-        <button class="discord">Join Our Discord</button>
+        <a class="discord" href="https://discord.gg/9wDJbCf67" target="_blank" rel="noopener">Join Our Discord</a>
 
         <div class="section-tabs">
             <button class="section-tab active" data-panel="highlights">Highlights</button>
@@ -172,8 +172,15 @@
         </div>
     </section>
 
+    <section class="rank-page">
+        <div class="page-head">
+            <div class="section-title">Rankings</div>
+            <p>Rankings will be shown here soon.</p>
+        </div>
+    </section>
+
     <footer>
-        <p>Freestyle Elite league &mdash; Season 2 &middot; By A7M | .vortex700</p>
+        <p>Freestyle Elite league &mdash; Season 1 &middot; By A7M | .vortex700</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -260,23 +267,26 @@
             const pages = {
                 home: 'home',
                 changelog: 'change-page',
-                signin: 'sign-page'
+                signin: 'sign-page',
+                rankings: 'rank-page'
             };
             const isKnown = Object.prototype.hasOwnProperty.call(pages, page) && page !== '';
             const homeEl = document.getElementById('home');
             const nfEl = document.querySelector('.nf-page');
             const clEl = document.querySelector('.change-page');
             const siEl = document.querySelector('.sign-page');
+            const rkEl = document.querySelector('.rank-page');
 
             homeEl.style.display = 'none';
             nfEl.style.display = 'none';
             clEl.style.display = 'none';
             siEl.style.display = 'none';
+            rkEl.style.display = 'none';
 
             if (page === '' || page === 'home') {
                 homeEl.style.display = '';
             } else if (isKnown) {
-                const el = page === 'changelog' ? clEl : siEl;
+                const el = page === 'changelog' ? clEl : (page === 'signin' ? siEl : rkEl);
                 el.style.display = 'flex';
                 if (page === 'signin') initSignPage();
             } else {
