@@ -827,7 +827,7 @@
 
         // ===== Site Content Editor =====
         const DEFAULT_CONTENT = {
-            'fx-team1': 'None', 'fx-score': '0 - 0', 'fx-team2': 'None',
+            'fx1': 'None', 'fx-score': '0 - 0', 'fx2': 'None',
             'hl-bigwin': '--', 'hl-bigwin-desc': 'Game Week 1',
             'hl-scorer': '--', 'hl-scorer-desc': '0 goals',
             'hl-assists': '--', 'hl-assists-desc': '0 assists',
@@ -873,7 +873,7 @@
         function applySiteContent(map) {
             const c = Object.assign({}, DEFAULT_CONTENT, map);
             const s = (id, t) => { const el = document.getElementById(id); if (el && t !== undefined) el.textContent = t; };
-            s('fxTeam1', c['fx-team1']); s('fxScore', c['fx-score']); s('fxTeam2', c['fx-team2']);
+            s('fxTeam1', c['fx1']); s('fxScore', c['fx-score']); s('fxTeam2', c['fx2']);
             s('hlBigWin', c['hl-bigwin']); s('hlBigWinDesc', c['hl-bigwin-desc']);
             s('hlTopScorer', c['hl-scorer']); s('hlTopScorerDesc', c['hl-scorer-desc']);
             s('hlMostAssists', c['hl-assists']); s('hlMostAssistsDesc', c['hl-assists-desc']);
