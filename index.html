@@ -477,7 +477,7 @@
                 console.log('[auth] user id:', u.id, 'admin:', u.id === ADMIN_USER_ID);
                 nameBox.textContent = getDiscordName(u);
                 btn.textContent = 'Sign Out';
-                if (adminLine) adminLine.style.display = (u.id === ADMIN_USER_ID) ? 'block' : 'none';
+                if (adminLine) adminLine.style.display = 'block';
             } else {
                 nameBox.textContent = 'Username';
                 btn.textContent = 'Sign In';
