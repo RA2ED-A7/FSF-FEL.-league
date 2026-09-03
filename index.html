@@ -9,6 +9,7 @@
 <body>
     <header>
         <div class="brand">Freestyle Elite league <span class="season">| Season 1</span></div>
+        <a href="#admin" class="admin-line" id="adminLine" style="display:none;"></a>
         <nav class="menu">
             <div class="menu-item">
                 <a href="#">Home<span class="caret">&#9662;</span></a>
@@ -463,6 +464,7 @@
         function renderUser(userOverride) {
             const nameBox = document.getElementById('userName');
             const btn = document.getElementById('signinBtn');
+            const adminLine = document.getElementById('adminLine');
             const u = userOverride || supabaseClient?.auth?._currentUser || null;
             if (signedIn && u) {
                 const m = u.user_metadata || {};
@@ -470,9 +472,11 @@
                 const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || m.email || u.email || u.identities?.[0]?.user_name || 'User';
                 nameBox.textContent = name;
                 btn.textContent = 'Sign Out';
+                if (adminLine) adminLine.style.display = (u.id === ADMIN_USER_ID) ? 'block' : 'none';
             } else {
                 nameBox.textContent = 'Username';
                 btn.textContent = 'Sign In';
+                if (adminLine) adminLine.style.display = 'none';
             }
         }
 
