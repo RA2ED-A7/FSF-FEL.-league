@@ -493,6 +493,9 @@
 
         async function renderCareer() {
             const u = signedIn ? (supabaseClient?.auth?._currentUser || null) : null;
+            console.log('[career] user:', u);
+            console.log('[career] user_metadata:', u?.user_metadata);
+            console.log('[career] identities:', u?.identities);
             const m = u ? (u.user_metadata || {}) : {};
             const id = u?.identities?.[0] || {};
             const idData = id.identity_data || {};
