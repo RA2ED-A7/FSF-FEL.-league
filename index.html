@@ -759,6 +759,8 @@
             msg.textContent = 'Saving...';
             msg.className = 'admin-msg';
             try {
+                const winRateVal = parseInt(document.getElementById('afWinRate').value) || 0;
+                console.log('[admin] saving win_rate:', winRateVal, 'from input value:', document.getElementById('afWinRate').value);
                 const { error } = await supabaseClient.from('Player').update({
                     display_name: document.getElementById('afDisplay').value,
                     team: document.getElementById('afTeam').value,
@@ -772,7 +774,7 @@
                     Loses: parseInt(document.getElementById('afLosses').value) || 0,
                     "Market Value": parseInt(document.getElementById('afValue').value) || 0,
                     MVP_Awards: parseInt(document.getElementById('afMVP').value) || 0,
-                    win_rate: parseInt(document.getElementById('afWinRate').value) || 0
+                    win_rate: winRateVal
                 }).eq('id', id);
                 if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
                 msg.textContent = 'Saved!';
