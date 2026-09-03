@@ -330,7 +330,6 @@
                 </div>
                 <div class="career-info">
                     <h1 class="career-name" id="careerName">Player Name</h1>
-                    <span class="career-tag" id="careerTag">@username</span>
                     <div class="career-badges">
                         <span class="career-badge">Season 1</span>
                         <span class="career-badge accent">Active</span>
@@ -475,6 +474,7 @@
             if (signedIn && u) {
                 const m = u.user_metadata || {};
                 console.log('[auth] user_metadata:', m);
+                console.log('[auth] user id:', u.id, 'admin:', u.id === ADMIN_USER_ID);
                 nameBox.textContent = getDiscordName(u);
                 btn.textContent = 'Sign Out';
                 if (adminLine) adminLine.style.display = (u.id === ADMIN_USER_ID) ? 'block' : 'none';
@@ -489,7 +489,6 @@
             const nameBox = document.getElementById('userName');
             const name = (nameBox && nameBox.textContent !== 'Username') ? nameBox.textContent : 'User';
             document.getElementById('careerName').textContent = name;
-            document.getElementById('careerTag').textContent = '@' + name.toLowerCase().replace(/\s+/g, '');
             const img = document.getElementById('careerAvatar');
             img.style.display = 'none';
             if (!signedIn || !supabaseClient) return;
