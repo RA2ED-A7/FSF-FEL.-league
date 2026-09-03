@@ -483,9 +483,10 @@
         async function renderCareer() {
             const u = signedIn ? (supabaseClient?.auth?._currentUser || null) : null;
             const m = u ? (u.user_metadata || {}) : {};
-            const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || (u ? u.email : '') || 'Player';
-            const username = m.user_name || m.preferred_username || m.prefered_username || m.custom_claims?.username || name.toLowerCase().replace(/\s+/g, '') || 'player';
-            const avatar = m.avatar_url || m.picture || '';
+            const idData = u?.identities?.[0]?.identity_data || {};
+            const name = m.full_name || m.name || idData.full_name || m.user_name || m.username || idData.username || m.custom_claims?.username || (u ? u.email : '') || 'Player';
+            const username = m.user_name || m.username || idData.username || m.preferred_username || name.toLowerCase().replace(/\s+/g, '') || 'player';
+            const avatar = m.avatar_url || m.picture || idData.avatar_url || (idData.avatar ? 'https://cdn.discordapp.com/avatars/' + u.id + '/' + idData.avatar + '.png' : '') || '';
             document.getElementById('careerName').textContent = name;
             document.getElementById('careerTag').textContent = '@' + username;
             const img = document.getElementById('careerAvatar');
@@ -540,10 +541,17 @@
             }
             const sel = document.getElementById('adminPlayerSelect');
             try {
-                const { data, error } = await supabaseClient.from('Player').select('id, display_name').order('display_name');
+                const { data, error } = await supabaseClient.from('Player').select('id, display_name').eq('id', u.id);
                 if (error || !data) { sel.innerHTML = '<option>Error loading</option>'; return; }
-                sel.innerHTML = '<option value="">-- Select Player --</option>' + data.map(p => '<option value="' + p.id + '">' + (p.display_name || p.id) + '</option>').join('');
+                const players = Array.isArray(data) ? data : [data];
+                if (players.length === 0) {
+                    sel.innerHTML = '<option value="">No player record found</option>';
+                    document.getElementById('adminForm').style.display = 'none';
+                    return;
+                }
+                sel.innerHTML = players.map(p => '<option value="' + p.id + '">' + (p.display_name || p.id) + '</option>').join('');
                 sel.onchange = () => { if (sel.value) loadAdminPlayer(sel.value); else document.getElementById('adminForm').style.display = 'none'; };
+                loadAdminPlayer(players[0].id);
             } catch (e) {
                 sel.innerHTML = '<option>Error</option>';
             }
