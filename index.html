@@ -330,14 +330,24 @@
                 <div class="career-info">
                     <h1 class="career-name" id="careerName">Player Name</h1>
                     <span class="career-tag" id="careerTag">@username</span>
-                    <div class="career-roblox">
-                        <span class="career-rblx-label">Roblox:</span>
-                        <span class="career-rblx-user" id="careerRobloxUser">Not linked</span>
-                    </div>
                     <div class="career-badges">
                         <span class="career-badge">Season 1</span>
                         <span class="career-badge accent">Active</span>
                     </div>
+                </div>
+            </div>
+            <div class="career-roblox-prompt" id="careerRobloxPrompt">
+                <p>Link your Roblox account to see your avatar and username.</p>
+                <div class="career-roblox-input-row">
+                    <input type="text" id="robloxIdInput" placeholder="Enter your Roblox ID" class="career-roblox-input">
+                    <button class="career-roblox-btn" onclick="linkRobloxFromInput()">Link</button>
+                </div>
+                <span class="career-roblox-msg" id="careerRobloxMsg"></span>
+            </div>
+            <div class="career-roblox-linked" id="careerRobloxLinked" style="display:none;">
+                <div class="career-roblox-linked-row">
+                    <span class="career-rblx-label">Roblox:</span>
+                    <span class="career-rblx-user" id="careerRobloxUser">—</span>
                 </div>
             </div>
             <div class="career-stats">
@@ -451,72 +461,68 @@
 
         function renderCareer() {
             const u = signedIn ? (supabaseClient?.auth?._currentUser || null) : null;
-            if (u) {
-                const m = u.user_metadata || {};
-                const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || u.email || 'Player';
-                const username = m.user_name || m.preferred_username || m.prefered_username || m.custom_claims?.username || name.toLowerCase().replace(/\s+/g, '') || 'player';
-                const avatar = m.avatar_url || m.picture || '';
-                const robloxId = m.roblox_id || m.custom_claims?.roblox_id || '';
-                document.getElementById('careerName').textContent = name;
-                document.getElementById('careerTag').textContent = '@' + username;
-                const img = document.getElementById('careerAvatar');
-                if (robloxId) {
-                    img.src = 'https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + robloxId + '&size=150x150&format=Png&isCircular=false';
-                    img.alt = 'Roblox Avatar';
-                    img.style.display = '';
-                } else if (avatar) {
-                    img.src = avatar;
-                    img.alt = 'Discord Avatar';
-                    img.style.display = '';
-                } else {
-                    img.style.display = 'none';
-                }
-                document.getElementById('careerRobloxUser').textContent = m.roblox_username || m.custom_claims?.roblox_username || 'Not linked';
+            const m = u ? (u.user_metadata || {}) : {};
+            const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || (u ? u.email : '') || 'Player';
+            const username = m.user_name || m.preferred_username || m.prefered_username || m.custom_claims?.username || name.toLowerCase().replace(/\s+/g, '') || 'player';
+            const avatar = m.avatar_url || m.picture || '';
+            const robloxId = m.roblox_id || '';
+            const robloxUser = m.roblox_username || '';
+            document.getElementById('careerName').textContent = name;
+            document.getElementById('careerTag').textContent = '@' + username;
+            const img = document.getElementById('careerAvatar');
+            if (robloxId) {
+                img.src = 'https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + robloxId + '&size=150x150&format=Png&isCircular=false';
+                img.alt = 'Roblox Avatar';
+                img.style.display = '';
+            } else if (avatar) {
+                img.src = avatar;
+                img.alt = 'Discord Avatar';
+                img.style.display = '';
             } else {
-                document.getElementById('careerName').textContent = 'Player';
-                document.getElementById('careerTag').textContent = '@player';
-                document.getElementById('careerAvatar').style.display = 'none';
-                document.getElementById('careerRobloxUser').textContent = 'Not linked';
+                img.style.display = 'none';
+            }
+            const prompt = document.getElementById('careerRobloxPrompt');
+            const linked = document.getElementById('careerRobloxLinked');
+            if (robloxId && robloxUser) {
+                prompt.style.display = 'none';
+                linked.style.display = '';
+                document.getElementById('careerRobloxUser').textContent = robloxUser;
+            } else {
+                prompt.style.display = '';
+                linked.style.display = 'none';
             }
         }
 
-        async function fetchRobloxInfo(discordUserId) {
+        async function linkRobloxFromInput() {
+            const input = document.getElementById('robloxIdInput');
+            const msg = document.getElementById('careerRobloxMsg');
+            const id = input.value.trim();
+            if (!id || !/^\d+$/.test(id)) {
+                msg.textContent = 'Please enter a valid numeric Roblox ID.';
+                msg.style.color = '#f55';
+                return;
+            }
+            msg.textContent = 'Fetching...';
+            msg.style.color = '';
             try {
-                const res = await fetch('https://api.bloxlink.com/v1/user/' + discordUserId);
-                if (!res.ok) return null;
+                const res = await fetch('https://users.roblox.com/v1/users/' + id);
+                if (!res.ok) { msg.textContent = 'Roblox user not found.'; msg.style.color = '#f55'; return; }
                 const data = await res.json();
-                if (data.status === 'ok' && data.primaryAccount) {
-                    const robloxId = data.primaryAccount;
-                    const userRes = await fetch('https://users.roblox.com/v1/users/' + robloxId);
-                    let robloxUsername = '';
-                    if (userRes.ok) {
-                        const userData = await userRes.json();
-                        robloxUsername = userData.name || '';
-                    }
-                    return { robloxId, robloxUsername };
-                }
-                return null;
-            } catch (e) {
-                console.warn('[roblox] Bloxlink fetch failed:', e);
-                return null;
-            }
-        }
-
-        async function linkRobloxToUser(user) {
-            if (!user || !supabaseClient) return;
-            const discordId = user.id;
-            const m = user.user_metadata || {};
-            if (m.roblox_id) return;
-            const info = await fetchRobloxInfo(discordId);
-            if (info) {
+                const robloxUsername = data.name || '';
+                if (!robloxUsername) { msg.textContent = 'Could not get username.'; msg.style.color = '#f55'; return; }
+                if (!supabaseClient) { msg.textContent = 'Not connected.'; msg.style.color = '#f55'; return; }
                 await supabaseClient.auth.updateUser({
-                    data: { roblox_id: info.robloxId, roblox_username: info.robloxUsername }
+                    data: { roblox_id: id, roblox_username: robloxUsername }
                 });
-                const { data } = await supabaseClient.auth.getSession();
-                if (data.session) {
+                const { data: sess } = await supabaseClient.auth.getSession();
+                if (sess.session) {
                     signedIn = true;
-                    renderUser(data.session.user);
+                    renderUser(sess.session.user);
                 }
+                renderCareer();
+            } catch (e) {
+                msg.textContent = 'Error: ' + e.message;
+                msg.style.color = '#f55';
             }
         }
 
@@ -604,7 +610,7 @@
             if (data.session) {
                 signedIn = true;
                 renderUser(data.session.user);
-                linkRobloxToUser(data.session.user).then(() => { renderCareer(); });
+                renderCareer();
             } else {
                 signedIn = false;
                 renderUser();
@@ -618,7 +624,7 @@
                 if (event === 'SIGNED_IN' && session) {
                     signedIn = true;
                     renderUser(session.user);
-                    linkRobloxToUser(session.user).then(() => { renderCareer(); });
+                    renderCareer();
                 } else if (event === 'SIGNED_OUT') {
                     signedIn = false;
                     renderUser();
@@ -727,14 +733,7 @@
         renderFixture(1);
         watchAuth();
         route();
-        refreshAuth().then(() => {
-            const u = supabaseClient?.auth?._currentUser || null;
-            if (signedIn && u) {
-                linkRobloxToUser(u).then(() => { route(); renderCareer(); });
-            } else {
-                route();
-            }
-        });
+        refreshAuth().then(() => { route(); renderCareer(); });
     </script>
 </body>
 </html>
