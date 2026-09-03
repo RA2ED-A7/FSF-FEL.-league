@@ -363,6 +363,37 @@
         </div>
     </section>
 
+    <section class="admin-page" id="adminPage" style="display:none;">
+        <h2 class="admin-title">Admin Panel</h2>
+        <p class="muted" style="margin-bottom:1.5rem;">Edit player stats. Only visible to you.</p>
+        <div class="admin-player-select">
+            <label>Select Player:</label>
+            <select id="adminPlayerSelect" class="admin-select">
+                <option value="">Loading players...</option>
+            </select>
+        </div>
+        <div class="admin-form" id="adminForm" style="display:none;">
+            <div class="admin-grid">
+                <div class="admin-field"><label>Display Name</label><input id="afDisplay" type="text"></div>
+                <div class="admin-field"><label>Team</label><input id="afTeam" type="text"></div>
+                <div class="admin-field"><label>Position</label><input id="afPosition" type="text"></div>
+                <div class="admin-field"><label>Rank</label><input id="afRank" type="text"></div>
+                <div class="admin-field"><label>Matches</label><input id="afMatches" type="number" min="0"></div>
+                <div class="admin-field"><label>Goals</label><input id="afGoals" type="number" min="0"></div>
+                <div class="admin-field"><label>Assists</label><input id="afAssists" type="number" min="0"></div>
+                <div class="admin-field"><label>Saves</label><input id="afSaves" type="number" min="0"></div>
+                <div class="admin-field"><label>Wins</label><input id="afWins" type="number" min="0"></div>
+                <div class="admin-field"><label>Losses</label><input id="afLosses" type="number" min="0"></div>
+                <div class="admin-field"><label>Market Value</label><input id="afValue" type="number" min="0"></div>
+                <div class="admin-field"><label>MVP Awards</label><input id="afMVP" type="number" min="0"></div>
+            </div>
+            <div class="admin-actions">
+                <button class="admin-save-btn" onclick="saveAdminPlayer()">Save</button>
+                <span class="admin-msg" id="adminMsg"></span>
+            </div>
+        </div>
+    </section>
+
     <footer>
         <p>Freestyle Elite league &mdash; Season 1 &middot; By A7M | .vortex700</p>
     </footer>
@@ -485,6 +516,83 @@
             }
         }
 
+        const ADMIN_USER_ID = 'dc542b03-1512-4d64-b537-141253adf553';
+
+        async function loadAdminPanel() {
+            const u = signedIn ? (supabaseClient?.auth?._currentUser || null) : null;
+            if (!u || u.id !== ADMIN_USER_ID) {
+                document.getElementById('adminPage').style.display = 'none';
+                location.hash = 'home';
+                return;
+            }
+            const sel = document.getElementById('adminPlayerSelect');
+            try {
+                const { data, error } = await supabaseClient.from('Player').select('id, display_name').order('display_name');
+                if (error || !data) { sel.innerHTML = '<option>Error loading</option>'; return; }
+                sel.innerHTML = '<option value="">-- Select Player --</option>' + data.map(p => '<option value="' + p.id + '">' + (p.display_name || p.id) + '</option>').join('');
+                sel.onchange = () => { if (sel.value) loadAdminPlayer(sel.value); else document.getElementById('adminForm').style.display = 'none'; };
+            } catch (e) {
+                sel.innerHTML = '<option>Error</option>';
+            }
+        }
+
+        async function loadAdminPlayer(id) {
+            const form = document.getElementById('adminForm');
+            form.style.display = 'none';
+            try {
+                const { data, error } = await supabaseClient.from('Player').select('*').eq('id', id).single();
+                if (error || !data) return;
+                document.getElementById('afDisplay').value = data.display_name || '';
+                document.getElementById('afTeam').value = data.team || '';
+                document.getElementById('afPosition').value = data.position || '';
+                document.getElementById('afRank').value = data.rank || '';
+                document.getElementById('afMatches').value = data.matches || 0;
+                document.getElementById('afGoals').value = data.goals || 0;
+                document.getElementById('afAssists').value = data.assists || 0;
+                document.getElementById('afSaves').value = data.saves || 0;
+                document.getElementById('afWins').value = data.Wins || 0;
+                document.getElementById('afLosses').value = data.Loses || 0;
+                document.getElementById('afValue').value = data["Market Value"] || 0;
+                document.getElementById('afMVP').value = data.MVP_Awards || 0;
+                form.style.display = '';
+                form.dataset.playerId = id;
+            } catch (e) {
+                console.warn('[admin] Load failed:', e);
+            }
+        }
+
+        async function saveAdminPlayer() {
+            const form = document.getElementById('adminForm');
+            const id = form.dataset.playerId;
+            const msg = document.getElementById('adminMsg');
+            if (!id) return;
+            msg.textContent = 'Saving...';
+            msg.className = 'admin-msg';
+            try {
+                const { error } = await supabaseClient.from('Player').update({
+                    display_name: document.getElementById('afDisplay').value,
+                    team: document.getElementById('afTeam').value,
+                    position: document.getElementById('afPosition').value,
+                    rank: document.getElementById('afRank').value,
+                    matches: parseInt(document.getElementById('afMatches').value) || 0,
+                    goals: parseInt(document.getElementById('afGoals').value) || 0,
+                    assists: parseInt(document.getElementById('afAssists').value) || 0,
+                    saves: parseInt(document.getElementById('afSaves').value) || 0,
+                    Wins: parseInt(document.getElementById('afWins').value) || 0,
+                    Loses: parseInt(document.getElementById('afLosses').value) || 0,
+                    "Market Value": parseInt(document.getElementById('afValue').value) || 0,
+                    MVP_Awards: parseInt(document.getElementById('afMVP').value) || 0
+                }).eq('id', id);
+                if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
+                msg.textContent = 'Saved!';
+                msg.className = 'admin-msg ok';
+                renderCareer();
+            } catch (e) {
+                msg.textContent = 'Error: ' + e.message;
+                msg.className = 'admin-msg err';
+            }
+        }
+
         // ===== Hash router =====
         function route() {
             const page = (location.hash.replace('#', '') || '').toLowerCase();
@@ -493,7 +601,8 @@
                 changelog: 'change-page',
                 signin: 'sign-page',
                 rankings: 'rank-page',
-                career: 'careerPage'
+                career: 'careerPage',
+                admin: 'adminPage'
             };
             const isKnown = Object.prototype.hasOwnProperty.call(pages, page) && page !== '';
             const homeEl = document.getElementById('home');
@@ -502,6 +611,7 @@
             const siEl = document.querySelector('.sign-page');
             const rkEl = document.querySelector('.rank-page');
             const crEl = document.getElementById('careerPage');
+            const adEl = document.getElementById('adminPage');
 
             homeEl.style.display = 'none';
             nfEl.style.display = 'none';
@@ -509,12 +619,16 @@
             siEl.style.display = 'none';
             rkEl.style.display = 'none';
             crEl.style.display = 'none';
+            adEl.style.display = 'none';
 
             if (page === '' || page === 'home') {
                 homeEl.style.display = '';
             } else if (page === 'career') {
                 crEl.style.display = '';
                 renderCareer();
+            } else if (page === 'admin') {
+                adEl.style.display = '';
+                loadAdminPanel();
             } else if (isKnown) {
                 const el = page === 'changelog' ? clEl : (page === 'signin' ? siEl : rkEl);
                 el.style.display = 'flex';

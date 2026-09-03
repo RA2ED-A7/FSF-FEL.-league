@@ -594,6 +594,32 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .sign-msg.ok { color: var(--good); }
 .sign-msg.err { color: #ff7b8a; }
 
+.admin-page { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+.admin-title { font-size: 1.6rem; margin-bottom: 0.5rem; }
+.admin-player-select { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; }
+.admin-player-select label { color: var(--muted); font-size: 0.9rem; }
+.admin-select {
+    padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); font-size: 0.9rem; flex: 1; max-width: 320px;
+}
+.admin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1.5rem; }
+.admin-field label { display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 0.3rem; }
+.admin-field input {
+    width: 100%; padding: 0.5rem 0.7rem; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); font-size: 0.9rem; box-sizing: border-box;
+}
+.admin-field input:focus { outline: none; border-color: var(--accent); }
+.admin-actions { display: flex; align-items: center; gap: 1rem; }
+.admin-save-btn {
+    padding: 0.6rem 1.5rem; border-radius: 8px; border: none;
+    background: var(--accent); color: #06322a; font-weight: 700; font-size: 0.9rem;
+    cursor: pointer; transition: opacity 0.15s;
+}
+.admin-save-btn:hover { opacity: 0.85; }
+.admin-msg { font-size: 0.85rem; }
+.admin-msg.ok { color: var(--accent); }
+.admin-msg.err { color: #f55; }
+
 footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); box-shadow: 0 -1px 0 rgba(47,214,176,0.1); }
 
 @media (max-width: 720px) {
@@ -617,4 +643,5 @@ footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.
     .career-header { flex-direction: column; text-align: center; gap: 1rem; }
     .career-badges { justify-content: center; }
     .career-stats { grid-template-columns: repeat(2, 1fr); }
+    .admin-grid { grid-template-columns: repeat(2, 1fr); }
 }
