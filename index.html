@@ -644,8 +644,11 @@
         function initSupabase() {
             if (typeof window.supabase === 'undefined') return false;
             if (SUPABASE_URL.indexOf('PASTE_YOUR') === 0 || SUPABASE_ANON_KEY.indexOf('PASTE_YOUR') === 0) return false;
+            if (supabaseClient) return true;
             try {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: { flowType: 'pkce', detectSessionInUrl: true }
+                });
                 return true;
             } catch (e) { return false; }
         }
@@ -739,7 +742,24 @@
             if (data.session) {
                 signedIn = true;
                 renderUser();
+            } else {
+                signedIn = false;
+                renderUser();
             }
+        }
+
+        // React to auth changes (e.g. right after the OAuth redirect completes)
+        function watchAuth() {
+            if (!initSupabase()) return;
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    signedIn = true;
+                    renderUser();
+                } else if (event === 'SIGNED_OUT') {
+                    signedIn = false;
+                    renderUser();
+                }
+            });
         }
 
         window.addEventListener('hashchange', () => { route(); refreshAuth(); });
@@ -757,7 +777,12 @@
         });
 
         renderFixture(1);
-        refreshAuth();
+        watchAuth();
+        refreshAuth().then(() => {
+            // If this is the page we land on right after sign-in, show home.
+            const page = (location.hash.replace('#', '') || '').toLowerCase();
+            if (page === '') route();
+        });
         route();
     </script>
 </body>
