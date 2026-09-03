@@ -316,7 +316,6 @@
                 <div class="career-badges">
                     <span class="career-badge" id="profilePosition">None</span>
                     <span class="career-badge" id="profileRank">Unranked</span>
-                    <span class="career-badge" id="profileStars"></span>
                     <span class="career-badge" id="profileWinRate">0%</span>
                 </div>
             </div>
@@ -535,15 +534,16 @@
                 document.getElementById('statAssists').textContent = s(data.assists, 0);
                 document.getElementById('statWins').textContent = s(data.Wins, 0);
                 document.getElementById('statRank').textContent = s(data.rank, '—');
+                const rnk = (data.rank || '').toLowerCase();
+                const rnkEl = document.getElementById('statRank');
+                if (RANK_STARS[rnk]) rnkEl.textContent = RANK_STARS[rnk] + ' ' + s(data.rank, '—');
                 document.getElementById('statValue').textContent = '€' + (s(data["Market Value"], 0)).toLocaleString();
                 document.getElementById('statSaves').textContent = s(data.saves, 0);
                 document.getElementById('statLosses').textContent = s(data.Loses, 0);
                 document.getElementById('statTeam').textContent = s(data.team, '—');
                 document.getElementById('statPosition').textContent = s(data.position, '—');
                 document.getElementById('statMVP').textContent = s(data.MVP_Awards, 0);
-                const matches = data.matches || 0;
-                const wins = data.Wins || 0;
-                document.getElementById('statWinRate').textContent = matches > 0 ? Math.round(wins / matches * 100) + '%' : '0%';
+                document.getElementById('statWinRate').textContent = s(data.win_rate, 0) + '%';
             } catch (e) {
                 console.warn('[career] Failed to load player stats:', e);
             }
@@ -661,13 +661,10 @@
                 document.getElementById('profilePosition').textContent = p.position || 'None';
                 const rank = (p.rank || 'Unranked').toLowerCase();
                 const rankEl = document.getElementById('profileRank');
-                rankEl.textContent = p.rank || 'Unranked';
+                rankEl.textContent = (RANK_STARS[rank] || '—') + ' ' + (p.rank || 'Unranked');
                 rankEl.style.color = RANK_COLORS[rank] || '#888';
                 rankEl.style.borderColor = RANK_COLORS[rank] || '#888';
                 rankEl.style.background = (RANK_COLORS[rank] || '#888') + '15';
-                const starsEl = document.getElementById('profileStars');
-                starsEl.textContent = RANK_STARS[rank] || '—';
-                starsEl.style.color = RANK_COLORS[rank] || '#888';
                 const matches = p.matches || 0;
                 const wins = p.Wins || 0;
                 const winRate = matches > 0 ? Math.round(wins / matches * 100) : 0;
