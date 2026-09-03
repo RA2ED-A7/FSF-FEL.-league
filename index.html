@@ -557,8 +557,8 @@
             }
             const sel = document.getElementById('adminPlayerSelect');
             try {
-                let { data, error } = await supabaseClient.from('Player').select('id, display_name').eq('id', u.id);
-                if (error) { sel.innerHTML = '<option>Error loading</option>'; return; }
+                let { data, error } = await supabaseClient.from('Player').select('id, display_name').order('display_name');
+                if (error) { sel.innerHTML = '<option>Error loading</option>'; console.warn('[admin] query error:', error); return; }
                 let players = Array.isArray(data) ? data : (data ? [data] : []);
                 if (players.length === 0) {
                     const m = u.user_metadata || {};
@@ -569,7 +569,7 @@
                         goals: 0, assists: 0, saves: 0, matches: 0,
                         Wins: 0, Loses: 0, "Market Value": 0, "MVP_Awards": 0
                     });
-                    if (insertErr) { sel.innerHTML = '<option>Error creating player</option>'; return; }
+                    if (insertErr) { sel.innerHTML = '<option>Error creating player</option>'; console.warn('[admin] insert error:', insertErr); return; }
                     players = [{ id: u.id, display_name: displayName }];
                 }
                 sel.innerHTML = players.map(p => '<option value="' + p.id + '">' + (p.display_name || p.id) + '</option>').join('');
