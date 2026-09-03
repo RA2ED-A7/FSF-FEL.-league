@@ -549,12 +549,11 @@
             if (data.session) {
                 signedIn = true;
                 renderUser(data.session.user);
-                renderCareer();
             } else {
                 signedIn = false;
                 renderUser();
-                renderCareer();
             }
+            if (location.hash.replace('#', '').toLowerCase() === 'career') renderCareer();
         }
 
         // React to auth changes (e.g. right after the OAuth redirect completes)
