@@ -292,6 +292,14 @@
             <h2>Team Rosters</h2>
             <p class="muted">All registered players sorted by team</p>
         </div>
+        <div class="rosters-filter">
+            <label>Division:</label>
+            <select id="rostersDivFilter" class="lb-select">
+                <option value="1.FEL">1. FEL</option>
+                <option value="2.FEL">2. FEL</option>
+                <option value="3.FEL">3. FEL</option>
+            </select>
+        </div>
         <div class="rosters-grid" id="rostersGrid"></div>
     </section>
 
@@ -584,20 +592,29 @@
             }
         }
 
-        const TEAMS = ['Manchester City', 'FC Barcelona', 'Bayern Munich', 'Paris Saint Germain', 'Real Madrid'];
+        const TEAMS = [
+            { name: 'Manchester City', division: '1.FEL' },
+            { name: 'FC Barcelona', division: '1.FEL' },
+            { name: 'Bayern Munich', division: '1.FEL' },
+            { name: 'Paris Saint Germain', division: '1.FEL' },
+            { name: 'Real Madrid', division: '1.FEL' }
+        ];
 
         async function renderRosters() {
             initSupabase();
             if (!supabaseClient) return;
+            const divFilter = document.getElementById('rostersDivFilter');
+            const selectedDiv = divFilter ? divFilter.value : '1.FEL';
             try {
                 const { data: players, error } = await supabaseClient.from('Player').select('*').order('display_name');
                 if (error || !players) return;
                 const grid = document.getElementById('rostersGrid');
                 grid.innerHTML = '';
-                TEAMS.forEach(team => {
-                    const teamPlayers = players.filter(p => p.team === team);
+                const filteredTeams = TEAMS.filter(t => t.division === selectedDiv);
+                filteredTeams.forEach(team => {
+                    const teamPlayers = players.filter(p => p.team === team.name);
                     const sorted = teamPlayers.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
-                    let html = '<div class="roster-team"><h3 class="roster-team-name">' + team + '</h3><div class="roster-list">';
+                    let html = '<div class="roster-team"><div class="roster-team-head"><h3 class="roster-team-name">' + team.name + '</h3><span class="roster-team-div">' + team.division + '</span></div><div class="roster-list">';
                     sorted.forEach((p, i) => {
                         const val = p["Market Value"] || 0;
                         html += '<div class="roster-player" onclick="location.hash=\'player?id=' + p.id + '\'"><span class="roster-rank">#' + (i + 1) + '</span><span class="roster-name">' + (p.display_name || 'Player') + '</span><span class="roster-pos">' + (p.position || 'None') + '</span><span class="roster-val">€' + val.toLocaleString() + '</span></div>';
@@ -970,6 +987,8 @@
         refreshAuth().then(() => { route(); renderCareer(); });
 
         window.admin = function() { location.hash = 'admin'; };
+
+        document.getElementById('rostersDivFilter').addEventListener('change', renderRosters);
     </script>
 </body>
 </html>
