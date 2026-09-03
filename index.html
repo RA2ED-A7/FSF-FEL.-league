@@ -403,11 +403,17 @@
             <div class="career-boxes">
                 <div class="career-section career-box-large">
                     <h3>Transfer History</h3>
-                    <p class="muted" id="transferText">No transfers yet.</p>
+                    <div id="transferList">
+                        <div class="career-placeholder">No transfers yet.</div>
+                    </div>
                 </div>
                 <div class="career-section career-box-large">
                     <h3>Recent Matches</h3>
-                    <p class="muted" id="matchesText">No matches played yet. Join a team to get started!</p>
+                    <div id="matchesList">
+                        <div class="career-match-row"><span class="cm-date">—</span><span class="cm-teams">No match</span><span class="cm-result">—</span></div>
+                        <div class="career-match-row"><span class="cm-date">—</span><span class="cm-teams">No match</span><span class="cm-result">—</span></div>
+                        <div class="career-match-row"><span class="cm-date">—</span><span class="cm-teams">No match</span><span class="cm-result">—</span></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -445,14 +451,39 @@
         </div>
         <hr class="admin-divider">
         <h3 class="admin-subtitle">Site Content</h3>
-        <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit text across the site. Changes are saved permanently.</p>
-        <div id="siteContentEditor" class="admin-content-editor">
-            <p class="muted">Loading...</p>
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="switchContentTab('home')">Home Page</button>
+            <button class="admin-tab" onclick="switchContentTab('career')">My Career</button>
         </div>
-        <div class="admin-actions">
-            <button class="admin-save-btn" onclick="saveSiteContent()">Save Content</button>
-            <button class="admin-add-btn" onclick="addSiteContentField()">+ Add Field</button>
-            <span class="admin-msg" id="contentMsg"></span>
+        <div id="contentHome" class="admin-panel-content active">
+            <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit home page text. Changes are saved permanently.</p>
+            <div id="siteContentEditor" class="admin-content-editor">
+                <p class="muted">Loading...</p>
+            </div>
+            <div class="admin-actions">
+                <button class="admin-save-btn" onclick="saveSiteContent()">Save Content</button>
+                <button class="admin-add-btn" onclick="addSiteContentField()">+ Add Field</button>
+                <span class="admin-msg" id="contentMsg"></span>
+            </div>
+        </div>
+        <div id="contentCareer" class="admin-panel-content">
+            <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit a player's Transfer History &amp; Recent Matches.</p>
+            <div class="admin-player-select">
+                <label>Select Player:</label>
+                <select id="careerPlayerSelect" class="admin-select" onchange="loadCareerContent()">
+                    <option value="">Loading players...</option>
+                </select>
+            </div>
+            <div id="careerContentEditor" style="display:none;">
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">Transfer History</h4>
+                <div class="admin-content-editor" id="careerTransferEditor"></div>
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">Recent Matches</h4>
+                <div class="admin-content-editor" id="careerMatchesEditor"></div>
+                <div class="admin-actions">
+                    <button class="admin-save-btn" onclick="saveCareerContent()">Save Career</button>
+                    <span class="admin-msg" id="careerMsg"></span>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -769,6 +800,7 @@
             } catch (e) {
                 sel.innerHTML = '<option>Error</option>';
             }
+            loadCareerPlayers();
         }
 
         async function loadAdminPlayer(id) {
@@ -847,9 +879,7 @@
             'Result 3 - Team A': 'Team Name', 'Result 3 - Score': '3 - 2', 'Result 3 - Team B': 'Team Name', 'Result 3 - Date': 'Date',
             '1st Place Team': 'Team Name', '1st Place Pts': '--',
             '2nd Place Team': 'Team Name', '2nd Place Pts': '--',
-            '3rd Place Team': 'Team Name', '3rd Place Pts': '--',
-            'Transfer Text': 'No transfers yet.',
-            'Matches Text': 'No matches played yet. Join a team to get started!'
+            '3rd Place Team': 'Team Name', '3rd Place Pts': '--'
         };
 
         const CONTENT_KEY_MAP = {
@@ -870,8 +900,7 @@
             'Result 3 - Team A': 'rr3-teams', 'Result 3 - Score': 'rr3-score', 'Result 3 - Team B': 'rr3-teams2', 'Result 3 - Date': 'rr3-date',
             '1st Place Team': 'pod1-team', '1st Place Pts': 'pod1-pts',
             '2nd Place Team': 'pod2-team', '2nd Place Pts': 'pod2-pts',
-            '3rd Place Team': 'pod3-team', '3rd Place Pts': 'pod3-pts',
-            'Transfer Text': 'transfer-text', 'Matches Text': 'matches-text'
+            '3rd Place Team': 'pod3-team', '3rd Place Pts': 'pod3-pts'
         };
 
         async function loadSiteContent() {
@@ -918,8 +947,6 @@
             s('pod1Team', c['pod1-team']); s('pod1Pts', c['pod1-pts']);
             s('pod2Team', c['pod2-team']); s('pod2Pts', c['pod2-pts']);
             s('pod3Team', c['pod3-team']); s('pod3Pts', c['pod3-pts']);
-            const el5 = document.getElementById('transferText'); if (el5) el5.innerHTML = c['transfer-text'];
-            const el6 = document.getElementById('matchesText'); if (el6) el6.innerHTML = c['matches-text'];
         }
 
         function loadContentEditor(data) {
@@ -952,6 +979,102 @@
         function addSiteContentField() {
             const editor = document.getElementById('siteContentEditor');
             addContentRow(editor, '', '');
+        }
+
+        // ===== Career Content Editor =====
+        let _careerPlayers = [];
+
+        function switchContentTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.admin-panel-content').forEach(p => p.classList.remove('active'));
+            if (tab === 'home') {
+                document.querySelector('.admin-tab:first-child').classList.add('active');
+                document.getElementById('contentHome').classList.add('active');
+            } else {
+                document.querySelector('.admin-tab:last-child').classList.add('active');
+                document.getElementById('contentCareer').classList.add('active');
+            }
+        }
+
+        async function loadCareerPlayers() {
+            initSupabase();
+            if (!supabaseClient) return;
+            try {
+                const { data } = await supabaseClient.from('Player').select('id, display_name').order('display_name');
+                if (data) {
+                    _careerPlayers = data;
+                    const sel = document.getElementById('careerPlayerSelect');
+                    sel.innerHTML = '<option value="">Select a player...</option>';
+                    data.forEach(p => {
+                        sel.innerHTML += '<option value="' + p.id + '">' + (p.display_name || 'Player') + '</option>';
+                    });
+                }
+            } catch (e) { console.warn('[career-content] load error:', e); }
+        }
+
+        async function loadCareerContent() {
+            const id = document.getElementById('careerPlayerSelect').value;
+            const editor = document.getElementById('careerContentEditor');
+            if (!id) { editor.style.display = 'none'; return; }
+            initSupabase();
+            if (!supabaseClient) return;
+            try {
+                const { data } = await supabaseClient.from('SiteContent').select('*');
+                const map = {};
+                if (data) data.forEach(r => { map[r.key] = r.value; });
+                const transDiv = document.getElementById('careerTransferEditor');
+                const matchDiv = document.getElementById('careerMatchesEditor');
+                transDiv.innerHTML = '';
+                matchDiv.innerHTML = '';
+                addCareerRow(transDiv, 'Transfer', id, map['career-' + id + '-transfer'] || 'No transfers yet.');
+                for (let i = 1; i <= 3; i++) {
+                    const val = map['career-' + id + '-match' + i] || '';
+                    addCareerRow(matchDiv, 'Match ' + i + ' (e.g. Team A 2-1 Team B)', id, val);
+                }
+                editor.style.display = '';
+            } catch (e) { console.warn('[career-content] load error:', e); }
+        }
+
+        function addCareerRow(container, label, playerId, val) {
+            const row = document.createElement('div');
+            row.className = 'admin-content-row';
+            row.dataset.playerId = playerId;
+            row.dataset.label = label;
+            row.innerHTML = '<span class="admin-content-key">' + label + '</span>' +
+                '<input class="admin-content-val" value="' + val.replace(/"/g, '&quot;') + '" placeholder="Enter text...">';
+            container.appendChild(row);
+        }
+
+        async function saveCareerContent() {
+            initSupabase();
+            if (!supabaseClient) return;
+            const msg = document.getElementById('careerMsg');
+            msg.textContent = 'Saving...';
+            msg.className = 'admin-msg';
+            const id = document.getElementById('careerPlayerSelect').value;
+            if (!id) { msg.textContent = 'Select a player first'; msg.className = 'admin-msg err'; return; }
+            const rows = document.querySelectorAll('#careerTransferEditor .admin-content-row, #careerMatchesEditor .admin-content-row');
+            try {
+                let matchIdx = 1;
+                for (const row of rows) {
+                    const val = row.querySelector('.admin-content-val').value;
+                    const label = row.dataset.label;
+                    let key;
+                    if (label === 'Transfer') {
+                        key = 'career-' + id + '-transfer';
+                    } else {
+                        key = 'career-' + id + '-match' + matchIdx;
+                        matchIdx++;
+                    }
+                    const { error } = await supabaseClient.from('SiteContent').upsert({ key, value: val }, { onConflict: 'key' });
+                    if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
+                }
+                msg.textContent = 'Saved!';
+                msg.className = 'admin-msg ok';
+            } catch (e) {
+                msg.textContent = 'Error: ' + e.message;
+                msg.className = 'admin-msg err';
+            }
         }
 
         async function saveSiteContent() {

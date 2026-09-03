@@ -533,6 +533,26 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
     border: 1px solid var(--border); border-radius: 18px;
 }
 .career-box-large h3 { font-size: 1.2rem; margin-bottom: 1rem; }
+.career-placeholder { color: var(--muted); font-size: 0.9rem; }
+.career-match-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.8rem 1rem; border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+}
+.career-match-row:last-child { border-bottom: none; }
+.cm-date { color: var(--muted); width: 80px; flex-shrink: 0; }
+.cm-teams { flex: 1; text-align: center; font-weight: 600; }
+.cm-result { width: 60px; text-align: right; flex-shrink: 0; color: var(--accent); font-weight: 700; }
+.admin-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.admin-tab {
+    padding: 0.5rem 1.2rem; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--muted); cursor: pointer;
+    font-size: 0.85rem; font-weight: 600; transition: all 0.15s;
+}
+.admin-tab:hover { color: var(--text); border-color: var(--accent); }
+.admin-tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+.admin-panel-content { display: none; }
+.admin-panel-content.active { display: block; }
 
 /* Update notification popup */
 .update-popup {
