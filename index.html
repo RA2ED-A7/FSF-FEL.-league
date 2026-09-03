@@ -486,25 +486,29 @@
         }
 
         async function renderCareer() {
+            console.log('[career] called, signedIn:', signedIn);
             const nameBox = document.getElementById('userName');
             const name = (nameBox && nameBox.textContent !== 'Username') ? nameBox.textContent : 'User';
             document.getElementById('careerName').textContent = name;
             const img = document.getElementById('careerAvatar');
             img.style.display = 'none';
-            if (!signedIn || !supabaseClient) return;
+            if (!signedIn || !supabaseClient) { console.log('[career] no auth'); return; }
             const u = supabaseClient.auth._currentUser;
-            if (!u) return;
+            if (!u) { console.log('[career] no user'); return; }
+            console.log('[career] user id:', u.id);
             try {
                 let { data, error } = await supabaseClient.from('Player').select('*').eq('id', u.id).single();
+                console.log('[career] query by id:', data, error);
                 if (error || !data) {
                     const nameBox2 = document.getElementById('userName');
                     const fallbackName = nameBox2 ? nameBox2.textContent : '';
                     if (fallbackName && fallbackName !== 'Username') {
                         const r2 = await supabaseClient.from('Player').select('*').eq('display_name', fallbackName).single();
+                        console.log('[career] query by name:', r2.data, r2.error);
                         if (r2.data) data = r2.data;
                     }
                 }
-                if (!data) return;
+                if (!data) { console.log('[career] no data found'); return; }
                 const s = (v, d) => v != null ? v : d;
                 document.getElementById('statMatches').textContent = s(data.matches, 0);
                 document.getElementById('statGoals').textContent = s(data.goals, 0);
