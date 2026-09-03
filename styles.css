@@ -670,6 +670,32 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .admin-msg { font-size: 0.85rem; }
 .admin-msg.ok { color: var(--accent); }
 .admin-msg.err { color: #f55; }
+.admin-divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+.admin-subtitle { font-size: 1.1rem; margin-bottom: 0.5rem; }
+.admin-add-btn {
+    background: none; border: 1px solid var(--border); color: var(--muted);
+    padding: 0.5rem 1.2rem; border-radius: 10px; cursor: pointer; font-size: 0.85rem;
+    transition: color 0.15s, border-color 0.15s;
+}
+.admin-add-btn:hover { color: var(--accent); border-color: var(--accent); }
+.admin-content-editor { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1rem; }
+.admin-content-row { display: flex; gap: 0.6rem; align-items: center; }
+.admin-content-key {
+    width: 200px; padding: 0.5rem 0.8rem; background: var(--surface-2); color: var(--accent);
+    border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+    outline: none; flex-shrink: 0;
+}
+.admin-content-val {
+    flex: 1; padding: 0.5rem 0.8rem; background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; outline: none;
+    transition: border-color 0.15s;
+}
+.admin-content-val:focus { border-color: var(--accent); }
+.admin-content-del {
+    background: none; border: none; color: #f55; font-size: 1.1rem; cursor: pointer;
+    padding: 0.3rem; transition: opacity 0.15s; flex-shrink: 0;
+}
+.admin-content-del:hover { opacity: 0.7; }
 
 /* Rosters page */
 .rosters-page { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }

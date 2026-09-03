@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <div class="brand">Freestyle Elite league <span class="season">| Season 1</span></div>
+        <div class="brand"><span id="site-title">Freestyle Elite league</span> <span class="season" id="site-subtitle">| Season 1</span></div>
         <a href="#admin" class="admin-line" id="adminLine" style="display:none;"></a>
         <nav class="menu">
             <div class="menu-item">
@@ -179,8 +179,8 @@
 
     <section class="rank-page">
         <div class="page-head">
-            <div class="rank-title">★ Rankings ★</div>
-            <p>Season 1 · skill ladder by tier &amp; position</p>
+            <div class="rank-title" id="rankingsTitle">★ Rankings ★</div>
+            <p id="rankingsSubtitle">Season 1 · skill ladder by tier &amp; position</p>
         </div>
 
         <div class="lb-toolbar">
@@ -345,7 +345,7 @@
                 <div class="career-info">
                     <h1 class="career-name" id="careerName">Player Name</h1>
                     <div class="career-badges">
-                        <span class="career-badge">Season 1</span>
+                        <span class="career-badge" id="careerSeasonBadge">Season 1</span>
                         <span class="career-badge accent">Active</span>
                     </div>
                 </div>
@@ -369,11 +369,11 @@
             <div class="career-boxes">
                 <div class="career-section career-box-large">
                     <h3>Transfer History</h3>
-                    <p class="muted">No transfers yet.</p>
+                    <p class="muted" id="transferText">No transfers yet.</p>
                 </div>
                 <div class="career-section career-box-large">
                     <h3>Recent Matches</h3>
-                    <p class="muted">No matches played yet. Join a team to get started!</p>
+                    <p class="muted" id="matchesText">No matches played yet. Join a team to get started!</p>
                 </div>
             </div>
         </div>
@@ -409,10 +409,21 @@
                 <span class="admin-msg" id="adminMsg"></span>
             </div>
         </div>
+        <hr class="admin-divider">
+        <h3 class="admin-subtitle">Site Content</h3>
+        <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit text across the site. Changes are saved permanently.</p>
+        <div id="siteContentEditor" class="admin-content-editor">
+            <p class="muted">Loading...</p>
+        </div>
+        <div class="admin-actions">
+            <button class="admin-save-btn" onclick="saveSiteContent()">Save Content</button>
+            <button class="admin-add-btn" onclick="addSiteContentField()">+ Add Field</button>
+            <span class="admin-msg" id="contentMsg"></span>
+        </div>
     </section>
 
     <footer>
-        <p>Freestyle Elite league &mdash; Season 1 &middot; By A7M | .vortex700</p>
+        <p id="footerText">Freestyle Elite league &mdash; Season 1 &middot; By A7M | .vortex700</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -798,6 +809,107 @@
             }
         }
 
+        // ===== Site Content Editor =====
+        const DEFAULT_CONTENT = {
+            'site-title': 'Freestyle Elite League',
+            'site-subtitle': 'Season 1',
+            'footer-text': 'Freestyle Elite league — Season 1 · By A7M | .vortex700',
+            'rankings-title': '★ Rankings ★',
+            'rankings-subtitle': 'Season 1 · skill ladder by tier & position',
+            'career-season-badge': 'Season 1',
+            'home-welcome': 'Welcome to the Freestyle Elite League',
+            'home-desc': 'Join the ultimate 5v5 competitive league. Sign up with Discord and start your career.',
+            'transfer-text': 'No transfers yet.',
+            'matches-text': 'No matches played yet. Join a team to get started!'
+        };
+
+        async function loadSiteContent() {
+            initSupabase();
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient.from('SiteContent').select('*');
+                if (error || !data) return;
+                const map = {};
+                data.forEach(row => { map[row.key] = row.value; });
+                applySiteContent(map);
+                loadContentEditor(data);
+            } catch (e) { console.warn('[content] load error:', e); }
+        }
+
+        function applySiteContent(map) {
+            const c = Object.assign({}, DEFAULT_CONTENT, map);
+            const safeSet = (id, text) => { const el = document.getElementById(id); if (el && text) el.textContent = text; };
+            const safeHTML = (id, html) => { const el = document.getElementById(id); if (el && html) el.innerHTML = html; };
+            safeSet('site-title', c['site-title']);
+            safeSet('site-subtitle', c['site-subtitle']);
+            safeSet('footerText', c['footer-text']);
+            safeSet('rankingsTitle', c['rankings-title']);
+            safeSet('rankingsSubtitle', c['rankings-subtitle']);
+            safeSet('careerSeasonBadge', c['career-season-badge']);
+            safeSet('homeWelcome', c['home-welcome']);
+            safeSet('homeDesc', c['home-desc']);
+            safeHTML('transferText', c['transfer-text']);
+            safeHTML('matchesText', c['matches-text']);
+        }
+
+        function loadContentEditor(data) {
+            const editor = document.getElementById('siteContentEditor');
+            if (!editor) return;
+            editor.innerHTML = '';
+            const allKeys = Object.keys(DEFAULT_CONTENT);
+            const map = {};
+            data.forEach(r => { map[r.key] = r.value; });
+            allKeys.forEach(key => {
+                const val = map[key] || DEFAULT_CONTENT[key] || '';
+                addContentRow(editor, key, val);
+            });
+        }
+
+        function addContentRow(container, key, val) {
+            const row = document.createElement('div');
+            row.className = 'admin-content-row';
+            row.innerHTML = '<input class="admin-content-key" value="' + key.replace(/"/g, '&quot;') + '" readonly title="Field key">' +
+                '<input class="admin-content-val" value="' + val.replace(/"/g, '&quot;') + '" placeholder="Enter text...">' +
+                '<button class="admin-content-del" title="Reset to default">&times;</button>';
+            row.querySelector('.admin-content-del').addEventListener('click', () => {
+                const input = row.querySelector('.admin-content-val');
+                const keyInput = row.querySelector('.admin-content-key').value;
+                input.value = DEFAULT_CONTENT[keyInput] || '';
+            });
+            container.appendChild(row);
+        }
+
+        function addSiteContentField() {
+            const editor = document.getElementById('siteContentEditor');
+            addContentRow(editor, '', '');
+        }
+
+        async function saveSiteContent() {
+            initSupabase();
+            if (!supabaseClient) return;
+            const msg = document.getElementById('contentMsg');
+            msg.textContent = 'Saving...';
+            msg.className = 'admin-msg';
+            const rows = document.querySelectorAll('.admin-content-row');
+            const updates = [];
+            rows.forEach(row => {
+                const key = row.querySelector('.admin-content-key').value.trim();
+                const value = row.querySelector('.admin-content-val').value;
+                if (key) updates.push({ key, value });
+            });
+            try {
+                for (const u of updates) {
+                    await supabaseClient.from('SiteContent').upsert({ key: u.key, value: u.value }, { onConflict: 'key' });
+                }
+                msg.textContent = 'Saved! Reloading...';
+                msg.className = 'admin-msg ok';
+                setTimeout(() => location.reload(), 800);
+            } catch (e) {
+                msg.textContent = 'Error: ' + e.message;
+                msg.className = 'admin-msg err';
+            }
+        }
+
         // ===== Hash router =====
         function route() {
             const page = (location.hash.replace('#', '') || '').toLowerCase();
@@ -1041,6 +1153,7 @@
         localStorage.setItem('fel-site-version', SITE_VERSION);
 
         renderFixture(1);
+        loadSiteContent();
         watchAuth();
         route();
         refreshAuth().then(() => { route(); renderCareer(); });
