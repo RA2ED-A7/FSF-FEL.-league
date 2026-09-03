@@ -663,7 +663,8 @@
                 console.log('[auth] user_metadata:', m);
                 const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || m.email || u.email || u.identities?.[0]?.user_name || 'User';
                 nameBox.textContent = name;
-                avatar.textContent = name.charAt(0).toUpperCase();
+                const init = [...name].find(ch => /[a-zA-Z]/.test(ch));
+                avatar.textContent = (init || name.charAt(0) || 'U').toUpperCase();
                 btn.textContent = 'Sign Out';
             } else {
                 nameBox.textContent = 'Username';
