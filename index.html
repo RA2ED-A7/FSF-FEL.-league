@@ -13,7 +13,7 @@
             <div class="menu-item">
                 <a href="#">Home<span class="caret">&#9662;</span></a>
                 <div class="dropdown">
-                    <a href="#notfound">My Career</a>
+                    <a href="#career">My Career</a>
                 </div>
             </div>
             <div class="menu-item">
@@ -320,6 +320,43 @@
         </div>
     </section>
 
+    <section class="career-page" id="careerPage">
+        <div class="career-guest" id="careerGuest">
+            <div class="career-lock">🔒</div>
+            <h2>Sign in to view your career</h2>
+            <p>Connect your Discord account to see your profile, stats, and Roblox avatar.</p>
+            <button class="career-sign-btn" onclick="location.hash='signin'">Sign In</button>
+        </div>
+        <div class="career-profile" id="careerProfile" style="display:none;">
+            <div class="career-header">
+                <div class="career-avatar-wrap">
+                    <img class="career-avatar" id="careerAvatar" src="" alt="Avatar">
+                    <div class="career-avatar-ring"></div>
+                </div>
+                <div class="career-info">
+                    <h1 class="career-name" id="careerName">Player Name</h1>
+                    <span class="career-tag" id="careerTag">@username</span>
+                    <div class="career-badges">
+                        <span class="career-badge">Season 1</span>
+                        <span class="career-badge accent">Active</span>
+                    </div>
+                </div>
+            </div>
+            <div class="career-stats">
+                <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">Matches</div></div>
+                <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">Goals</div></div>
+                <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">Assists</div></div>
+                <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">Wins</div></div>
+                <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Rank</div></div>
+                <div class="stat-card"><div class="stat-val">€0</div><div class="stat-lbl">Value</div></div>
+            </div>
+            <div class="career-section">
+                <h3>Recent Activity</h3>
+                <p class="muted">No recent activity yet. Play your first match to get started!</p>
+            </div>
+        </div>
+    </section>
+
     <footer>
         <p>Freestyle Elite league &mdash; Season 1 &middot; By A7M | .vortex700</p>
     </footer>
@@ -402,6 +439,32 @@
             }
         }
 
+        function renderCareer() {
+            const guest = document.getElementById('careerGuest');
+            const profile = document.getElementById('careerProfile');
+            const u = signedIn ? (supabaseClient?.auth?._currentUser || null) : null;
+            if (signedIn && u) {
+                guest.style.display = 'none';
+                profile.style.display = '';
+                const m = u.user_metadata || {};
+                const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || u.email || 'Player';
+                const username = m.user_name || m.preferred_username || m.prefered_username || m.custom_claims?.username || name.toLowerCase().replace(/\s+/g, '') || 'player';
+                const avatar = m.avatar_url || m.picture || '';
+                document.getElementById('careerName').textContent = name;
+                document.getElementById('careerTag').textContent = '@' + username;
+                const img = document.getElementById('careerAvatar');
+                if (avatar) {
+                    img.src = avatar;
+                    img.style.display = '';
+                } else {
+                    img.style.display = 'none';
+                }
+            } else {
+                guest.style.display = '';
+                profile.style.display = 'none';
+            }
+        }
+
         // ===== Hash router =====
         function route() {
             const page = (location.hash.replace('#', '') || '').toLowerCase();
@@ -409,7 +472,8 @@
                 home: 'home',
                 changelog: 'change-page',
                 signin: 'sign-page',
-                rankings: 'rank-page'
+                rankings: 'rank-page',
+                career: 'careerPage'
             };
             const isKnown = Object.prototype.hasOwnProperty.call(pages, page) && page !== '';
             const homeEl = document.getElementById('home');
@@ -417,15 +481,20 @@
             const clEl = document.querySelector('.change-page');
             const siEl = document.querySelector('.sign-page');
             const rkEl = document.querySelector('.rank-page');
+            const crEl = document.getElementById('careerPage');
 
             homeEl.style.display = 'none';
             nfEl.style.display = 'none';
             clEl.style.display = 'none';
             siEl.style.display = 'none';
             rkEl.style.display = 'none';
+            crEl.style.display = 'none';
 
             if (page === '' || page === 'home') {
                 homeEl.style.display = '';
+            } else if (page === 'career') {
+                crEl.style.display = '';
+                renderCareer();
             } else if (isKnown) {
                 const el = page === 'changelog' ? clEl : (page === 'signin' ? siEl : rkEl);
                 el.style.display = 'flex';
@@ -480,9 +549,11 @@
             if (data.session) {
                 signedIn = true;
                 renderUser(data.session.user);
+                renderCareer();
             } else {
                 signedIn = false;
                 renderUser();
+                renderCareer();
             }
         }
 
@@ -493,9 +564,11 @@
                 if (event === 'SIGNED_IN' && session) {
                     signedIn = true;
                     renderUser(session.user);
+                    renderCareer();
                 } else if (event === 'SIGNED_OUT') {
                     signedIn = false;
                     renderUser();
+                    renderCareer();
                 }
             });
         }

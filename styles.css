@@ -456,6 +456,71 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 
 .rung.hidden { display: none; }
 
+/* My Career page */
+.career-page { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+.career-guest {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 4rem 1.5rem;
+    background: linear-gradient(145deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border); border-radius: 18px;
+}
+.career-lock { font-size: 3rem; margin-bottom: 1rem; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4)); }
+.career-guest h2 { font-size: 1.4rem; margin-bottom: 0.5rem; }
+.career-guest p { color: var(--muted); max-width: 400px; line-height: 1.6; margin-bottom: 1.5rem; }
+.career-sign-btn {
+    padding: 0.7rem 2rem; border-radius: 12px; border: none;
+    background: var(--accent); color: #06322a; font-weight: 700; font-size: 1rem;
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+}
+.career-sign-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(47,214,176,0.4); }
+
+.career-header {
+    display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem;
+    padding: 1.5rem; background: linear-gradient(145deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border); border-radius: 18px;
+}
+.career-avatar-wrap { position: relative; flex-shrink: 0; }
+.career-avatar {
+    width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
+    border: 3px solid var(--accent); display: block;
+    background: var(--surface-2);
+}
+.career-avatar-ring {
+    position: absolute; inset: -5px; border-radius: 50%;
+    border: 2px solid rgba(47,214,176,0.25);
+    pointer-events: none;
+}
+.career-info { flex: 1; min-width: 0; }
+.career-name { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.2rem; }
+.career-tag { color: var(--muted); font-size: 0.9rem; }
+.career-badges { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+.career-badge {
+    padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.72rem;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    background: rgba(47,214,176,0.1); color: var(--muted); border: 1px solid var(--border);
+}
+.career-badge.accent { color: var(--accent); border-color: rgba(47,214,176,0.35); }
+
+.career-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 2rem;
+}
+.stat-card {
+    text-align: center; padding: 1.2rem 0.8rem;
+    background: linear-gradient(145deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border); border-radius: 14px;
+    transition: border-color 0.15s;
+}
+.stat-card:hover { border-color: var(--accent); }
+.stat-val { font-size: 1.4rem; font-weight: 800; color: var(--text); margin-bottom: 0.2rem; }
+.stat-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.career-section {
+    padding: 1.5rem; background: linear-gradient(145deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border); border-radius: 18px;
+}
+.career-section h3 { font-size: 1.1rem; margin-bottom: 0.8rem; }
+.career-section .muted { color: var(--muted); font-size: 0.9rem; }
+
 /* 404 page */
 .nf {
     flex: 1; display: flex; flex-direction: column;
@@ -564,4 +629,7 @@ footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.
     .lb-select { min-width: 100%; }
     .lb-pagination { gap: 0.5rem; }
     .lb-page-btn { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+    .career-header { flex-direction: column; text-align: center; gap: 1rem; }
+    .career-badges { justify-content: center; }
+    .career-stats { grid-template-columns: repeat(2, 1fr); }
 }
