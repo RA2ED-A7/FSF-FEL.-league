@@ -557,7 +557,7 @@
             }
             const sel = document.getElementById('adminPlayerSelect');
             try {
-                let { data, error } = await supabaseClient.from('Player').select('id, display_name').order('display_name');
+                let { data, error } = await supabaseClient.from('Player').select('id, display_name').eq('id', u.id);
                 if (error) { sel.innerHTML = '<option>Error loading</option>'; console.warn('[admin] query error:', error); return; }
                 let players = Array.isArray(data) ? data : (data ? [data] : []);
                 if (players.length === 0) {
