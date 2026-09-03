@@ -493,6 +493,9 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .career-info { flex: 1; min-width: 0; }
 .career-name { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.2rem; }
 .career-tag { color: var(--muted); font-size: 0.9rem; }
+.career-roblox { display: flex; align-items: center; gap: 0.4rem; margin-top: 0.4rem; font-size: 0.85rem; }
+.career-rblx-label { color: var(--muted); }
+.career-rblx-user { color: var(--accent-2); font-weight: 600; }
 .career-badges { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
 .career-badge {
     padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.72rem;

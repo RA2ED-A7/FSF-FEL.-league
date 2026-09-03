@@ -336,6 +336,10 @@
                 <div class="career-info">
                     <h1 class="career-name" id="careerName">Player Name</h1>
                     <span class="career-tag" id="careerTag">@username</span>
+                    <div class="career-roblox">
+                        <span class="career-rblx-label">Roblox:</span>
+                        <span class="career-rblx-user" id="careerRobloxUser">Not linked</span>
+                    </div>
                     <div class="career-badges">
                         <span class="career-badge">Season 1</span>
                         <span class="career-badge accent">Active</span>
@@ -348,11 +352,23 @@
                 <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">Assists</div></div>
                 <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">Wins</div></div>
                 <div class="stat-card"><div class="stat-val">—</div><div class="stat-lbl">Rank</div></div>
-                <div class="stat-card"><div class="stat-val">€0</div><div class="stat-lbl">Value</div></div>
+                <div class="stat-card"><div class="stat-val">€0</div><div class="stat-lbl">Market Value</div></div>
+            </div>
+            <div class="career-stats">
+                <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">Yellow Cards</div></div>
+                <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">Red Cards</div></div>
+                <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">Clean Sheets</div></div>
+                <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">Tackles</div></div>
+                <div class="stat-card"><div class="stat-val">0%</div><div class="stat-lbl">Pass Accuracy</div></div>
+                <div class="stat-card"><div class="stat-val">0</div><div class="stat-lbl">MVP Awards</div></div>
             </div>
             <div class="career-section">
-                <h3>Recent Activity</h3>
-                <p class="muted">No recent activity yet. Play your first match to get started!</p>
+                <h3>Transfer History</h3>
+                <p class="muted">No transfers yet.</p>
+            </div>
+            <div class="career-section">
+                <h3>Recent Matches</h3>
+                <p class="muted">No matches played yet. Join a team to get started!</p>
             </div>
         </div>
     </section>
@@ -450,15 +466,22 @@
                 const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || u.email || 'Player';
                 const username = m.user_name || m.preferred_username || m.prefered_username || m.custom_claims?.username || name.toLowerCase().replace(/\s+/g, '') || 'player';
                 const avatar = m.avatar_url || m.picture || '';
+                const robloxId = m.roblox_id || m.custom_claims?.roblox_id || '';
                 document.getElementById('careerName').textContent = name;
                 document.getElementById('careerTag').textContent = '@' + username;
                 const img = document.getElementById('careerAvatar');
-                if (avatar) {
+                if (robloxId) {
+                    img.src = 'https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + robloxId + '&size=150x150&format=Png&isCircular=false';
+                    img.alt = 'Roblox Avatar';
+                    img.style.display = '';
+                } else if (avatar) {
                     img.src = avatar;
+                    img.alt = 'Discord Avatar';
                     img.style.display = '';
                 } else {
                     img.style.display = 'none';
                 }
+                document.getElementById('careerRobloxUser').textContent = m.roblox_username || m.custom_claims?.roblox_username || 'Not linked';
             } else {
                 guest.style.display = '';
                 profile.style.display = 'none';
@@ -671,12 +694,8 @@
 
         renderFixture(1);
         watchAuth();
-        refreshAuth().then(() => {
-            // If this is the page we land on right after sign-in, show home.
-            const page = (location.hash.replace('#', '') || '').toLowerCase();
-            if (page === '') route();
-        });
         route();
+        refreshAuth().then(() => { route(); });
     </script>
 </body>
 </html>
