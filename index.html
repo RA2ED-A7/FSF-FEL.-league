@@ -495,8 +495,16 @@
             const u = supabaseClient.auth._currentUser;
             if (!u) return;
             try {
-                const { data, error } = await supabaseClient.from('Player').select('*').eq('id', u.id).single();
-                if (error || !data) return;
+                let { data, error } = await supabaseClient.from('Player').select('*').eq('id', u.id).single();
+                if (error || !data) {
+                    const nameBox2 = document.getElementById('userName');
+                    const fallbackName = nameBox2 ? nameBox2.textContent : '';
+                    if (fallbackName && fallbackName !== 'Username') {
+                        const r2 = await supabaseClient.from('Player').select('*').eq('display_name', fallbackName).single();
+                        if (r2.data) data = r2.data;
+                    }
+                }
+                if (!data) return;
                 const s = (v, d) => v != null ? v : d;
                 document.getElementById('statMatches').textContent = s(data.matches, 0);
                 document.getElementById('statGoals').textContent = s(data.goals, 0);
