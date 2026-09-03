@@ -523,7 +523,16 @@
         const ADMIN_USER_ID = 'dc542b03-1512-4d64-b537-141253adf553';
 
         async function loadAdminPanel() {
-            const u = signedIn ? (supabaseClient?.auth?._currentUser || null) : null;
+            if (!initSupabase()) return;
+            let u = supabaseClient?.auth?._currentUser || null;
+            if (!u) {
+                const { data } = await supabaseClient.auth.getSession();
+                if (data.session) {
+                    signedIn = true;
+                    u = data.session.user;
+                    renderUser(u);
+                }
+            }
             if (!u || u.id !== ADMIN_USER_ID) {
                 document.getElementById('adminPage').style.display = 'none';
                 location.hash = 'home';
@@ -688,6 +697,7 @@
                 signedIn = true;
                 renderUser(data.session.user);
                 renderCareer();
+                if (location.hash.replace('#', '').toLowerCase() === 'admin') loadAdminPanel();
             } else {
                 signedIn = false;
                 renderUser();
@@ -702,6 +712,7 @@
                     signedIn = true;
                     renderUser(session.user);
                     renderCareer();
+                    if (location.hash.replace('#', '').toLowerCase() === 'admin') loadAdminPanel();
                 } else if (event === 'SIGNED_OUT') {
                     signedIn = false;
                     renderUser();
