@@ -924,7 +924,13 @@
             });
             try {
                 for (const u of updates) {
-                    await supabaseClient.from('SiteContent').upsert({ key: u.key, value: u.value }, { onConflict: 'key' });
+                    const { error } = await supabaseClient.from('SiteContent').upsert({ key: u.key, value: u.value }, { onConflict: 'key' });
+                    if (error) {
+                        console.warn('[content] upsert error for key:', u.key, error);
+                        msg.textContent = 'Error: ' + error.message;
+                        msg.className = 'admin-msg err';
+                        return;
+                    }
                 }
                 msg.textContent = 'Saved! Reloading...';
                 msg.className = 'admin-msg ok';
