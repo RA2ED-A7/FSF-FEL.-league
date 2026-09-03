@@ -543,7 +543,10 @@
                 document.getElementById('statTeam').textContent = s(data.team, '—');
                 document.getElementById('statPosition').textContent = s(data.position, '—');
                 document.getElementById('statMVP').textContent = s(data.MVP_Awards, 0);
-                document.getElementById('statWinRate').textContent = s(data.win_rate, 0) + '%';
+                const wMatches = data.matches || 0;
+                const wWins = data.Wins || 0;
+                const wRate = data.win_rate != null ? data.win_rate : (wMatches > 0 ? Math.round(wWins / wMatches * 100) : 0);
+                document.getElementById('statWinRate').textContent = wRate + '%';
             } catch (e) {
                 console.warn('[career] Failed to load player stats:', e);
             }
@@ -743,7 +746,10 @@
                 document.getElementById('afLosses').value = data.Loses || 0;
                 document.getElementById('afValue').value = data["Market Value"] || 0;
                 document.getElementById('afMVP').value = data.MVP_Awards || 0;
-                document.getElementById('afWinRate').value = data.win_rate || 0;
+                const lWins = data.Wins || 0;
+                const lMatches = data.matches || 0;
+                const lWinRate = data.win_rate != null ? data.win_rate : (lMatches > 0 ? Math.round(lWins / lMatches * 100) : 0);
+                document.getElementById('afWinRate').value = lWinRate;
                 form.style.display = '';
                 form.dataset.playerId = id;
             } catch (e) {
@@ -759,8 +765,10 @@
             msg.textContent = 'Saving...';
             msg.className = 'admin-msg';
             try {
-                const winRateVal = parseInt(document.getElementById('afWinRate').value) || 0;
-                console.log('[admin] saving win_rate:', winRateVal, 'from input value:', document.getElementById('afWinRate').value);
+                const afW = parseInt(document.getElementById('afWins').value) || 0;
+                const afM = parseInt(document.getElementById('afMatches').value) || 0;
+                const winRateVal = afM > 0 ? Math.round(afW / afM * 100) : (parseInt(document.getElementById('afWinRate').value) || 0);
+                console.log('[admin] saving win_rate:', winRateVal, '(wins:', afW, 'matches:', afM, ')');
                 const { error } = await supabaseClient.from('Player').update({
                     display_name: document.getElementById('afDisplay').value,
                     team: document.getElementById('afTeam').value,
