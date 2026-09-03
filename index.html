@@ -467,12 +467,6 @@
             return m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || idData.global_name || idData.username || idData.full_name || m.email || u?.email || u?.identities?.[0]?.user_name || 'User';
         }
 
-        function getDiscordUserName(u) {
-            const m = u?.user_metadata || {};
-            const idData = u?.identities?.[0]?.identity_data || {};
-            return m.user_name || m.username || idData.username || idData.discord_username || idData.global_name || m.preferred_username || m.prefered_username || getDiscordName(u).toLowerCase().replace(/\s+/g, '') || 'player';
-        }
-
         function renderUser(userOverride) {
             const nameBox = document.getElementById('userName');
             const btn = document.getElementById('signinBtn');
@@ -492,29 +486,15 @@
         }
 
         async function renderCareer() {
-            const u = signedIn ? (supabaseClient?.auth?._currentUser || null) : null;
-            console.log('[career] user:', u);
-            console.log('[career] user_metadata:', u?.user_metadata);
-            console.log('[career] identities:', u?.identities);
-            const m = u ? (u.user_metadata || {}) : {};
-            const id = u?.identities?.[0] || {};
-            const idData = id.identity_data || {};
-            const discordId = id.provider === 'discord' ? (id.id || idData.sub || '') : '';
-            const name = getDiscordName(u);
-            const username = getDiscordUserName(u);
-            const avatarHash = idData.avatar;
-            const avatar = m.avatar_url || m.picture || idData.avatar_url || (avatarHash && discordId ? 'https://cdn.discordapp.com/avatars/' + discordId + '/' + avatarHash + (avatarHash.startsWith('a_') ? '.gif' : '.png') : '') || '';
+            const nameBox = document.getElementById('userName');
+            const name = (nameBox && nameBox.textContent !== 'Username') ? nameBox.textContent : 'User';
             document.getElementById('careerName').textContent = name;
-            document.getElementById('careerTag').textContent = '@' + username;
+            document.getElementById('careerTag').textContent = '@' + name.toLowerCase().replace(/\s+/g, '');
             const img = document.getElementById('careerAvatar');
-            if (avatar) {
-                img.src = avatar;
-                img.alt = 'Discord Avatar';
-                img.style.display = '';
-            } else {
-                img.style.display = 'none';
-            }
-            if (!u || !supabaseClient) return;
+            img.style.display = 'none';
+            if (!signedIn || !supabaseClient) return;
+            const u = supabaseClient.auth._currentUser;
+            if (!u) return;
             try {
                 const { data, error } = await supabaseClient.from('Player').select('*').eq('id', u.id).single();
                 if (error || !data) return;
