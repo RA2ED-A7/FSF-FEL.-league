@@ -400,7 +400,6 @@
                 <div class="admin-field"><label>Losses</label><input id="afLosses" type="number" min="0"></div>
                 <div class="admin-field"><label>Market Value</label><select id="afValue"><option value="0">€0</option><option value="5000000">€5,000,000</option><option value="10000000">€10,000,000</option><option value="15000000">€15,000,000</option><option value="20000000">€20,000,000</option><option value="30000000">€30,000,000</option><option value="40000000">€40,000,000</option><option value="50000000">€50,000,000</option><option value="60000000">€60,000,000</option><option value="70000000">€70,000,000</option><option value="80000000">€80,000,000</option><option value="90000000">€90,000,000</option><option value="100000000">€100,000,000</option></select></div>
                 <div class="admin-field"><label>MVP Awards</label><input id="afMVP" type="number" min="0"></div>
-                <div class="admin-field"><label>Win Rate %</label><input id="afWinRate" type="number" min="0" max="100"></div>
             </div>
             <div class="admin-actions">
                 <button class="admin-save-btn" onclick="saveAdminPlayer()">Save</button>
@@ -746,10 +745,6 @@
                 document.getElementById('afLosses').value = data.Loses || 0;
                 document.getElementById('afValue').value = data["Market Value"] || 0;
                 document.getElementById('afMVP').value = data.MVP_Awards || 0;
-                const lWins = data.Wins || 0;
-                const lMatches = data.matches || 0;
-                const lWinRate = data.win_rate != null ? data.win_rate : (lMatches > 0 ? Math.round(lWins / lMatches * 100) : 0);
-                document.getElementById('afWinRate').value = lWinRate;
                 form.style.display = '';
                 form.dataset.playerId = id;
             } catch (e) {
@@ -765,10 +760,6 @@
             msg.textContent = 'Saving...';
             msg.className = 'admin-msg';
             try {
-                const afW = parseInt(document.getElementById('afWins').value) || 0;
-                const afM = parseInt(document.getElementById('afMatches').value) || 0;
-                const winRateVal = afM > 0 ? Math.round(afW / afM * 100) : (parseInt(document.getElementById('afWinRate').value) || 0);
-                console.log('[admin] saving win_rate:', winRateVal, '(wins:', afW, 'matches:', afM, ')');
                 const { error } = await supabaseClient.from('Player').update({
                     display_name: document.getElementById('afDisplay').value,
                     team: document.getElementById('afTeam').value,
@@ -781,8 +772,7 @@
                     Wins: parseInt(document.getElementById('afWins').value) || 0,
                     Loses: parseInt(document.getElementById('afLosses').value) || 0,
                     "Market Value": parseInt(document.getElementById('afValue').value) || 0,
-                    MVP_Awards: parseInt(document.getElementById('afMVP').value) || 0,
-                    win_rate: winRateVal
+                    MVP_Awards: parseInt(document.getElementById('afMVP').value) || 0
                 }).eq('id', id);
                 if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
                 msg.textContent = 'Saved!';
