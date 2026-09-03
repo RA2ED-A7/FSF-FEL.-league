@@ -811,43 +811,43 @@
 
         // ===== Site Content Editor =====
         const DEFAULT_CONTENT = {
-            'site-title': 'Freestyle Elite League',
-            'site-subtitle': 'Season 1',
-            'footer-text': 'Freestyle Elite league — Season 1 · By A7M | .vortex700',
             'rankings-title': '★ Rankings ★',
             'rankings-subtitle': 'Season 1 · skill ladder by tier & position',
             'career-season-badge': 'Season 1',
-            'home-welcome': 'Welcome to the Freestyle Elite League',
-            'home-desc': 'Join the ultimate 5v5 competitive league. Sign up with Discord and start your career.',
             'transfer-text': 'No transfers yet.',
             'matches-text': 'No matches played yet. Join a team to get started!'
         };
 
         async function loadSiteContent() {
             initSupabase();
-            if (!supabaseClient) return;
+            const editor = document.getElementById('siteContentEditor');
+            if (!supabaseClient) { if (editor) editor.innerHTML = '<p class="muted">Supabase not configured.</p>'; return; }
             try {
                 const { data, error } = await supabaseClient.from('SiteContent').select('*');
-                if (error || !data) return;
+                if (error || !data) {
+                    console.warn('[content] load error (table may not exist):', error);
+                    if (editor) editor.innerHTML = '';
+                    loadContentEditor(Object.keys(DEFAULT_CONTENT).map(k => ({ key: k, value: DEFAULT_CONTENT[k] })));
+                    return;
+                }
                 const map = {};
                 data.forEach(row => { map[row.key] = row.value; });
                 applySiteContent(map);
-                loadContentEditor(data);
-            } catch (e) { console.warn('[content] load error:', e); }
+                loadContentEditor(data.length ? data : Object.keys(DEFAULT_CONTENT).map(k => ({ key: k, value: DEFAULT_CONTENT[k] })));
+            } catch (e) {
+                console.warn('[content] load error:', e);
+                if (editor) editor.innerHTML = '';
+                loadContentEditor(Object.keys(DEFAULT_CONTENT).map(k => ({ key: k, value: DEFAULT_CONTENT[k] })));
+            }
         }
 
         function applySiteContent(map) {
             const c = Object.assign({}, DEFAULT_CONTENT, map);
             const safeSet = (id, text) => { const el = document.getElementById(id); if (el && text) el.textContent = text; };
             const safeHTML = (id, html) => { const el = document.getElementById(id); if (el && html) el.innerHTML = html; };
-            safeSet('site-title', c['site-title']);
-            safeSet('site-subtitle', c['site-subtitle']);
-            safeSet('footerText', c['footer-text']);
             safeSet('rankingsTitle', c['rankings-title']);
             safeSet('rankingsSubtitle', c['rankings-subtitle']);
             safeSet('careerSeasonBadge', c['career-season-badge']);
-            safeSet('homeWelcome', c['home-welcome']);
-            safeSet('homeDesc', c['home-desc']);
             safeHTML('transferText', c['transfer-text']);
             safeHTML('matchesText', c['matches-text']);
         }
