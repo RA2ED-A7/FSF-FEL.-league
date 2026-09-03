@@ -12,14 +12,35 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
     font-family: system-ui, sans-serif;
-    background: radial-gradient(1200px 600px at 80% -10%, #12302b 0%, transparent 60%),
-                radial-gradient(1000px 600px at -10% 110%, #0f2e24 0%, transparent 55%),
-                var(--bg);
+    background: var(--bg);
     color: var(--text);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
 }
+body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+        radial-gradient(ellipse 900px 500px at 85% -5%, rgba(47,214,176,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 800px 500px at -5% 105%, rgba(20,107,90,0.15) 0%, transparent 55%),
+        radial-gradient(ellipse 600px 400px at 50% 50%, rgba(14,36,33,0.6) 0%, transparent 70%),
+        radial-gradient(ellipse 400px 300px at 20% 30%, rgba(47,214,176,0.04) 0%, transparent 50%),
+        radial-gradient(ellipse 500px 350px at 80% 70%, rgba(47,214,176,0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(rgba(47,214,176,0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+}
+body > * { position: relative; z-index: 1; }
 a { color: var(--accent-2); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
@@ -36,6 +57,7 @@ header {
     background: rgba(7, 13, 15, 0.85);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 0 rgba(47,214,176,0.15), 0 4px 24px rgba(0,0,0,0.3);
 }
 .brand { font-weight: 800; font-size: 1.1rem; letter-spacing: 0.5px; white-space: nowrap; }
 .brand .season { color: var(--accent); }
@@ -521,7 +543,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .sign-msg.ok { color: var(--good); }
 .sign-msg.err { color: #ff7b8a; }
 
-footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); }
+footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); box-shadow: 0 -1px 0 rgba(47,214,176,0.1); }
 
 @media (max-width: 720px) {
     header { flex-wrap: wrap; padding: 0.9rem 1rem; }
