@@ -653,15 +653,14 @@
             } catch (e) { return false; }
         }
 
-        function renderUser() {
+        function renderUser(userOverride) {
             const nameBox = document.getElementById('userName');
             const btn = document.getElementById('signinBtn');
-            if (signedIn && supabaseClient) {
-                const user = supabaseClient.auth.user();
-                const meta = user?.user_metadata || {};
-                console.log('[auth] user:', user);
-                console.log('[auth] user_metadata:', meta);
-                const name = meta.full_name || meta.user_name || meta.name || meta.prefered_username || meta.custom_claims?.username || meta.email || user?.email || user?.identities?.[0]?.user_name || 'User';
+            const u = userOverride || supabaseClient?.auth?._currentUser || null;
+            if (signedIn && u) {
+                const m = u.user_metadata || {};
+                console.log('[auth] user_metadata:', m);
+                const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || m.email || u.email || u.identities?.[0]?.user_name || 'User';
                 nameBox.textContent = name;
                 btn.textContent = 'Sign Out';
             } else {
@@ -744,7 +743,7 @@
             }
             if (data.session) {
                 signedIn = true;
-                renderUser();
+                renderUser(data.session.user);
             } else {
                 signedIn = false;
                 renderUser();
@@ -757,7 +756,7 @@
             supabaseClient.auth.onAuthStateChange((event, session) => {
                 if (event === 'SIGNED_IN' && session) {
                     signedIn = true;
-                    renderUser();
+                    renderUser(session.user);
                 } else if (event === 'SIGNED_OUT') {
                     signedIn = false;
                     renderUser();
