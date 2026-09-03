@@ -797,10 +797,10 @@
             const prevBtn = document.getElementById('lbPrev');
             const nextBtn = document.getElementById('lbNext');
             const pageInfo = document.getElementById('lbPageInfo');
-            const allRows = Array.from(document.querySelectorAll('#rankLadder .rp'));
             const allRungs = Array.from(document.querySelectorAll('#rankLadder .rung'));
 
             function applyFilters() {
+                const allRows = Array.from(document.querySelectorAll('#rankLadder .rp'));
                 const q = searchEl.value.toLowerCase().trim();
                 const tier = tierEl.value;
                 const pos = posEl.value;
