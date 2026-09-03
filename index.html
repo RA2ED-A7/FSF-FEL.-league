@@ -71,9 +71,9 @@
             <span class="corner" id="fixtureCorner">1. FEL</span>
             <div class="label">Next Match</div>
             <div class="match-row">
-                <div class="team"><span class="crest">N</span>None</div>
-                <div class="score">0 - 0</div>
-                <div class="team">None<span class="crest">N</span></div>
+                <div class="team"><span class="crest">N</span><span id="fxTeam1">None</span></div>
+                <div class="score" id="fxScore">0 - 0</div>
+                <div class="team"><span id="fxTeam2">None</span><span class="crest">N</span></div>
             </div>
         </div>
 
@@ -87,17 +87,17 @@
         <div id="highlights" class="panel active">
             <div class="section-title">Season Highlights</div>
             <div class="hl-grid">
-                <div class="hl-card"><div class="k">Biggest Win</div><div class="v">--</div><div class="d">Game Week 1</div></div>
-                <div class="hl-card"><div class="k">Top Scorer</div><div class="v">--</div><div class="d">0 goals</div></div>
-                <div class="hl-card"><div class="k">Most Assists</div><div class="v">--</div><div class="d">0 assists</div></div>
+                <div class="hl-card"><div class="k">Biggest Win</div><div class="v" id="hlBigWin">--</div><div class="d" id="hlBigWinDesc">Game Week 1</div></div>
+                <div class="hl-card"><div class="k">Top Scorer</div><div class="v" id="hlTopScorer">--</div><div class="d" id="hlTopScorerDesc">0 goals</div></div>
+                <div class="hl-card"><div class="k">Most Assists</div><div class="v" id="hlMostAssists">--</div><div class="d" id="hlMostAssistsDesc">0 assists</div></div>
             </div>
 
             <div class="records">
                 <div class="section-title">League Records</div>
                 <div class="records-grid">
-                    <div class="hl-card"><div class="k">First Goal</div><div class="v">--</div><div class="d">TBD</div></div>
-                    <div class="hl-card"><div class="k">First Assist</div><div class="v">--</div><div class="d">TBD</div></div>
-                    <div class="hl-card"><div class="k">First Save</div><div class="v">--</div><div class="d">TBD</div></div>
+                    <div class="hl-card"><div class="k">First Goal</div><div class="v" id="recFirstGoal">--</div><div class="d" id="recFirstGoalDesc">TBD</div></div>
+                    <div class="hl-card"><div class="k">First Assist</div><div class="v" id="recFirstAssist">--</div><div class="d" id="recFirstAssistDesc">TBD</div></div>
+                    <div class="hl-card"><div class="k">First Save</div><div class="v" id="recFirstSave">--</div><div class="d" id="recFirstSaveDesc">TBD</div></div>
                 </div>
             </div>
         </div>
@@ -109,24 +109,24 @@
 
         <div class="gw">
             <div class="section-title">Game Week 1</div>
-            <div class="gw-card"><span class="felm">1. FEL</span><span class="teams">Team Name VS Team Name</span><span class="res tbd">TBD</span></div>
-            <div class="gw-card"><span class="felm">2. FEL</span><span class="teams">Team Name VS Team Name</span><span class="res tbd">TBD</span></div>
-            <div class="gw-card"><span class="felm">3. FEL</span><span class="teams">Team Name VS Team Name</span><span class="res tbd">TBD</span></div>
+            <div class="gw-card"><span class="felm">1. FEL</span><span class="teams" id="gw1Teams">Team Name VS Team Name</span><span class="res tbd" id="gw1Result">TBD</span></div>
+            <div class="gw-card"><span class="felm">2. FEL</span><span class="teams" id="gw2Teams">Team Name VS Team Name</span><span class="res tbd" id="gw2Result">TBD</span></div>
+            <div class="gw-card"><span class="felm">3. FEL</span><span class="teams" id="gw3Teams">Team Name VS Team Name</span><span class="res tbd" id="gw3Result">TBD</span></div>
         </div>
 
         <div class="gw">
             <div class="section-title">Recent Results</div>
-            <div class="gw-card"><span class="felm">1. FEL</span><span class="teams">Team Name <span style="color:var(--text)">2 - 1</span> Team Name</span><span class="res tbd">Date</span></div>
-            <div class="gw-card"><span class="felm">2. FEL</span><span class="teams">Team Name <span style="color:var(--text)">0 - 0</span> Team Name</span><span class="res tbd">Date</span></div>
-            <div class="gw-card"><span class="felm">3. FEL</span><span class="teams">Team Name <span style="color:var(--text)">3 - 2</span> Team Name</span><span class="res tbd">Date</span></div>
+            <div class="gw-card"><span class="felm">1. FEL</span><span class="teams"><span id="rr1TeamA">Team Name</span> <span style="color:var(--text)" id="rr1Score">2 - 1</span> <span id="rr1TeamB">Team Name</span></span><span class="res tbd" id="rr1Date">Date</span></div>
+            <div class="gw-card"><span class="felm">2. FEL</span><span class="teams"><span id="rr2TeamA">Team Name</span> <span style="color:var(--text)" id="rr2Score">0 - 0</span> <span id="rr2TeamB">Team Name</span></span><span class="res tbd" id="rr2Date">Date</span></div>
+            <div class="gw-card"><span class="felm">3. FEL</span><span class="teams"><span id="rr3TeamA">Team Name</span> <span style="color:var(--text)" id="rr3Score">3 - 2</span> <span id="rr3TeamB">Team Name</span></span><span class="res tbd" id="rr3Date">Date</span></div>
         </div>
 
         <div class="standings">
             <div class="section-title">Top 3 Teams · By Points (PTs)</div>
             <div class="podium">
-                <div class="p-card p-1"><span class="rank">1st</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
-                <div class="p-card p-2"><span class="rank">2nd</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
-                <div class="p-card p-3"><span class="rank">3rd</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
+                <div class="p-card p-1"><span class="rank">1st</span><span class="t-name" id="pod1Team">Team Name</span><span class="pts" id="pod1Pts">--</span></div>
+                <div class="p-card p-2"><span class="rank">2nd</span><span class="t-name" id="pod2Team">Team Name</span><span class="pts" id="pod2Pts">--</span></div>
+                <div class="p-card p-3"><span class="rank">3rd</span><span class="t-name" id="pod3Team">Team Name</span><span class="pts" id="pod3Pts">--</span></div>
             </div>
             <div class="rest">
                 <div class="r-card"><span class="r-rank">4</span><span class="t-name">Team Name</span><span class="pts">--</span></div>
@@ -811,9 +811,22 @@
 
         // ===== Site Content Editor =====
         const DEFAULT_CONTENT = {
-            'rankings-title': '★ Rankings ★',
-            'rankings-subtitle': 'Season 1 · skill ladder by tier & position',
-            'career-season-badge': 'Season 1',
+            'fx-team1': 'None', 'fx-score': '0 - 0', 'fx-team2': 'None',
+            'hl-bigwin': '--', 'hl-bigwin-desc': 'Game Week 1',
+            'hl-scorer': '--', 'hl-scorer-desc': '0 goals',
+            'hl-assists': '--', 'hl-assists-desc': '0 assists',
+            'rec-goal': '--', 'rec-goal-desc': 'TBD',
+            'rec-assist': '--', 'rec-assist-desc': 'TBD',
+            'rec-save': '--', 'rec-save-desc': 'TBD',
+            'gw1-teams': 'Team Name VS Team Name', 'gw1-result': 'TBD',
+            'gw2-teams': 'Team Name VS Team Name', 'gw2-result': 'TBD',
+            'gw3-teams': 'Team Name VS Team Name', 'gw3-result': 'TBD',
+            'rr1-teams': 'Team Name', 'rr1-score': '2 - 1', 'rr1-teams2': 'Team Name', 'rr1-date': 'Date',
+            'rr2-teams': 'Team Name', 'rr2-score': '0 - 0', 'rr2-teams2': 'Team Name', 'rr2-date': 'Date',
+            'rr3-teams': 'Team Name', 'rr3-score': '3 - 2', 'rr3-teams2': 'Team Name', 'rr3-date': 'Date',
+            'pod1-team': 'Team Name', 'pod1-pts': '--',
+            'pod2-team': 'Team Name', 'pod2-pts': '--',
+            'pod3-team': 'Team Name', 'pod3-pts': '--',
             'transfer-text': 'No transfers yet.',
             'matches-text': 'No matches played yet. Join a team to get started!'
         };
@@ -843,13 +856,25 @@
 
         function applySiteContent(map) {
             const c = Object.assign({}, DEFAULT_CONTENT, map);
-            const safeSet = (id, text) => { const el = document.getElementById(id); if (el && text) el.textContent = text; };
-            const safeHTML = (id, html) => { const el = document.getElementById(id); if (el && html) el.innerHTML = html; };
-            safeSet('rankingsTitle', c['rankings-title']);
-            safeSet('rankingsSubtitle', c['rankings-subtitle']);
-            safeSet('careerSeasonBadge', c['career-season-badge']);
-            safeHTML('transferText', c['transfer-text']);
-            safeHTML('matchesText', c['matches-text']);
+            const s = (id, t) => { const el = document.getElementById(id); if (el && t !== undefined) el.textContent = t; };
+            s('fxTeam1', c['fx-team1']); s('fxScore', c['fx-score']); s('fxTeam2', c['fx-team2']);
+            s('hlBigWin', c['hl-bigwin']); s('hlBigWinDesc', c['hl-bigwin-desc']);
+            s('hlTopScorer', c['hl-scorer']); s('hlTopScorerDesc', c['hl-scorer-desc']);
+            s('hlMostAssists', c['hl-assists']); s('hlMostAssistsDesc', c['hl-assists-desc']);
+            s('recFirstGoal', c['rec-goal']); s('recFirstGoalDesc', c['rec-goal-desc']);
+            s('recFirstAssist', c['rec-assist']); s('recFirstAssistDesc', c['rec-assist-desc']);
+            s('recFirstSave', c['rec-save']); s('recFirstSaveDesc', c['rec-save-desc']);
+            s('gw1Teams', c['gw1-teams']); s('gw1Result', c['gw1-result']);
+            s('gw2Teams', c['gw2-teams']); s('gw2Result', c['gw2-result']);
+            s('gw3Teams', c['gw3-teams']); s('gw3Result', c['gw3-result']);
+            s('rr1TeamA', c['rr1-teams']); s('rr1Score', c['rr1-score']); s('rr1TeamB', c['rr1-teams2']); s('rr1Date', c['rr1-date']);
+            s('rr2TeamA', c['rr2-teams']); s('rr2Score', c['rr2-score']); s('rr2TeamB', c['rr2-teams2']); s('rr2Date', c['rr2-date']);
+            s('rr3TeamA', c['rr3-teams']); s('rr3Score', c['rr3-score']); s('rr3TeamB', c['rr3-teams2']); s('rr3Date', c['rr3-date']);
+            s('pod1Team', c['pod1-team']); s('pod1Pts', c['pod1-pts']);
+            s('pod2Team', c['pod2-team']); s('pod2Pts', c['pod2-pts']);
+            s('pod3Team', c['pod3-team']); s('pod3Pts', c['pod3-pts']);
+            const el5 = document.getElementById('transferText'); if (el5) el5.innerHTML = c['transfer-text'];
+            const el6 = document.getElementById('matchesText'); if (el6) el6.innerHTML = c['matches-text'];
         }
 
         function loadContentEditor(data) {
