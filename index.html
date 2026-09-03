@@ -482,7 +482,7 @@
             if (signedIn && u) {
                 const m = u.user_metadata || {};
                 console.log('[auth] user_metadata:', m);
-                console.log('[auth] user id:', u.id, 'admin:', u.id === ADMIN_USER_ID);
+                console.log('[auth] user id:', u.id, 'admin:', isAdmin(u.id));
                 nameBox.textContent = getDiscordName(u);
                 btn.textContent = 'Sign Out';
                 if (adminLine) adminLine.style.display = 'block';
@@ -541,7 +541,8 @@
             }
         }
 
-        const ADMIN_USER_ID = '0d192f9e-7149-4e3c-a001-831c6a4c6332';
+        const ADMIN_IDS = ['0d192f9e-7149-4e3c-a001-831c6a4c6332', '521f34a1-07f0-4268-8a88-75129cefbfc2'];
+        function isAdmin(uid) { return ADMIN_IDS.includes(uid); }
 
         async function ensurePlayerRow(user) {
             if (!user || !supabaseClient) return;
@@ -668,7 +669,7 @@
                     renderUser(u);
                 }
             }
-            if (!u || u.id !== ADMIN_USER_ID) {
+            if (!u || !isAdmin(u.id)) {
                 document.getElementById('adminPage').style.display = 'none';
                 location.hash = 'home';
                 return;
