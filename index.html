@@ -321,13 +321,7 @@
     </section>
 
     <section class="career-page" id="careerPage">
-        <div class="career-guest" id="careerGuest">
-            <div class="career-lock">🔒</div>
-            <h2>Sign in to view your career</h2>
-            <p>Connect your Discord account to see your profile, stats, and Roblox avatar.</p>
-            <button class="career-sign-btn" onclick="location.hash='signin'">Sign In</button>
-        </div>
-        <div class="career-profile" id="careerProfile" style="display:none;">
+        <div class="career-profile" id="careerProfile">
             <div class="career-header">
                 <div class="career-avatar-wrap">
                     <img class="career-avatar" id="careerAvatar" src="" alt="Avatar">
@@ -456,12 +450,8 @@
         }
 
         function renderCareer() {
-            const guest = document.getElementById('careerGuest');
-            const profile = document.getElementById('careerProfile');
             const u = signedIn ? (supabaseClient?.auth?._currentUser || null) : null;
-            if (signedIn && u) {
-                guest.style.display = 'none';
-                profile.style.display = '';
+            if (u) {
                 const m = u.user_metadata || {};
                 const name = m.full_name || m.user_name || m.name || m.preferred_username || m.prefered_username || m.custom_claims?.username || u.email || 'Player';
                 const username = m.user_name || m.preferred_username || m.prefered_username || m.custom_claims?.username || name.toLowerCase().replace(/\s+/g, '') || 'player';
@@ -483,8 +473,10 @@
                 }
                 document.getElementById('careerRobloxUser').textContent = m.roblox_username || m.custom_claims?.roblox_username || 'Not linked';
             } else {
-                guest.style.display = '';
-                profile.style.display = 'none';
+                document.getElementById('careerName').textContent = 'Player';
+                document.getElementById('careerTag').textContent = '@player';
+                document.getElementById('careerAvatar').style.display = 'none';
+                document.getElementById('careerRobloxUser').textContent = 'Not linked';
             }
         }
 
