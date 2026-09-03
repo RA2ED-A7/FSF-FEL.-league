@@ -584,6 +584,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .cl-timeline {
     display: flex; gap: 1.5rem; overflow-x: auto;
     padding-bottom: 1rem; scroll-snap-type: x mandatory;
+    margin-left: 1.5rem;
 }
 .cl-timeline::-webkit-scrollbar { height: 6px; }
 .cl-timeline::-webkit-scrollbar-track { background: var(--surface-2); border-radius: 3px; }
