@@ -923,6 +923,7 @@
             const tabs = { overview: 0, records: 1, transfers: 2 };
             document.querySelectorAll('.td-tab')[tabs[tab]].classList.add('active');
             document.getElementById('td' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+            sessionStorage.setItem('teamTab', tab);
         }
 
         async function loadTeamDetail() {
@@ -933,6 +934,8 @@
             if (!nameMatch) return;
             const teamName = decodeURIComponent(nameMatch[1]);
             document.getElementById('tdTeamName').textContent = teamName;
+            const savedTeamTab = sessionStorage.getItem('teamTab') || 'overview';
+            switchTeamTab(savedTeamTab);
             try {
                 const playerRes = await supabaseClient.from('Player').select('*').eq('team', teamName);
                 const players = playerRes.data;
@@ -1185,6 +1188,8 @@
                 sel.innerHTML = '<option>Error</option>';
             }
             loadCareerPlayers();
+            const savedAdminTab = sessionStorage.getItem('adminTab');
+            if (savedAdminTab) switchContentTab(savedAdminTab);
         }
 
         async function loadAdminPlayer(id) {
@@ -1374,6 +1379,7 @@
             const tabMap = { home: 0, career: 1, teams: 2 };
             document.querySelectorAll('.admin-tab')[tabMap[tab]].classList.add('active');
             document.getElementById('content' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+            sessionStorage.setItem('adminTab', tab);
         }
 
         async function loadCareerPlayers() {
