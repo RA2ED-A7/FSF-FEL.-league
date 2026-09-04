@@ -501,6 +501,11 @@
                     <div class="career-avatar-fallback" id="careerAvatarFallback" style="display:none;"></div>
                     <div class="career-avatar-ring"></div>
                 </div>
+                <div style="margin-top:0.5rem;display:flex;gap:0.5rem;align-items:center;">
+                    <input id="robloxUsernameInput" placeholder="Roblox username" style="flex:1;padding:0.4rem 0.6rem;border-radius:6px;border:1px solid var(--line);background:rgba(0,0,0,0.3);color:#fff;font-size:0.82rem;">
+                    <button onclick="saveRobloxUsername()" style="padding:0.4rem 0.8rem;border-radius:6px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:0.82rem;">Save</button>
+                </div>
+                <div id="robloxUsernameMsg" style="font-size:0.75rem;margin-top:0.25rem;color:var(--muted);"></div>
                 <div class="career-info">
                     <h1 class="career-name" id="careerName">Player Name</h1>
                     <div class="career-badges">
@@ -2160,19 +2165,6 @@
         // ===== Roblox Avatar =====
         const CORS_PROXY = 'https://api.codetabs.com/v1/proxy?quest=';
 
-        async function getRobloxUserId(discordId) {
-            try {
-                const res = await fetch('https://api.bloxlink.net/v2/users/' + discordId);
-                if (!res.ok) return null;
-                const data = await res.json();
-                console.log('[avatar] Bloxlink response:', data);
-                if (data.status === 'ok' && data.primaryAccount) {
-                    return String(data.primaryAccount);
-                }
-            } catch (e) { console.log('[avatar] Bloxlink failed:', e); }
-            return null;
-        }
-
         async function getRobloxUserIdFromUsername(username) {
             try {
                 const target = 'https://users.roblox.com/v1/usernames/users';
@@ -2212,7 +2204,7 @@
 
         async function loadRobloxAvatar(discordId, displayName, imgEl, fallbackEl) {
             let robloxUserId = null;
-            // Check cache first (use maybeSingle to avoid 406 on empty)
+            // Check cache first
             try {
                 if (initSupabase() && supabaseClient) {
                     const { data: sc } = await supabaseClient.from('SiteContent').select('value').eq('key', 'roblox-' + discordId).maybeSingle();
@@ -2223,20 +2215,7 @@
                 }
             } catch (e) { console.log('[avatar] cache read error:', e); }
 
-            // Try Bloxlink if no cache
-            if (!robloxUserId) {
-                robloxUserId = await getRobloxUserId(discordId);
-                if (robloxUserId) {
-                    console.log('[avatar] Bloxlink userId:', robloxUserId);
-                    try {
-                        if (initSupabase() && supabaseClient) {
-                            await supabaseClient.from('SiteContent').upsert({ key: 'roblox-' + discordId, value: robloxUserId }, { onConflict: 'key' });
-                        }
-                    } catch (e) {}
-                }
-            }
-
-            // If Bloxlink failed, try looking up by Discord display name as Roblox username
+            // If no cached ID, try Discord display name as Roblox username
             if (!robloxUserId && displayName && displayName !== 'User') {
                 console.log('[avatar] trying display name as Roblox username:', displayName);
                 robloxUserId = await getRobloxUserIdFromUsername(displayName);
@@ -2256,6 +2235,25 @@
             }
 
             await fetchRobloxAvatar(robloxUserId, imgEl, fallbackEl);
+        }
+
+        async function saveRobloxUsername() {
+            const input = document.getElementById('robloxUsernameInput');
+            const msg = document.getElementById('robloxUsernameMsg');
+            const username = input.value.trim();
+            if (!username) { msg.textContent = 'Enter a username'; msg.style.color = '#e74c3c'; return; }
+            msg.textContent = 'Looking up...'; msg.style.color = 'var(--muted)';
+            const userId = await getRobloxUserIdFromUsername(username);
+            if (!userId) { msg.textContent = 'User not found'; msg.style.color = '#e74c3c'; return; }
+            try {
+                if (!initSupabase() || !supabaseClient) return;
+                const { data: sess } = await supabaseClient.auth.getSession();
+                if (!sess.session) return;
+                const discordId = sess.session.user.id;
+                await supabaseClient.from('SiteContent').upsert({ key: 'roblox-' + discordId, value: userId }, { onConflict: 'key' });
+                msg.textContent = 'Saved! Refreshing...'; msg.style.color = '#4caf50';
+                setTimeout(() => location.reload(), 1000);
+            } catch (e) { msg.textContent = 'Error: ' + e.message; msg.style.color = '#e74c3c'; }
         }
 
         // ===== Bug Report =====
