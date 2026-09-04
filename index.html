@@ -365,6 +365,7 @@
         </div>
         <div class="career-stats">
             <div class="stat-card"><div class="stat-val" id="pStatSaves">0</div><div class="stat-lbl">Saves</div></div>
+            <div class="stat-card"><div class="stat-val" id="pStatApps">0</div><div class="stat-lbl">Appearances</div></div>
             <div class="stat-card"><div class="stat-val" id="pStatMVP">0</div><div class="stat-lbl">MVP Awards</div></div>
         </div>
         <div class="career-boxes">
@@ -1052,7 +1053,7 @@
 
         function renderTrajectory(map, teamName) {
             const box = document.getElementById('tdTrajectory');
-            const raw = map['team-' + teamName + '-trajectory'] || '';
+            const raw = map['team-' + teamName + '-trajectory'] || '0,0';
             const points = raw ? raw.split(',').map(Number).filter(n => !isNaN(n)) : [];
             if (points.length < 2) { box.innerHTML = '<p class="muted">No trajectory data. Add comma-separated points in admin (e.g. "0,3,6,9,12").</p>'; return; }
             const canvas = document.createElement('canvas');
@@ -1140,6 +1141,7 @@
                 document.getElementById('pStatValue').textContent = '€' + (s(p["Market Value"], 0)).toLocaleString();
                 document.getElementById('pStatSaves').textContent = s(p.saves, 0);
                 document.getElementById('pStatMVP').textContent = s(p.MVP_Awards, 0);
+                document.getElementById('pStatApps').textContent = s(p.appearances, 0);
                 document.getElementById('profileAvatar').style.display = 'none';
 
                 try {
@@ -1198,7 +1200,7 @@
                         id: u.id, display_name: displayName,
                         team: '', position: 'None', rank: 'Unranked',
                         goals: 0, assists: 0, saves: 0, matches: 0,
-                        Wins: 0, Loses: 0, "Market Value": 5000000, "MVP_Awards": 0
+                    Wins: 0, Loses: 0, "Market Value": 5000000, "MVP_Awards": 0, appearances: 0
                     });
                     if (insertErr) { sel.innerHTML = '<option>Error creating player</option>'; console.warn('[admin] insert error:', insertErr); return; }
                     players = [{ id: u.id, display_name: displayName }];
@@ -1232,6 +1234,7 @@
                 document.getElementById('afLosses').value = data.Loses || 0;
                 document.getElementById('afValue').value = data["Market Value"] || 0;
                 document.getElementById('afMVP').value = data.MVP_Awards || 0;
+                document.getElementById('afApps').value = data.appearances || 0;
                 form.style.display = '';
                 form.dataset.playerId = id;
             } catch (e) {
@@ -1259,7 +1262,8 @@
                     Wins: parseInt(document.getElementById('afWins').value) || 0,
                     Loses: parseInt(document.getElementById('afLosses').value) || 0,
                     "Market Value": parseInt(document.getElementById('afValue').value) || 0,
-                    MVP_Awards: parseInt(document.getElementById('afMVP').value) || 0
+                    MVP_Awards: parseInt(document.getElementById('afMVP').value) || 0,
+                    appearances: parseInt(document.getElementById('afApps').value) || 0
                 }).eq('id', id);
                 if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
                 msg.textContent = 'Saved!';
