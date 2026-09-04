@@ -2167,16 +2167,13 @@
 
         async function getRobloxUserIdFromUsername(username) {
             try {
-                const target = 'https://users.roblox.com/v1/usernames/users';
-                const res = await fetch(CORS_PROXY + encodeURIComponent(target), {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ usernames: [username], excludeBannedUsers: false })
-                });
+                const target = 'https://api.roblox.com/users/get-by-username?username=' + encodeURIComponent(username);
+                const res = await fetch(CORS_PROXY + encodeURIComponent(target));
                 if (!res.ok) { console.log('[avatar] username lookup HTTP', res.status); return null; }
                 const data = await res.json();
-                if (data.data && data.data.length > 0) {
-                    return String(data.data[0].id);
+                console.log('[avatar] legacy lookup response:', data);
+                if (data && data.Id) {
+                    return String(data.Id);
                 }
             } catch (e) { console.log('[avatar] username lookup failed:', e); }
             return null;
