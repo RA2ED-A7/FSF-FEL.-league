@@ -890,13 +890,14 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .td-rc-val { font-size: 1.1rem; font-weight: 700; color: var(--text); }
 .td-rc-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; }
 
-.td-transfers-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.td-transfers-list { display: flex; flex-direction: column; gap: 0.5rem; min-width: 620px; }
 .td-transfer-row {
     display: flex; align-items: center; gap: 0.8rem;
     background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
     padding: 0.7rem 1rem;
 }
 .td-transfer-arrow { font-size: 1.1rem; font-weight: 700; }
+.td-transfer-player { font-weight: 700; font-size: 0.9rem; color: var(--text); }
 .td-transfer-team { font-weight: 600; font-size: 0.9rem; flex: 1; }
 .td-transfer-type {
     font-size: 0.75rem; font-weight: 600; padding: 2px 8px; border-radius: 4px;

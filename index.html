@@ -639,7 +639,7 @@
                     Transfer History
                     <div>
                         <button onclick="openRemoveTeamTransferModal()" style="background: #e74c3c; color: #fff; border: none; border-radius: 4px; padding: 4px 10px; margin-right: 5px; cursor: pointer; font-weight: bold; font-size: 0.8rem;">- Remove</button>
-                        <button onclick="document.getElementById('teamTransferModal').style.display='block'" style="background: var(--accent); color: #fff; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem;">+ Add Transfer</button>
+                        <button onclick="loadTeamTransferPlayers(); document.getElementById('teamTransferModal').style.display='block'" style="background: var(--accent); color: #fff; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem;">+ Add Transfer</button>
                     </div>
                 </h4>
                 <div class="admin-content-editor" id="teamTransfersEditor"></div>
@@ -674,6 +674,7 @@
 
         <div id="teamTransferModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2a2d35; padding: 1.5rem; border-radius: 8px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); width: 320px; border: 1px solid #3d4250;">
             <h3 style="margin-top:0; color: #fff; font-size: 1.1rem; margin-bottom: 1rem;">Add Team Transfer</h3>
+            <div class="admin-field"><label>Player</label><select id="ttPlayer" class="admin-select" style="width:100%;"><option value="">Loading players...</option></select></div>
             <div class="admin-field"><label>Direction</label><select id="ttDirection" class="admin-select" style="width:100%;"><option value="From">From</option><option value="To">To</option></select></div>
             <div class="admin-field"><label>Team</label><select id="ttTeam" class="admin-select" style="width:100%;"><option value="Free Agent">Free Agent</option><option value="Manchester City">Manchester City</option><option value="FC Barcelona">FC Barcelona</option><option value="Bayern Munich">Bayern Munich</option><option value="Paris Saint Germain">Paris Saint Germain</option><option value="Real Madrid">Real Madrid</option></select></div>
             <div class="admin-field"><label>Type</label><select id="ttType" class="admin-select" style="width:100%;"><option value="Signing">Signing</option><option value="Trade">Trade</option><option value="Loan">Loan</option><option value="Release">Release</option><option value="Free Agency">Free Agency</option></select></div>
@@ -1069,7 +1070,7 @@
                     tlDiv.innerHTML = '<div class="td-transfers-list">' + tTransfers.map(t => {
                         const arrow = t.direction === 'From' ? '←' : '→';
                         const color = typeColors[t.type] || '#888';
-                        return '<div class="td-transfer-row"><span class="td-transfer-arrow" style="color:' + color + '">' + arrow + '</span><span class="td-transfer-team">' + t.team + '</span><span class="td-transfer-type" style="background:' + color + '22;color:' + color + ';border:1px solid ' + color + '44">' + t.type + '</span>' + (t.date ? '<span class="td-transfer-date">' + t.date + '</span>' : '') + '</div>';
+                        return '<div class="td-transfer-row"><span class="td-transfer-arrow" style="color:' + color + '">' + arrow + '</span><span class="td-transfer-player">' + (t.player || 'Unknown') + '</span><span class="td-transfer-team">' + t.team + '</span><span class="td-transfer-type" style="background:' + color + '22;color:' + color + ';border:1px solid ' + color + '44">' + t.type + '</span>' + (t.date ? '<span class="td-transfer-date">' + t.date + '</span>' : '') + '</div>';
                     }).join('') + '</div>';
                 }
             } catch (e) { console.warn('[team] error:', e); }
@@ -1624,6 +1625,16 @@
 
         // ===== Team Transfer History =====
         let teamTransfers = [];
+        async function loadTeamTransferPlayers() {
+            initSupabase();
+            if (!supabaseClient) return;
+            const sel = document.getElementById('ttPlayer');
+            try {
+                const { data } = await supabaseClient.from('Player').select('id, display_name').order('display_name');
+                const players = Array.isArray(data) ? data : (data ? [data] : []);
+                sel.innerHTML = '<option value="">Select player...</option>' + players.map(p => '<option value="' + p.id + '">' + (p.display_name || p.id) + '</option>').join('');
+            } catch (e) { sel.innerHTML = '<option value="">Error loading</option>'; }
+        }
         function renderTeamTransfers() {
             const ed = document.getElementById('teamTransfersEditor');
             ed.innerHTML = '';
@@ -1631,16 +1642,18 @@
             teamTransfers.forEach((t, i) => {
                 const row = document.createElement('div');
                 row.className = 'admin-content-row';
-                row.innerHTML = '<span class="admin-content-label">' + (t.direction === 'From' ? '←' : '→') + ' ' + t.team + ' (' + t.type + ')' + (t.date ? ' — ' + t.date : '') + '</span>';
+                row.innerHTML = '<span class="admin-content-label">' + (t.direction === 'From' ? '←' : '→') + ' ' + (t.player || 'Unknown') + ' — ' + t.team + ' (' + t.type + ')' + (t.date ? ' — ' + t.date : '') + '</span>';
                 ed.appendChild(row);
             });
         }
         function applyTeamTransferModal() {
+            const player = document.getElementById('ttPlayer');
+            const playerName = player.options[player.selectedIndex] ? player.options[player.selectedIndex].text : '';
             const dir = document.getElementById('ttDirection').value;
             const team = document.getElementById('ttTeam').value;
             const type = document.getElementById('ttType').value;
             const date = document.getElementById('ttDate').value;
-            teamTransfers.push({ direction: dir, team: team, type: type, date: date });
+            teamTransfers.push({ player: playerName, direction: dir, team: team, type: type, date: date });
             renderTeamTransfers();
             document.getElementById('teamTransferModal').style.display = 'none';
         }
@@ -1651,7 +1664,7 @@
             teamTransfers.forEach((t, i) => {
                 const row = document.createElement('div');
                 row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0;border-bottom:1px solid var(--border);';
-                row.innerHTML = '<span style="font-size:0.85rem;">' + (t.direction === 'From' ? '←' : '→') + ' ' + t.team + ' (' + t.type + ')' + (t.date ? ' — ' + t.date : '') + '</span>';
+                row.innerHTML = '<span style="font-size:0.85rem;">' + (t.direction === 'From' ? '←' : '→') + ' ' + (t.player || 'Unknown') + ' — ' + t.team + ' (' + t.type + ')' + (t.date ? ' — ' + t.date : '') + '</span>';
                 const btn = document.createElement('button');
                 btn.textContent = '✕';
                 btn.style.cssText = 'background:#e74c3c;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-weight:bold;';
