@@ -398,15 +398,24 @@
             <button class="td-tab" onclick="switchTeamTab('records')">Club Records</button>
             <button class="td-tab" onclick="switchTeamTab('transfers')">Transfers</button>
         </div>
-        <div id="tdOverview" class="td-panel active">
-            <div class="td-section">
+        <div id="tdOverview" class="td-panel">
+            <div class="td-section td-field-section">
                 <h3>Team Lineup</h3>
-                <div id="tdLineup" class="td-lineup">
-                    <p class="muted">No lineup set.</p>
+                <div id="tdLineup" class="td-field">
+                    <div class="td-field-row td-field-gk"><div class="td-field-slot" data-pos="GK"></div></div>
+                    <div class="td-field-row td-field-def"><div class="td-field-slot" data-pos="LB"></div><div class="td-field-slot" data-pos="CB"></div><div class="td-field-slot" data-pos="CB"></div><div class="td-field-slot" data-pos="RB"></div></div>
+                    <div class="td-field-row td-field-mid"><div class="td-field-slot" data-pos="CDM"></div><div class="td-field-slot" data-pos="CM"></div><div class="td-field-slot" data-pos="CAM"></div></div>
+                    <div class="td-field-row td-field-att"><div class="td-field-slot" data-pos="LW"></div><div class="td-field-slot" data-pos="ST"></div><div class="td-field-slot" data-pos="RW"></div></div>
                 </div>
             </div>
             <div class="td-section">
-                <h3>Players</h3>
+                <div class="td-roster-header">
+                    <h3>Players</h3>
+                    <div class="td-roster-info">
+                        <span class="td-roster-badge" id="tdPlayerCount">0 Players</span>
+                        <span class="td-roster-badge accent" id="tdBudget">€0</span>
+                    </div>
+                </div>
                 <div id="tdRoster" class="td-roster"></div>
             </div>
             <div class="td-section">
@@ -867,16 +876,20 @@
                         '</div>'
                     ).join('') + '</div>';
                 }
-                const lineupDiv = document.getElementById('tdLineup');
-                const positions = ['GK', 'CB', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST'];
-                const posLabels = ['GK', 'CB', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST'];
-                let lineupHtml = '';
-                positions.forEach((pos, i) => {
+                document.querySelectorAll('.td-field-slot').forEach(slot => {
+                    const pos = slot.dataset.pos;
                     const player = sorted.find(p => p.position === pos);
-                    const name = player ? player.display_name : '—';
-                    lineupHtml += '<div class="td-lineup-slot"><span class="td-lineup-pos">' + posLabels[i] + '</span><span class="td-lineup-name">' + name + '</span></div>';
+                    slot.innerHTML = '<span class="slot-pos">' + pos + '</span><span class="slot-name">' + (player ? player.display_name : '—') + '</span>';
+                    if (player) slot.classList.add('filled');
+                    else slot.classList.remove('filled');
+                    if (player) {
+                        slot.onclick = function() { location.hash = 'player?id=' + player.id; };
+                        slot.style.cursor = 'pointer';
+                    } else {
+                        slot.onclick = null;
+                        slot.style.cursor = 'default';
+                    }
                 });
-                lineupDiv.innerHTML = lineupHtml;
                 const fxDiv = document.getElementById('tdFixture');
                 fxDiv.innerHTML = '<div class="td-fixture-box"><span>' + teamName + '</span><span class="td-fixture-vs">VS</span><span>TBD</span></div>';
             } catch (e) { console.warn('[team] error:', e); }

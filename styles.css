@@ -764,7 +764,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .roster-empty { padding: 1rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
 
 /* Team Detail page */
-.team-detail-page { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+.team-detail-page { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
 .team-detail-header { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
 .team-detail-header h2 { margin: 0; font-size: 1.5rem; }
 .team-detail-badge {
@@ -787,13 +787,46 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
     border: 1px solid var(--border); border-radius: 18px; margin-bottom: 1rem;
 }
 .td-section h3 { font-size: 1rem; margin-bottom: 0.8rem; color: var(--text); }
-.td-lineup { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
-.td-lineup-slot {
-    padding: 0.6rem 0.8rem; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; font-size: 0.85rem; display: flex; justify-content: space-between;
+
+/* Football field lineup */
+.td-field-section { padding: 1.5rem; }
+.td-field {
+    background: linear-gradient(180deg, #1a5c3a 0%, #1e6b43 50%, #1a5c3a 100%);
+    border: 2px solid #fff3; border-radius: 14px;
+    padding: 1.2rem 1rem; display: flex; flex-direction: column; gap: 0.8rem;
+    position: relative; overflow: hidden;
 }
-.td-lineup-pos { color: var(--accent); font-weight: 700; font-size: 0.8rem; }
-.td-lineup-name { color: var(--text); }
+.td-field::before {
+    content: ''; position: absolute; top: 50%; left: 5%; right: 5%;
+    height: 1px; background: rgba(255,255,255,0.15);
+}
+.td-field::after {
+    content: ''; position: absolute; top: calc(50% - 35px); left: 50%;
+    width: 70px; height: 70px; border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 50%; transform: translateX(-50%);
+}
+.td-field-row { display: flex; justify-content: center; gap: 0.6rem; z-index: 1; }
+.td-field-slot {
+    width: 80px; height: 42px; border-radius: 8px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 0.7rem; color: rgba(255,255,255,0.7); text-align: center;
+    backdrop-filter: blur(2px); transition: background 0.15s;
+}
+.td-field-slot .slot-pos { font-weight: 700; font-size: 0.65rem; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+.td-field-slot .slot-name { font-weight: 600; font-size: 0.78rem; color: #fff; margin-top: 1px; }
+.td-field-slot.filled { background: rgba(0,230,200,0.15); border-color: rgba(0,230,200,0.4); }
+.td-field-slot.filled .slot-pos { color: rgba(0,230,200,0.7); }
+
+/* Roster */
+.td-roster-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+.td-roster-header h3 { margin: 0; }
+.td-roster-info { display: flex; gap: 0.5rem; }
+.td-roster-badge {
+    padding: 0.25rem 0.7rem; border-radius: 8px; font-size: 0.78rem; font-weight: 600;
+    background: var(--surface); color: var(--muted); border: 1px solid var(--border);
+}
+.td-roster-badge.accent { color: var(--accent); border-color: rgba(47,214,176,0.35); }
 .td-roster-list { display: flex; flex-direction: column; gap: 0.4rem; }
 .td-roster-row {
     display: flex; justify-content: space-between; align-items: center;
@@ -809,8 +842,10 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 }
 .td-fixture-vs { color: var(--accent); font-weight: 700; margin: 0 0.5rem; }
 @media (max-width: 600px) {
-    .td-lineup { grid-template-columns: 1fr; }
+    .td-field-slot { width: 60px; height: 36px; }
+    .td-field-slot .slot-name { font-size: 0.65rem; }
     .team-detail-header { flex-direction: column; align-items: flex-start; }
+    .td-roster-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
 }
 
 /* Player Profile page */
