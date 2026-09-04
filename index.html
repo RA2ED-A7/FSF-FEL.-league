@@ -385,6 +385,51 @@
         </div>
     </section>
 
+    <section class="team-detail-page" id="teamDetailPage" style="display:none;">
+        <button class="back-btn" onclick="history.back()">&larr; Back</button>
+        <div class="team-detail-header">
+            <h2 id="tdTeamName">Team Name</h2>
+            <span class="team-detail-badge" id="tdTeamDiv">1.FEL</span>
+            <span class="team-detail-badge" id="tdPlayerCount">0 Players</span>
+            <span class="team-detail-badge accent" id="tdBudget">€0</span>
+        </div>
+        <div class="team-detail-tabs">
+            <button class="td-tab active" onclick="switchTeamTab('overview')">Overview</button>
+            <button class="td-tab" onclick="switchTeamTab('records')">Club Records</button>
+            <button class="td-tab" onclick="switchTeamTab('transfers')">Transfers</button>
+        </div>
+        <div id="tdOverview" class="td-panel active">
+            <div class="td-section">
+                <h3>Team Lineup</h3>
+                <div id="tdLineup" class="td-lineup">
+                    <p class="muted">No lineup set.</p>
+                </div>
+            </div>
+            <div class="td-section">
+                <h3>Players</h3>
+                <div id="tdRoster" class="td-roster"></div>
+            </div>
+            <div class="td-section">
+                <h3>Next Fixture</h3>
+                <div id="tdFixture" class="td-fixture">
+                    <p class="muted">No fixture scheduled.</p>
+                </div>
+            </div>
+        </div>
+        <div id="tdRecords" class="td-panel">
+            <div class="td-section">
+                <h3>Club Records</h3>
+                <p class="muted">No records yet.</p>
+            </div>
+        </div>
+        <div id="tdTransfers" class="td-panel">
+            <div class="td-section">
+                <h3>Transfer History</h3>
+                <p class="muted">No transfers yet.</p>
+            </div>
+        </div>
+    </section>
+
     <section class="career-page" id="careerPage">
         <div class="career-profile" id="careerProfile">
             <div class="career-header">
@@ -761,7 +806,7 @@
                 filteredTeams.forEach(team => {
                     const teamPlayers = players.filter(p => p.team === team.name);
                     const sorted = teamPlayers.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
-                    let html = '<div class="roster-team"><div class="roster-team-head"><h3 class="roster-team-name">' + team.name + '</h3><span class="roster-team-div">' + team.division + '</span></div><div class="roster-list">';
+                    let html = '<div class="roster-team"><div class="roster-team-head"><h3 class="roster-team-name" onclick="location.hash=\'team?name=' + encodeURIComponent(team.name) + '\'" style="cursor:pointer">' + team.name + '</h3><span class="roster-team-div">' + team.division + '</span></div><div class="roster-list">';
                     sorted.forEach((p, i) => {
                         const val = p["Market Value"] || 0;
                         html += '<div class="roster-player" onclick="location.hash=\'player?id=' + p.id + '\'"><span class="roster-rank">#' + (i + 1) + '</span><span class="roster-name">' + (p.display_name || 'Player') + '</span><span class="roster-pos">' + (p.position || 'None') + '</span><span class="roster-val">€' + val.toLocaleString() + '</span></div>';
@@ -783,6 +828,59 @@
             'platinum': '★★★★★', 'gold': '★★★★', 'silver': '★★★',
             'bronze': '★★', 'new star': '★', 'unranked': '—'
         };
+
+        // ===== Team Detail Page =====
+        function switchTeamTab(tab) {
+            document.querySelectorAll('.td-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.td-panel').forEach(p => p.classList.remove('active'));
+            const tabs = { overview: 0, records: 1, transfers: 2 };
+            document.querySelectorAll('.td-tab')[tabs[tab]].classList.add('active');
+            document.getElementById('td' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+        }
+
+        async function loadTeamDetail() {
+            initSupabase();
+            if (!supabaseClient) return;
+            const hash = location.hash;
+            const nameMatch = hash.match(/name=([^&]+)/);
+            if (!nameMatch) return;
+            const teamName = decodeURIComponent(nameMatch[1]);
+            document.getElementById('tdTeamName').textContent = teamName;
+            try {
+                const { data: players, error } = await supabaseClient.from('Player').select('*').eq('team', teamName);
+                if (error || !players) return;
+                const sorted = players.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
+                const totalBudget = sorted.reduce((s, p) => s + (p["Market Value"] || 0), 0);
+                document.getElementById('tdPlayerCount').textContent = players.length + ' Players';
+                document.getElementById('tdBudget').textContent = '€' + totalBudget.toLocaleString();
+                const team = TEAMS.find(t => t.name === teamName);
+                document.getElementById('tdTeamDiv').textContent = team ? team.division : '—';
+                const rosterDiv = document.getElementById('tdRoster');
+                if (sorted.length === 0) {
+                    rosterDiv.innerHTML = '<p class="muted">No players on this team yet.</p>';
+                } else {
+                    rosterDiv.innerHTML = '<div class="td-roster-list">' + sorted.map((p, i) =>
+                        '<div class="td-roster-row" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer">' +
+                        '<span class="td-roster-name">#' + (i + 1) + ' ' + (p.display_name || 'Player') + '</span>' +
+                        '<span class="td-roster-pos">' + (p.position || 'None') + '</span>' +
+                        '<span class="td-roster-val">€' + (p["Market Value"] || 0).toLocaleString() + '</span>' +
+                        '</div>'
+                    ).join('') + '</div>';
+                }
+                const lineupDiv = document.getElementById('tdLineup');
+                const positions = ['GK', 'CB', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST'];
+                const posLabels = ['GK', 'CB', 'CB', 'LB', 'RB', 'CDM', 'CM', 'CAM', 'LW', 'RW', 'ST'];
+                let lineupHtml = '';
+                positions.forEach((pos, i) => {
+                    const player = sorted.find(p => p.position === pos);
+                    const name = player ? player.display_name : '—';
+                    lineupHtml += '<div class="td-lineup-slot"><span class="td-lineup-pos">' + posLabels[i] + '</span><span class="td-lineup-name">' + name + '</span></div>';
+                });
+                lineupDiv.innerHTML = lineupHtml;
+                const fxDiv = document.getElementById('tdFixture');
+                fxDiv.innerHTML = '<div class="td-fixture-box"><span>' + teamName + '</span><span class="td-fixture-vs">VS</span><span>TBD</span></div>';
+            } catch (e) { console.warn('[team] error:', e); }
+        }
 
         async function loadPlayerProfile() {
             initSupabase();
@@ -1275,9 +1373,10 @@
                 career: 'careerPage',
                 admin: 'adminPage',
                 rosters: 'rostersPage',
-                player: 'playerProfilePage'
+                player: 'playerProfilePage',
+                team: 'teamDetailPage'
             };
-            const isKnown = Object.prototype.hasOwnProperty.call(pages, page) && page !== '' || page.startsWith('player?');
+            const isKnown = Object.prototype.hasOwnProperty.call(pages, page) && page !== '' || page.startsWith('player?') || page.startsWith('team?');
             const homeEl = document.getElementById('home');
             const nfEl = document.querySelector('.nf-page');
             const clEl = document.querySelector('.change-page');
@@ -1287,6 +1386,7 @@
             const adEl = document.getElementById('adminPage');
             const roEl = document.getElementById('rostersPage');
             const prEl = document.getElementById('playerProfilePage');
+            const tdEl = document.getElementById('teamDetailPage');
 
             homeEl.style.display = 'none';
             nfEl.style.display = 'none';
@@ -1297,6 +1397,7 @@
             adEl.style.display = 'none';
             roEl.style.display = 'none';
             prEl.style.display = 'none';
+            tdEl.style.display = 'none';
 
             if (page === '' || page === 'home') {
                 homeEl.style.display = '';
@@ -1312,6 +1413,9 @@
             } else if (page.startsWith('player')) {
                 prEl.style.display = '';
                 loadPlayerProfile();
+            } else if (page.startsWith('team')) {
+                tdEl.style.display = '';
+                loadTeamDetail();
             } else if (isKnown) {
                 const el = page === 'changelog' ? clEl : (page === 'signin' ? siEl : rkEl);
                 el.style.display = 'flex';
