@@ -856,11 +856,11 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 }
 .td-fixture-score { font-size: 1.4rem; font-weight: 800; color: var(--muted); }
 .td-fixture-vs { color: var(--accent); font-weight: 700; margin: 0 0.5rem; }
-.td-records { display: flex; flex-direction: column; gap: 1.2rem; min-width: 550px; }
-.td-record-row { display: flex; align-items: center; gap: 1rem; }
-.td-record-label { width: 70px; font-size: 0.85rem; color: var(--muted); font-weight: 600; flex-shrink: 0; }
+.td-records { display: flex; flex-direction: column; gap: 0.7rem; min-width: 620px; }
+.td-record-row { display: flex; align-items: center; gap: 0.8rem; }
+.td-record-label { width: 140px; font-size: 0.85rem; color: var(--muted); font-weight: 600; flex-shrink: 0; }
 .td-record-bar-bg {
-    flex: 1; height: 16px; background: var(--surface);
+    flex: 1; height: 22px; background: var(--surface);
     border-radius: 2px; overflow: hidden; border: 1px solid var(--border);
 }
 .td-record-bar {
@@ -870,7 +870,24 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .td-record-bar.td-record-wins { background: #4caf50; }
 .td-record-bar.td-record-losses { background: #f44336; }
 .td-record-bar.td-record-ties { background: #ff9800; }
-.td-record-val { width: 40px; text-align: right; font-weight: 700; font-size: 0.9rem; }
+.td-record-bar.td-record-gs { background: #2196f3; }
+.td-record-bar.td-record-gc { background: #e91e63; }
+.td-record-val { width: 40px; text-align: right; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+
+.td-traj-box {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1.2rem; min-height: 180px; position: relative; overflow: hidden;
+}
+.td-traj-canvas { width: 100%; height: 160px; }
+
+.td-records-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; }
+.td-record-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 1rem; text-align: center;
+}
+.td-rc-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
+.td-rc-val { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.td-rc-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; }
 @media (max-width: 600px) {
     .td-field-slot { width: 70px; height: 38px; }
     .td-field-slot .slot-name { font-size: 0.65rem; }

@@ -425,11 +425,30 @@
         </div>
         <div id="tdRecords" class="td-panel">
             <div class="td-section">
-                <h3>Club Records</h3>
+                <h3>Points Trajectory</h3>
+                <div class="td-traj-box" id="tdTrajectory">
+                    <p class="muted">No data yet.</p>
+                </div>
+            </div>
+            <div class="td-section">
+                <h3>Season Records</h3>
                 <div class="td-records">
                     <div class="td-record-row"><span class="td-record-label">Wins</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-wins" id="tdRecWins" style="width:0%"></div></div><span class="td-record-val" id="tdRecWinsVal">0</span></div>
                     <div class="td-record-row"><span class="td-record-label">Losses</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-losses" id="tdRecLosses" style="width:0%"></div></div><span class="td-record-val" id="tdRecLossesVal">0</span></div>
                     <div class="td-record-row"><span class="td-record-label">Ties</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-ties" id="tdRecTies" style="width:0%"></div></div><span class="td-record-val" id="tdRecTiesVal">0</span></div>
+                    <div class="td-record-row"><span class="td-record-label">Goals Scored</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-gs" id="tdRecGS" style="width:0%"></div></div><span class="td-record-val" id="tdRecGSVal">0</span></div>
+                    <div class="td-record-row"><span class="td-record-label">Goals Conceded</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-gc" id="tdRecGC" style="width:0%"></div></div><span class="td-record-val" id="tdRecGCVal">0</span></div>
+                </div>
+            </div>
+            <div class="td-section">
+                <h3>All-Time Records</h3>
+                <div class="td-records-grid">
+                    <div class="td-record-card"><div class="td-rc-label">Biggest Win</div><div class="td-rc-val" id="tdRCBigWin">—</div><div class="td-rc-sub" id="tdRCBigWinSub"></div></div>
+                    <div class="td-record-card"><div class="td-rc-label">Top Scorer (All-Time)</div><div class="td-rc-val" id="tdRCTopScorer">—</div><div class="td-rc-sub" id="tdRCTopScorerSub"></div></div>
+                    <div class="td-record-card"><div class="td-rc-label">Most Goals in a Match</div><div class="td-rc-val" id="tdRCMostGoals">—</div><div class="td-rc-sub" id="tdRCMostGoalsSub"></div></div>
+                    <div class="td-record-card"><div class="td-rc-label">Longest Win Streak</div><div class="td-rc-val" id="tdRCWinStreak">—</div><div class="td-rc-sub" id="tdRCWinStreakSub"></div></div>
+                    <div class="td-record-card"><div class="td-rc-label">Most Appearances</div><div class="td-rc-val" id="tdRCMostApps">—</div><div class="td-rc-sub" id="tdRCMostAppsSub"></div></div>
+                    <div class="td-record-card"><div class="td-rc-label">Top Playmaker (All-Time)</div><div class="td-rc-val" id="tdRCTopPlaymaker">—</div><div class="td-rc-sub" id="tdRCTopPlaymakerSub"></div></div>
                 </div>
             </div>
         </div>
@@ -566,7 +585,7 @@
         </div>
 
         <div id="contentTeams" class="admin-panel-content">
-            <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit team fixture &amp; budget.</p>
+            <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit team fixture, budget, records &amp; trajectory.</p>
             <div class="admin-player-select">
                 <label>Select Team:</label>
                 <select id="teamEditSelect" class="admin-select" onchange="loadTeamEditContent()">
@@ -585,6 +604,32 @@
                 <div style="display:flex; gap:0.5rem; align-items:center;">
                     <span style="color:var(--muted);">€</span>
                     <input id="teamBudgetInput" type="number" min="0" step="1000000" style="flex:1; padding:0.5rem 0.8rem; background:var(--surface-2); color:var(--text); border:1px solid var(--border); border-radius:8px; font-size:0.85rem; outline:none;">
+                </div>
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">Points Trajectory</h4>
+                <p class="muted" style="font-size:0.75rem;margin-bottom:0.5rem;">Comma-separated points per GW (e.g. "0,3,6,9,12")</p>
+                <input id="teamTrajectoryInput" type="text" placeholder="0,3,6,9,12" style="width:100%; padding:0.5rem 0.8rem; background:var(--surface-2); color:var(--text); border:1px solid var(--border); border-radius:8px; font-size:0.85rem; outline:none;">
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">Season Records</h4>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
+                    <div class="admin-field"><label>Wins</label><input id="teamRecWins" type="number" min="0" class="admin-input"></div>
+                    <div class="admin-field"><label>Losses</label><input id="teamRecLosses" type="number" min="0" class="admin-input"></div>
+                    <div class="admin-field"><label>Ties</label><input id="teamRecTies" type="number" min="0" class="admin-input"></div>
+                    <div class="admin-field"><label>Goals Scored</label><input id="teamRecGS" type="number" min="0" class="admin-input"></div>
+                    <div class="admin-field"><label>Goals Conceded</label><input id="teamRecGC" type="number" min="0" class="admin-input"></div>
+                </div>
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">All-Time Records</h4>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
+                    <div class="admin-field"><label>Biggest Win</label><input id="teamRCBigWin" class="admin-input" placeholder="e.g. 5-1"></div>
+                    <div class="admin-field"><label>Biggest Win (note)</label><input id="teamRCBigWinSub" class="admin-input" placeholder="e.g. vs Real Madrid"></div>
+                    <div class="admin-field"><label>Top Scorer</label><input id="teamRCTopScorer" class="admin-input" placeholder="Player name"></div>
+                    <div class="admin-field"><label>Top Scorer (note)</label><input id="teamRCTopScorerSub" class="admin-input" placeholder="e.g. 12 goals"></div>
+                    <div class="admin-field"><label>Most Goals in Match</label><input id="teamRCMostGoals" class="admin-input" placeholder="e.g. 3 goals"></div>
+                    <div class="admin-field"><label>Most Goals (note)</label><input id="teamRCMostGoalsSub" class="admin-input" placeholder="e.g. vs Bayern"></div>
+                    <div class="admin-field"><label>Longest Win Streak</label><input id="teamRCWinStreak" class="admin-input" placeholder="e.g. 5 games"></div>
+                    <div class="admin-field"><label>Win Streak (note)</label><input id="teamRCWinStreakSub" class="admin-input" placeholder="e.g. GW3-GW7"></div>
+                    <div class="admin-field"><label>Most Appearances</label><input id="teamRCMostApps" class="admin-input" placeholder="Player name"></div>
+                    <div class="admin-field"><label>Most Apps (note)</label><input id="teamRCMostAppsSub" class="admin-input" placeholder="e.g. 15 apps"></div>
+                    <div class="admin-field"><label>Top Playmaker</label><input id="teamRCTopPlaymaker" class="admin-input" placeholder="Player name"></div>
+                    <div class="admin-field"><label>Top Playmaker (note)</label><input id="teamRCTopPlaymakerSub" class="admin-input" placeholder="e.g. 8 assists"></div>
                 </div>
                 <div class="admin-actions" style="margin-top:1rem;">
                     <button class="admin-save-btn" onclick="saveTeamContent()">Save Team</button>
@@ -933,19 +978,110 @@
                 const tWins = sorted.reduce((s, p) => s + (p.Wins || 0), 0);
                 const tLosses = sorted.reduce((s, p) => s + (p.Loses || 0), 0);
                 const tTies = Math.max(0, tMatches - tWins - tLosses);
-                const maxRec = Math.max(tMatches, 1);
+                const tGoals = sorted.reduce((s, p) => s + (p.goals || 0), 0);
+                const tAssists = sorted.reduce((s, p) => s + (p.assists || 0), 0);
+                const maxRec = Math.max(tGoals, tWins, tLosses, tTies, 1);
                 document.getElementById('tdRecWins').style.width = Math.round(tWins / maxRec * 100) + '%';
                 document.getElementById('tdRecWinsVal').textContent = tWins;
                 document.getElementById('tdRecLosses').style.width = Math.round(tLosses / maxRec * 100) + '%';
                 document.getElementById('tdRecLossesVal').textContent = tLosses;
                 document.getElementById('tdRecTies').style.width = Math.round(tTies / maxRec * 100) + '%';
                 document.getElementById('tdRecTiesVal').textContent = tTies;
+                document.getElementById('tdRecGS').style.width = Math.round(tGoals / maxRec * 100) + '%';
+                document.getElementById('tdRecGSVal').textContent = tGoals;
+                document.getElementById('tdRecGC').style.width = Math.round(tLosses / maxRec * 100) + '%';
+                document.getElementById('tdRecGCVal').textContent = tLosses;
+                // All-time records from SiteContent
+                const bigWin = map['team-' + teamName + '-bigwin'] || '—';
+                const bigWinSub = map['team-' + teamName + '-bigwin-sub'] || '';
+                const topScorer = map['team-' + teamName + '-topscorer'] || '—';
+                const topScorerSub = map['team-' + teamName + '-topscorer-sub'] || '';
+                const mostGoals = map['team-' + teamName + '-mostgoals'] || '—';
+                const mostGoalsSub = map['team-' + teamName + '-mostgoals-sub'] || '';
+                const winStreak = map['team-' + teamName + '-winstreak'] || '—';
+                const winStreakSub = map['team-' + teamName + '-winstreak-sub'] || '';
+                const mostApps = map['team-' + teamName + '-mostapps'] || '—';
+                const mostAppsSub = map['team-' + teamName + '-mostapps-sub'] || '';
+                const topPlaymaker = map['team-' + teamName + '-topplaymaker'] || '—';
+                const topPlaymakerSub = map['team-' + teamName + '-topplaymaker-sub'] || '';
+                document.getElementById('tdRCBigWin').textContent = bigWin;
+                document.getElementById('tdRCBigWinSub').textContent = bigWinSub;
+                document.getElementById('tdRCTopScorer').textContent = topScorer;
+                document.getElementById('tdRCTopScorerSub').textContent = topScorerSub;
+                document.getElementById('tdRCMostGoals').textContent = mostGoals;
+                document.getElementById('tdRCMostGoalsSub').textContent = mostGoalsSub;
+                document.getElementById('tdRCWinStreak').textContent = winStreak;
+                document.getElementById('tdRCWinStreakSub').textContent = winStreakSub;
+                document.getElementById('tdRCMostApps').textContent = mostApps;
+                document.getElementById('tdRCMostAppsSub').textContent = mostAppsSub;
+                document.getElementById('tdRCTopPlaymaker').textContent = topPlaymaker;
+                document.getElementById('tdRCTopPlaymakerSub').textContent = topPlaymakerSub;
+                // Points Trajectory
+                renderTrajectory(map, teamName);
                 const fxDiv = document.getElementById('tdFixture');
                 const home = map['team-' + teamName + '-home'] || teamName;
                 const away = map['team-' + teamName + '-away'] || 'TBD';
                 const score = map['team-' + teamName + '-score'] || '0 - 0';
                 fxDiv.innerHTML = '<div class="td-fixture-box"><span class="td-fixture-corner">' + (team ? team.division : '') + '</span><div class="td-fixture-label">Next Match</div><div class="td-fixture-match"><div class="td-fixture-team"><div class="td-fixture-crest">' + home.charAt(0) + '</div>' + home + '</div><div class="td-fixture-score">' + score + '</div><div class="td-fixture-team">' + away + '<div class="td-fixture-crest">' + away.charAt(0) + '</div></div></div></div>';
             } catch (e) { console.warn('[team] error:', e); }
+        }
+
+        function renderTrajectory(map, teamName) {
+            const box = document.getElementById('tdTrajectory');
+            const raw = map['team-' + teamName + '-trajectory'] || '';
+            const points = raw ? raw.split(',').map(Number).filter(n => !isNaN(n)) : [];
+            if (points.length < 2) { box.innerHTML = '<p class="muted">No trajectory data. Add comma-separated points in admin (e.g. "0,3,6,9,12").</p>'; return; }
+            const canvas = document.createElement('canvas');
+            canvas.className = 'td-traj-canvas';
+            box.innerHTML = '';
+            box.appendChild(canvas);
+            const W = box.clientWidth || 600, H = 160;
+            canvas.width = W; canvas.height = H;
+            const ctx = canvas.getContext('2d');
+            const pad = { l: 40, r: 20, t: 15, b: 25 };
+            const gW = W - pad.l - pad.r, gH = H - pad.t - pad.b;
+            const maxPts = Math.max(...points, 1);
+            const step = gW / (points.length - 1);
+            // Grid
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = pad.t + (gH / 4) * i;
+                ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+                ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '10px sans-serif';
+                ctx.textAlign = 'right'; ctx.fillText(Math.round(maxPts - (maxPts / 4) * i), pad.l - 6, y + 3);
+            }
+            // Line
+            ctx.beginPath();
+            ctx.strokeStyle = '#00e6c8';
+            ctx.lineWidth = 2.5;
+            ctx.lineJoin = 'round';
+            points.forEach((p, i) => {
+                const x = pad.l + step * i;
+                const y = pad.t + gH - (p / maxPts) * gH;
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            // Fill under
+            const lastX = pad.l + step * (points.length - 1);
+            ctx.lineTo(lastX, pad.t + gH);
+            ctx.lineTo(pad.l, pad.t + gH);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(0,230,200,0.12)';
+            ctx.fill();
+            // Dots
+            points.forEach((p, i) => {
+                const x = pad.l + step * i;
+                const y = pad.t + gH - (p / maxPts) * gH;
+                ctx.beginPath(); ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#00e6c8'; ctx.fill();
+            });
+            // GW labels
+            ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+            points.forEach((p, i) => {
+                const x = pad.l + step * i;
+                ctx.fillText('GW' + (i + 1), x, H - 4);
+            });
         }
 
         async function loadPlayerProfile() {
@@ -1409,6 +1545,24 @@
                 addCareerRow(fxDiv, 'Away Team', teamName, map['team-' + teamName + '-away'] || 'TBD');
                 addCareerRow(fxDiv, 'Score', teamName, map['team-' + teamName + '-score'] || '0 - 0');
                 document.getElementById('teamBudgetInput').value = map['team-' + teamName + '-budget'] || 250000000;
+                document.getElementById('teamTrajectoryInput').value = map['team-' + teamName + '-trajectory'] || '';
+                document.getElementById('teamRecWins').value = map['team-' + teamName + '-rec-wins'] || '';
+                document.getElementById('teamRecLosses').value = map['team-' + teamName + '-rec-losses'] || '';
+                document.getElementById('teamRecTies').value = map['team-' + teamName + '-rec-ties'] || '';
+                document.getElementById('teamRecGS').value = map['team-' + teamName + '-rec-gs'] || '';
+                document.getElementById('teamRecGC').value = map['team-' + teamName + '-rec-gc'] || '';
+                document.getElementById('teamRCBigWin').value = map['team-' + teamName + '-bigwin'] || '';
+                document.getElementById('teamRCBigWinSub').value = map['team-' + teamName + '-bigwin-sub'] || '';
+                document.getElementById('teamRCTopScorer').value = map['team-' + teamName + '-topscorer'] || '';
+                document.getElementById('teamRCTopScorerSub').value = map['team-' + teamName + '-topscorer-sub'] || '';
+                document.getElementById('teamRCMostGoals').value = map['team-' + teamName + '-mostgoals'] || '';
+                document.getElementById('teamRCMostGoalsSub').value = map['team-' + teamName + '-mostgoals-sub'] || '';
+                document.getElementById('teamRCWinStreak').value = map['team-' + teamName + '-winstreak'] || '';
+                document.getElementById('teamRCWinStreakSub').value = map['team-' + teamName + '-winstreak-sub'] || '';
+                document.getElementById('teamRCMostApps').value = map['team-' + teamName + '-mostapps'] || '';
+                document.getElementById('teamRCMostAppsSub').value = map['team-' + teamName + '-mostapps-sub'] || '';
+                document.getElementById('teamRCTopPlaymaker').value = map['team-' + teamName + '-topplaymaker'] || '';
+                document.getElementById('teamRCTopPlaymakerSub').value = map['team-' + teamName + '-topplaymaker-sub'] || '';
                 editor.style.display = '';
             } catch (e) { console.warn('[team-content] load error:', e); }
         }
@@ -1423,17 +1577,36 @@
             if (!teamName) { msg.textContent = 'Select a team first'; msg.className = 'admin-msg err'; return; }
             const rows = document.querySelectorAll('#teamFixtureEditor .admin-content-row');
             try {
+                const kv = {};
                 for (const row of rows) {
                     const val = row.querySelector('.admin-content-val').value;
                     const label = row.dataset.label;
                     const keyMap = { 'Home Team': 'home', 'Away Team': 'away', 'Score': 'score' };
-                    const key = 'team-' + teamName + '-' + (keyMap[label] || label);
+                    kv['team-' + teamName + '-' + (keyMap[label] || label)] = val;
+                }
+                kv['team-' + teamName + '-budget'] = document.getElementById('teamBudgetInput').value;
+                kv['team-' + teamName + '-trajectory'] = document.getElementById('teamTrajectoryInput').value;
+                kv['team-' + teamName + '-rec-wins'] = document.getElementById('teamRecWins').value;
+                kv['team-' + teamName + '-rec-losses'] = document.getElementById('teamRecLosses').value;
+                kv['team-' + teamName + '-rec-ties'] = document.getElementById('teamRecTies').value;
+                kv['team-' + teamName + '-rec-gs'] = document.getElementById('teamRecGS').value;
+                kv['team-' + teamName + '-rec-gc'] = document.getElementById('teamRecGC').value;
+                kv['team-' + teamName + '-bigwin'] = document.getElementById('teamRCBigWin').value;
+                kv['team-' + teamName + '-bigwin-sub'] = document.getElementById('teamRCBigWinSub').value;
+                kv['team-' + teamName + '-topscorer'] = document.getElementById('teamRCTopScorer').value;
+                kv['team-' + teamName + '-topscorer-sub'] = document.getElementById('teamRCTopScorerSub').value;
+                kv['team-' + teamName + '-mostgoals'] = document.getElementById('teamRCMostGoals').value;
+                kv['team-' + teamName + '-mostgoals-sub'] = document.getElementById('teamRCMostGoalsSub').value;
+                kv['team-' + teamName + '-winstreak'] = document.getElementById('teamRCWinStreak').value;
+                kv['team-' + teamName + '-winstreak-sub'] = document.getElementById('teamRCWinStreakSub').value;
+                kv['team-' + teamName + '-mostapps'] = document.getElementById('teamRCMostApps').value;
+                kv['team-' + teamName + '-mostapps-sub'] = document.getElementById('teamRCMostAppsSub').value;
+                kv['team-' + teamName + '-topplaymaker'] = document.getElementById('teamRCTopPlaymaker').value;
+                kv['team-' + teamName + '-topplaymaker-sub'] = document.getElementById('teamRCTopPlaymakerSub').value;
+                for (const [key, val] of Object.entries(kv)) {
                     const { error } = await supabaseClient.from('SiteContent').upsert({ key, value: val }, { onConflict: 'key' });
                     if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
                 }
-                const budget = document.getElementById('teamBudgetInput').value;
-                const { error: bErr } = await supabaseClient.from('SiteContent').upsert({ key: 'team-' + teamName + '-budget', value: budget }, { onConflict: 'key' });
-                if (bErr) { msg.textContent = 'Error: ' + bErr.message; msg.className = 'admin-msg err'; return; }
                 msg.textContent = 'Saved!';
                 msg.className = 'admin-msg ok';
             } catch (e) {
