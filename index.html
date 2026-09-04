@@ -2050,6 +2050,12 @@
                 signedIn = true;
                 renderUser(data.session.user);
                 await ensurePlayerRow(data.session.user);
+                // Auto-save Discord avatar on every page load
+                try {
+                    const meta = data.session.user.user_metadata || {};
+                    const avUrl = meta.avatar_url || '';
+                    if (avUrl) await supabaseClient.from('SiteContent').upsert({ key: 'discord-avatar-' + data.session.user.id, value: avUrl }, { onConflict: 'key' });
+                } catch(e) {}
                 renderCareer();
                 if (location.hash.replace('#', '').toLowerCase() === 'admin') loadAdminPanel();
             } else {
@@ -2065,7 +2071,15 @@
                 if (event === 'SIGNED_IN' && session) {
                     signedIn = true;
                     renderUser(session.user);
-                    ensurePlayerRow(session.user).then(() => { renderCareer(); });
+                    ensurePlayerRow(session.user).then(async () => {
+                        // Auto-save Discord avatar
+                        try {
+                            const meta = session.user.user_metadata || {};
+                            const avUrl = meta.avatar_url || '';
+                            if (avUrl) await supabaseClient.from('SiteContent').upsert({ key: 'discord-avatar-' + session.user.id, value: avUrl }, { onConflict: 'key' });
+                        } catch(e) {}
+                        renderCareer();
+                    });
                     if (location.hash.replace('#', '').toLowerCase() === 'admin') loadAdminPanel();
                 } else if (event === 'SIGNED_OUT') {
                     signedIn = false;
