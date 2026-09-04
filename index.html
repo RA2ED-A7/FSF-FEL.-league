@@ -2163,15 +2163,30 @@
         window.admin = function() { location.hash = 'admin'; };
 
         // ===== Roblox Avatar =====
-        const CORS_PROXY = 'https://api.codetabs.com/v1/proxy?quest=';
+        const CORS_PROXIES = [
+            url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+            url => 'https://api.allorigins.win/get?url=' + encodeURIComponent(url),
+            url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url)
+        ];
+
+        async function fetchWithProxy(url) {
+            for (const makeUrl of CORS_PROXIES) {
+                try {
+                    const proxyUrl = makeUrl(url);
+                    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+                    if (!res.ok) continue;
+                    const text = await res.text();
+                    try { return JSON.parse(text); } catch(e) { return text; }
+                } catch (e) { console.log('[proxy] failed:', e.message); continue; }
+            }
+            return null;
+        }
 
         async function getRobloxUserIdFromUsername(username) {
             try {
                 const target = 'https://api.roblox.com/users/get-by-username?username=' + encodeURIComponent(username);
-                const res = await fetch(CORS_PROXY + encodeURIComponent(target));
-                if (!res.ok) { console.log('[avatar] username lookup HTTP', res.status); return null; }
-                const data = await res.json();
-                console.log('[avatar] legacy lookup response:', data);
+                const data = await fetchWithProxy(target);
+                console.log('[avatar] lookup response:', data);
                 if (data && data.Id) {
                     return String(data.Id);
                 }
@@ -2182,11 +2197,9 @@
         async function fetchRobloxAvatar(userId, imgEl, fallbackEl) {
             try {
                 const target = 'https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + userId + '&size=150x150&format=Png&isCircular=false';
-                const thumbRes = await fetch(CORS_PROXY + encodeURIComponent(target));
-                if (!thumbRes.ok) return false;
-                const thumbData = await thumbRes.json();
+                const thumbData = await fetchWithProxy(target);
                 console.log('[avatar] thumbnail response:', thumbData);
-                if (thumbData.data && thumbData.data.length > 0 && thumbData.data[0].state === 'Completed') {
+                if (thumbData && thumbData.data && thumbData.data.length > 0 && thumbData.data[0].state === 'Completed') {
                     imgEl.src = thumbData.data[0].imageUrl;
                     imgEl.onload = function() {
                         imgEl.style.display = 'block';
