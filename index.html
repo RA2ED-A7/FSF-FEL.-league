@@ -457,7 +457,9 @@
         <div id="tdTransfers" class="td-panel">
             <div class="td-section">
                 <h3>Transfer History</h3>
-                <p class="muted">No transfers yet.</p>
+                <div id="tdTransfersList">
+                    <p class="muted">No transfers yet.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -633,6 +635,14 @@
                     <div class="admin-field"><label>Top Playmaker</label><input id="teamRCTopPlaymaker" class="admin-input" placeholder="Player name"></div>
                     <div class="admin-field"><label>Top Playmaker (note)</label><input id="teamRCTopPlaymakerSub" class="admin-input" placeholder="e.g. 8 assists"></div>
                 </div>
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center;">
+                    Transfer History
+                    <div>
+                        <button onclick="openRemoveTeamTransferModal()" style="background: #e74c3c; color: #fff; border: none; border-radius: 4px; padding: 4px 10px; margin-right: 5px; cursor: pointer; font-weight: bold; font-size: 0.8rem;">- Remove</button>
+                        <button onclick="document.getElementById('teamTransferModal').style.display='block'" style="background: var(--accent); color: #fff; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem;">+ Add Transfer</button>
+                    </div>
+                </h4>
+                <div class="admin-content-editor" id="teamTransfersEditor"></div>
                 <div class="admin-actions" style="margin-top:1rem;">
                     <button class="admin-save-btn" onclick="saveTeamContent()">Save Team</button>
                     <span class="admin-msg" id="teamMsg"></span>
@@ -661,6 +671,27 @@
                 <button class="admin-save-btn" style="background: #555;" onclick="document.getElementById('removeTransferModal').style.display='none'">Close</button>
             </div>
         </div>
+
+        <div id="teamTransferModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2a2d35; padding: 1.5rem; border-radius: 8px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); width: 320px; border: 1px solid #3d4250;">
+            <h3 style="margin-top:0; color: #fff; font-size: 1.1rem; margin-bottom: 1rem;">Add Team Transfer</h3>
+            <div class="admin-field"><label>Direction</label><select id="ttDirection" class="admin-select" style="width:100%;"><option value="From">From</option><option value="To">To</option></select></div>
+            <div class="admin-field"><label>Team</label><select id="ttTeam" class="admin-select" style="width:100%;"><option value="Free Agent">Free Agent</option><option value="Manchester City">Manchester City</option><option value="FC Barcelona">FC Barcelona</option><option value="Bayern Munich">Bayern Munich</option><option value="Paris Saint Germain">Paris Saint Germain</option><option value="Real Madrid">Real Madrid</option></select></div>
+            <div class="admin-field"><label>Type</label><select id="ttType" class="admin-select" style="width:100%;"><option value="Signing">Signing</option><option value="Trade">Trade</option><option value="Loan">Loan</option><option value="Release">Release</option><option value="Free Agency">Free Agency</option></select></div>
+            <div class="admin-field"><label>Date</label><input type="date" id="ttDate" class="admin-select" style="width:100%;"></div>
+            <div style="display:flex; gap: 0.5rem; margin-top: 1.5rem;">
+                <button class="admin-save-btn" style="flex: 1;" onclick="applyTeamTransferModal()">Add</button>
+                <button class="admin-save-btn" style="flex: 1; background: #555;" onclick="document.getElementById('teamTransferModal').style.display='none'">Cancel</button>
+            </div>
+        </div>
+
+        <div id="removeTeamTransferModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2a2d35; padding: 1.5rem; border-radius: 8px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); width: 350px; border: 1px solid #3d4250;">
+            <h3 style="margin-top:0; color: #fff; font-size: 1.1rem; margin-bottom: 1rem;">Remove Team Transfer</h3>
+            <div id="rttList" style="max-height: 200px; overflow-y: auto; margin-bottom: 1rem;"></div>
+            <div style="display:flex; justify-content:flex-end;">
+                <button class="admin-save-btn" style="background: #555;" onclick="document.getElementById('removeTeamTransferModal').style.display='none'">Close</button>
+            </div>
+        </div>
+
     </section>
 
     <footer>
@@ -1027,6 +1058,20 @@
                 const fxDate = map['team-' + teamName + '-date'] || '';
                 const dateHtml = fxDate ? '<div class="td-fixture-date">' + fxDate + '</div>' : '';
                 fxDiv.innerHTML = '<div class="td-fixture-box"><span class="td-fixture-corner">' + (team ? team.division : '') + '</span><div class="td-fixture-label">Next Match</div><div class="td-fixture-match"><div class="td-fixture-team"><div class="td-fixture-crest">' + home.charAt(0) + '</div>' + home + '</div><div class="td-fixture-score">' + score + '</div><div class="td-fixture-team">' + away + '<div class="td-fixture-crest">' + away.charAt(0) + '</div></div></div>' + dateHtml + '</div>';
+                // Team transfers
+                let tTransfers = [];
+                try { tTransfers = JSON.parse(map['team-' + teamName + '-transfers'] || '[]'); } catch (e) {}
+                const tlDiv = document.getElementById('tdTransfersList');
+                if (tTransfers.length === 0) {
+                    tlDiv.innerHTML = '<p class="muted">No transfers yet.</p>';
+                } else {
+                    const typeColors = { 'Signing': '#4caf50', 'Trade': '#2196f3', 'Loan': '#ff9800', 'Release': '#f44336', 'Free Agency': '#9e9e9e' };
+                    tlDiv.innerHTML = '<div class="td-transfers-list">' + tTransfers.map(t => {
+                        const arrow = t.direction === 'From' ? '←' : '→';
+                        const color = typeColors[t.type] || '#888';
+                        return '<div class="td-transfer-row"><span class="td-transfer-arrow" style="color:' + color + '">' + arrow + '</span><span class="td-transfer-team">' + t.team + '</span><span class="td-transfer-type" style="background:' + color + '22;color:' + color + ';border:1px solid ' + color + '44">' + t.type + '</span>' + (t.date ? '<span class="td-transfer-date">' + t.date + '</span>' : '') + '</div>';
+                    }).join('') + '</div>';
+                }
             } catch (e) { console.warn('[team] error:', e); }
         }
 
@@ -1571,8 +1616,50 @@
                 document.getElementById('teamRCMostAppsSub').value = map['team-' + teamName + '-mostapps-sub'] || '';
                 document.getElementById('teamRCTopPlaymaker').value = map['team-' + teamName + '-topplaymaker'] || '';
                 document.getElementById('teamRCTopPlaymakerSub').value = map['team-' + teamName + '-topplaymaker-sub'] || '';
+                try { teamTransfers = JSON.parse(map['team-' + teamName + '-transfers'] || '[]'); } catch (e) { teamTransfers = []; }
+                renderTeamTransfers();
                 editor.style.display = '';
             } catch (e) { console.warn('[team-content] load error:', e); }
+        }
+
+        // ===== Team Transfer History =====
+        let teamTransfers = [];
+        function renderTeamTransfers() {
+            const ed = document.getElementById('teamTransfersEditor');
+            ed.innerHTML = '';
+            if (teamTransfers.length === 0) { ed.innerHTML = '<p class="muted" style="font-size:0.8rem;">No transfers yet.</p>'; return; }
+            teamTransfers.forEach((t, i) => {
+                const row = document.createElement('div');
+                row.className = 'admin-content-row';
+                row.innerHTML = '<span class="admin-content-label">' + (t.direction === 'From' ? '←' : '→') + ' ' + t.team + ' (' + t.type + ')' + (t.date ? ' — ' + t.date : '') + '</span>';
+                ed.appendChild(row);
+            });
+        }
+        function applyTeamTransferModal() {
+            const dir = document.getElementById('ttDirection').value;
+            const team = document.getElementById('ttTeam').value;
+            const type = document.getElementById('ttType').value;
+            const date = document.getElementById('ttDate').value;
+            teamTransfers.push({ direction: dir, team: team, type: type, date: date });
+            renderTeamTransfers();
+            document.getElementById('teamTransferModal').style.display = 'none';
+        }
+        function openRemoveTeamTransferModal() {
+            if (teamTransfers.length === 0) return;
+            const list = document.getElementById('rttList');
+            list.innerHTML = '';
+            teamTransfers.forEach((t, i) => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0;border-bottom:1px solid var(--border);';
+                row.innerHTML = '<span style="font-size:0.85rem;">' + (t.direction === 'From' ? '←' : '→') + ' ' + t.team + ' (' + t.type + ')' + (t.date ? ' — ' + t.date : '') + '</span>';
+                const btn = document.createElement('button');
+                btn.textContent = '✕';
+                btn.style.cssText = 'background:#e74c3c;color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-weight:bold;';
+                btn.onclick = () => { teamTransfers.splice(i, 1); renderTeamTransfers(); openRemoveTeamTransferModal(); };
+                row.appendChild(btn);
+                list.appendChild(row);
+            });
+            document.getElementById('removeTeamTransferModal').style.display = 'block';
         }
 
         async function saveTeamContent() {
@@ -1611,6 +1698,7 @@
                 kv['team-' + teamName + '-mostapps-sub'] = document.getElementById('teamRCMostAppsSub').value;
                 kv['team-' + teamName + '-topplaymaker'] = document.getElementById('teamRCTopPlaymaker').value;
                 kv['team-' + teamName + '-topplaymaker-sub'] = document.getElementById('teamRCTopPlaymakerSub').value;
+                kv['team-' + teamName + '-transfers'] = JSON.stringify(teamTransfers);
                 for (const [key, val] of Object.entries(kv)) {
                     const { error } = await supabaseClient.from('SiteContent').upsert({ key, value: val }, { onConflict: 'key' });
                     if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
