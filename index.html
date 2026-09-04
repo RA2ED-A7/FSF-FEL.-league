@@ -426,7 +426,12 @@
         <div id="tdRecords" class="td-panel">
             <div class="td-section">
                 <h3>Club Records</h3>
-                <p class="muted">No records yet.</p>
+                <div class="td-records">
+                    <div class="td-record-row"><span class="td-record-label">Matches</span><div class="td-record-bar-bg"><div class="td-record-bar" id="tdRecMatches" style="width:0%"></div></div><span class="td-record-val" id="tdRecMatchesVal">0</span></div>
+                    <div class="td-record-row"><span class="td-record-label">Wins</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-wins" id="tdRecWins" style="width:0%"></div></div><span class="td-record-val" id="tdRecWinsVal">0</span></div>
+                    <div class="td-record-row"><span class="td-record-label">Losses</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-losses" id="tdRecLosses" style="width:0%"></div></div><span class="td-record-val" id="tdRecLossesVal">0</span></div>
+                    <div class="td-record-row"><span class="td-record-label">Ties</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-ties" id="tdRecTies" style="width:0%"></div></div><span class="td-record-val" id="tdRecTiesVal">0</span></div>
+                </div>
             </div>
         </div>
         <div id="tdTransfers" class="td-panel">
@@ -522,6 +527,7 @@
         <div class="admin-tabs">
             <button class="admin-tab active" onclick="switchContentTab('home')">Home Page</button>
             <button class="admin-tab" onclick="switchContentTab('career')">My Career</button>
+            <button class="admin-tab" onclick="switchContentTab('teams')">Teams</button>
         </div>
         <div id="contentHome" class="admin-panel-content active">
             <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit home page text. Changes are saved permanently.</p>
@@ -556,6 +562,34 @@
                 <div class="admin-actions">
                     <button class="admin-save-btn" onclick="saveCareerContent()">Save Career</button>
                     <span class="admin-msg" id="careerMsg"></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="contentTeams" class="admin-panel-content">
+            <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit team fixture &amp; budget.</p>
+            <div class="admin-player-select">
+                <label>Select Team:</label>
+                <select id="teamEditSelect" class="admin-select" onchange="loadTeamEditContent()">
+                    <option value="">Select a team...</option>
+                    <option value="Manchester City">Manchester City</option>
+                    <option value="FC Barcelona">FC Barcelona</option>
+                    <option value="Bayern Munich">Bayern Munich</option>
+                    <option value="Paris Saint Germain">Paris Saint Germain</option>
+                    <option value="Real Madrid">Real Madrid</option>
+                </select>
+            </div>
+            <div id="teamEditContent" style="display:none;">
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">Next Fixture</h4>
+                <div class="admin-content-editor" id="teamFixtureEditor"></div>
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">Budget</h4>
+                <div style="display:flex; gap:0.5rem; align-items:center;">
+                    <span style="color:var(--muted);">€</span>
+                    <input id="teamBudgetInput" type="number" min="0" step="1000000" style="flex:1; padding:0.5rem 0.8rem; background:var(--surface-2); color:var(--text); border:1px solid var(--border); border-radius:8px; font-size:0.85rem; outline:none;">
+                </div>
+                <div class="admin-actions" style="margin-top:1rem;">
+                    <button class="admin-save-btn" onclick="saveTeamContent()">Save Team</button>
+                    <span class="admin-msg" id="teamMsg"></span>
                 </div>
             </div>
         </div>
@@ -854,12 +888,19 @@
             const teamName = decodeURIComponent(nameMatch[1]);
             document.getElementById('tdTeamName').textContent = teamName;
             try {
-                const { data: players, error } = await supabaseClient.from('Player').select('*').eq('team', teamName);
+                const [playerRes, scRes] = await Promise.all([
+                    supabaseClient.from('Player').select('*').eq('team', teamName),
+                    supabaseClient.from('SiteContent').select('*')
+                ]);
+                const players = playerRes.data;
+                const error = playerRes.error;
                 if (error || !players) return;
+                const map = {};
+                if (scRes.data) scRes.data.forEach(r => { map[r.key] = r.value; });
                 const sorted = players.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
                 const totalBudget = sorted.reduce((s, p) => s + (p["Market Value"] || 0), 0);
                 document.getElementById('tdPlayerCount').textContent = players.length + ' Players';
-                document.getElementById('tdBudget').textContent = '€250,000,000';
+                document.getElementById('tdBudget').textContent = '€' + (parseInt(map['team-' + teamName + '-budget']) || 250000000).toLocaleString();
                 const team = TEAMS.find(t => t.name === teamName);
                 document.getElementById('tdTeamDiv').textContent = team ? team.division : '—';
                 const rosterDiv = document.getElementById('tdRoster');
@@ -876,7 +917,8 @@
                 }
                 document.querySelectorAll('.td-field-slot').forEach(slot => {
                     const pos = slot.dataset.pos;
-                    const player = sorted.find(p => p.position === pos);
+                    const posMatch = { 'RB': ['RB', 'RWB'], 'LB': ['LB', 'LWB'] };
+                    const player = sorted.find(p => p.position === pos || (posMatch[pos] && posMatch[pos].includes(p.position)));
                     slot.innerHTML = '<span class="slot-pos">' + pos + '</span><span class="slot-name">' + (player ? player.display_name : '—') + '</span>';
                     if (player) slot.classList.add('filled');
                     else slot.classList.remove('filled');
@@ -888,8 +930,24 @@
                         slot.style.cursor = 'default';
                     }
                 });
+                const tMatches = sorted.reduce((s, p) => s + (p.matches || 0), 0);
+                const tWins = sorted.reduce((s, p) => s + (p.Wins || 0), 0);
+                const tLosses = sorted.reduce((s, p) => s + (p.Loses || 0), 0);
+                const tTies = Math.max(0, tMatches - tWins - tLosses);
+                const maxRec = Math.max(tMatches, 1);
+                document.getElementById('tdRecMatches').style.width = '100%';
+                document.getElementById('tdRecMatchesVal').textContent = tMatches;
+                document.getElementById('tdRecWins').style.width = Math.round(tWins / maxRec * 100) + '%';
+                document.getElementById('tdRecWinsVal').textContent = tWins;
+                document.getElementById('tdRecLosses').style.width = Math.round(tLosses / maxRec * 100) + '%';
+                document.getElementById('tdRecLossesVal').textContent = tLosses;
+                document.getElementById('tdRecTies').style.width = Math.round(tTies / maxRec * 100) + '%';
+                document.getElementById('tdRecTiesVal').textContent = tTies;
                 const fxDiv = document.getElementById('tdFixture');
-                fxDiv.innerHTML = '<div class="td-fixture-box"><span class="td-fixture-corner">' + (team ? team.division : '') + '</span><div class="td-fixture-label">Next Match</div><div class="td-fixture-match"><div class="td-fixture-team"><div class="td-fixture-crest">' + teamName.charAt(0) + '</div>' + teamName + '</div><span class="td-fixture-vs">VS</span><div class="td-fixture-team">TBD<div class="td-fixture-crest">?</div></div></div></div>';
+                const home = map['team-' + teamName + '-home'] || teamName;
+                const away = map['team-' + teamName + '-away'] || 'TBD';
+                const score = map['team-' + teamName + '-score'] || '0 - 0';
+                fxDiv.innerHTML = '<div class="td-fixture-box"><span class="td-fixture-corner">' + (team ? team.division : '') + '</span><div class="td-fixture-label">Next Match</div><div class="td-fixture-match"><div class="td-fixture-team"><div class="td-fixture-crest">' + home.charAt(0) + '</div>' + home + '</div><div class="td-fixture-score">' + score + '</div><div class="td-fixture-team">' + away + '<div class="td-fixture-crest">' + away.charAt(0) + '</div></div></div></div>';
             } catch (e) { console.warn('[team] error:', e); }
         }
 
@@ -1181,13 +1239,9 @@
         function switchContentTab(tab) {
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.admin-panel-content').forEach(p => p.classList.remove('active'));
-            if (tab === 'home') {
-                document.querySelector('.admin-tab:first-child').classList.add('active');
-                document.getElementById('contentHome').classList.add('active');
-            } else {
-                document.querySelector('.admin-tab:last-child').classList.add('active');
-                document.getElementById('contentCareer').classList.add('active');
-            }
+            const tabMap = { home: 0, career: 1, teams: 2 };
+            document.querySelectorAll('.admin-tab')[tabMap[tab]].classList.add('active');
+            document.getElementById('content' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
         }
 
         async function loadCareerPlayers() {
@@ -1333,6 +1387,56 @@
                     const { error } = await supabaseClient.from('SiteContent').upsert({ key, value: val }, { onConflict: 'key' });
                     if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
                 }
+                msg.textContent = 'Saved!';
+                msg.className = 'admin-msg ok';
+            } catch (e) {
+                msg.textContent = 'Error: ' + e.message;
+                msg.className = 'admin-msg err';
+            }
+        }
+
+        // ===== Team Content Editor =====
+        async function loadTeamEditContent() {
+            const teamName = document.getElementById('teamEditSelect').value;
+            const editor = document.getElementById('teamEditContent');
+            if (!teamName) { editor.style.display = 'none'; return; }
+            initSupabase();
+            if (!supabaseClient) return;
+            try {
+                const { data } = await supabaseClient.from('SiteContent').select('*');
+                const map = {};
+                if (data) data.forEach(r => { map[r.key] = r.value; });
+                const fxDiv = document.getElementById('teamFixtureEditor');
+                fxDiv.innerHTML = '';
+                addCareerRow(fxDiv, 'Home Team', teamName, map['team-' + teamName + '-home'] || teamName);
+                addCareerRow(fxDiv, 'Away Team', teamName, map['team-' + teamName + '-away'] || 'TBD');
+                addCareerRow(fxDiv, 'Score', teamName, map['team-' + teamName + '-score'] || '0 - 0');
+                document.getElementById('teamBudgetInput').value = map['team-' + teamName + '-budget'] || 250000000;
+                editor.style.display = '';
+            } catch (e) { console.warn('[team-content] load error:', e); }
+        }
+
+        async function saveTeamContent() {
+            initSupabase();
+            if (!supabaseClient) return;
+            const msg = document.getElementById('teamMsg');
+            msg.textContent = 'Saving...';
+            msg.className = 'admin-msg';
+            const teamName = document.getElementById('teamEditSelect').value;
+            if (!teamName) { msg.textContent = 'Select a team first'; msg.className = 'admin-msg err'; return; }
+            const rows = document.querySelectorAll('#teamFixtureEditor .admin-content-row');
+            try {
+                for (const row of rows) {
+                    const val = row.querySelector('.admin-content-val').value;
+                    const label = row.dataset.label;
+                    const keyMap = { 'Home Team': 'home', 'Away Team': 'away', 'Score': 'score' };
+                    const key = 'team-' + teamName + '-' + (keyMap[label] || label);
+                    const { error } = await supabaseClient.from('SiteContent').upsert({ key, value: val }, { onConflict: 'key' });
+                    if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
+                }
+                const budget = document.getElementById('teamBudgetInput').value;
+                const { error: bErr } = await supabaseClient.from('SiteContent').upsert({ key: 'team-' + teamName + '-budget', value: budget }, { onConflict: 'key' });
+                if (bErr) { msg.textContent = 'Error: ' + bErr.message; msg.className = 'admin-msg err'; return; }
                 msg.textContent = 'Saved!';
                 msg.className = 'admin-msg ok';
             } catch (e) {
