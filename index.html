@@ -30,15 +30,12 @@
                 <div class="dropdown">
                     <a href="#rankings">Rankings</a>
                     <a href="#rosters">Rosters</a>
-                    <a href="#freeagents">Free Agents</a>
                 </div>
             </div>
             <div class="menu-item">
-                <a href="#notfound">Market<span class="caret">&#9662;</span></a>
+                <a href="#">Market<span class="caret">&#9662;</span></a>
                 <div class="dropdown">
-                    <a href="#notfound">Placeholder 1</a>
-                    <a href="#notfound">Placeholder 2</a>
-                    <a href="#notfound">Placeholder 3</a>
+                    <a href="#freeagents">Free Agents</a>
                 </div>
             </div>
             <a href="#">Standings</a>
@@ -362,7 +359,7 @@
                 <option value="RW">RW</option>
                 <option value="CF">CF</option>
             </select>
-            <input id="faSearch" type="text" placeholder="Search player..." class="lb-search" oninput="renderFreeAgents()" style="margin-left:0.5rem;">
+            <input id="faSearch" type="text" placeholder="Search player..." class="fa-search-input" oninput="renderFreeAgents()">
         </div>
         <div class="fa-table" id="faTable"></div>
     </section>
@@ -826,6 +823,7 @@
 
         async function renderCareer() {
             console.log('[career] called, signedIn:', signedIn);
+            initSupabase();
             const nameBox = document.getElementById('userName');
             const name = (nameBox && nameBox.textContent !== 'Username') ? nameBox.textContent : 'User';
             document.getElementById('careerName').textContent = name;

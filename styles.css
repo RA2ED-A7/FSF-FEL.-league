@@ -740,6 +740,16 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 
 /* Rosters page */
 .rosters-page { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+.rosters-page .page-head { margin-bottom: 1.5rem; }
+.rosters-page .page-head h2 { font-size: 1.5rem; margin-bottom: 0.3rem; }
+.rosters-page .page-head p { color: var(--muted); font-size: 0.9rem; }
+.fa-search-input {
+    padding: 0.5rem 1rem; background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: 20px; font-size: 0.85rem;
+    outline: none; width: 220px; transition: border-color 0.2s;
+}
+.fa-search-input:focus { border-color: var(--accent); }
+.fa-search-input::placeholder { color: var(--muted); }
 .rosters-filter { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; }
 .rosters-filter label { color: var(--muted); font-size: 0.9rem; }
 .rosters-grid { display: flex; gap: 2rem; justify-content: center; flex-wrap: nowrap; }
@@ -954,7 +964,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 }
 .back-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); box-shadow: 0 -1px 0 rgba(47,214,176,0.1); }
+footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); box-shadow: 0 -1px 0 rgba(47,214,176,0.1); position: sticky; bottom: 0; background: var(--bg); z-index: 10; }
 
 @media (max-width: 720px) {
     header { flex-wrap: wrap; padding: 0.9rem 1rem; }
