@@ -932,15 +932,15 @@
             const teamName = decodeURIComponent(nameMatch[1]);
             document.getElementById('tdTeamName').textContent = teamName;
             try {
-                const [playerRes, scRes] = await Promise.all([
-                    supabaseClient.from('Player').select('*').eq('team', teamName),
-                    supabaseClient.from('SiteContent').select('*')
-                ]);
+                const playerRes = await supabaseClient.from('Player').select('*').eq('team', teamName);
                 const players = playerRes.data;
                 const error = playerRes.error;
                 if (error || !players) return;
-                const map = {};
-                if (scRes.data) scRes.data.forEach(r => { map[r.key] = r.value; });
+                let map = {};
+                try {
+                    const scRes = await supabaseClient.from('SiteContent').select('*');
+                    if (scRes.data) scRes.data.forEach(r => { map[r.key] = r.value; });
+                } catch (scErr) { console.warn('[team] SiteContent error:', scErr); }
                 const sorted = players.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
                 const totalBudget = sorted.reduce((s, p) => s + (p["Market Value"] || 0), 0);
                 document.getElementById('tdPlayerCount').textContent = players.length + ' Players';
@@ -974,23 +974,22 @@
                         slot.style.cursor = 'default';
                     }
                 });
-                const tMatches = sorted.reduce((s, p) => s + (p.matches || 0), 0);
-                const tWins = sorted.reduce((s, p) => s + (p.Wins || 0), 0);
-                const tLosses = sorted.reduce((s, p) => s + (p.Loses || 0), 0);
-                const tTies = Math.max(0, tMatches - tWins - tLosses);
-                const tGoals = sorted.reduce((s, p) => s + (p.goals || 0), 0);
-                const tAssists = sorted.reduce((s, p) => s + (p.assists || 0), 0);
-                const maxRec = Math.max(tGoals, tWins, tLosses, tTies, 1);
-                document.getElementById('tdRecWins').style.width = Math.round(tWins / maxRec * 100) + '%';
-                document.getElementById('tdRecWinsVal').textContent = tWins;
-                document.getElementById('tdRecLosses').style.width = Math.round(tLosses / maxRec * 100) + '%';
-                document.getElementById('tdRecLossesVal').textContent = tLosses;
-                document.getElementById('tdRecTies').style.width = Math.round(tTies / maxRec * 100) + '%';
-                document.getElementById('tdRecTiesVal').textContent = tTies;
-                document.getElementById('tdRecGS').style.width = Math.round(tGoals / maxRec * 100) + '%';
-                document.getElementById('tdRecGSVal').textContent = tGoals;
-                document.getElementById('tdRecGC').style.width = Math.round(tLosses / maxRec * 100) + '%';
-                document.getElementById('tdRecGCVal').textContent = tLosses;
+                const sWins = parseInt(map['team-' + teamName + '-rec-wins']) || 0;
+                const sLosses = parseInt(map['team-' + teamName + '-rec-losses']) || 0;
+                const sTies = parseInt(map['team-' + teamName + '-rec-ties']) || 0;
+                const sGS = parseInt(map['team-' + teamName + '-rec-gs']) || 0;
+                const sGC = parseInt(map['team-' + teamName + '-rec-gc']) || 0;
+                const maxRec = Math.max(sWins, sLosses, sTies, sGS, sGC, 1);
+                document.getElementById('tdRecWins').style.width = Math.round(sWins / maxRec * 100) + '%';
+                document.getElementById('tdRecWinsVal').textContent = sWins;
+                document.getElementById('tdRecLosses').style.width = Math.round(sLosses / maxRec * 100) + '%';
+                document.getElementById('tdRecLossesVal').textContent = sLosses;
+                document.getElementById('tdRecTies').style.width = Math.round(sTies / maxRec * 100) + '%';
+                document.getElementById('tdRecTiesVal').textContent = sTies;
+                document.getElementById('tdRecGS').style.width = Math.round(sGS / maxRec * 100) + '%';
+                document.getElementById('tdRecGSVal').textContent = sGS;
+                document.getElementById('tdRecGC').style.width = Math.round(sGC / maxRec * 100) + '%';
+                document.getElementById('tdRecGCVal').textContent = sGC;
                 // All-time records from SiteContent
                 const bigWin = map['team-' + teamName + '-bigwin'] || '—';
                 const bigWinSub = map['team-' + teamName + '-bigwin-sub'] || '';
