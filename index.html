@@ -491,7 +491,7 @@
                 </select>
             </div>
             <div id="careerContentEditor" style="display:none;">
-                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">Transfer History</h4>
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center;">Transfer History <button onclick="document.getElementById('transferModal').style.display='block'" style="background: var(--accent); color: #fff; border: none; border-radius: 4px; padding: 2px 8px; cursor: pointer; font-weight: bold;">+</button></h4>
                 <div class="admin-content-editor" id="careerTransferEditor"></div>
                 <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">Recent Matches</h4>
                 <div class="admin-content-editor" id="careerMatchesEditor"></div>
@@ -499,6 +499,18 @@
                     <button class="admin-save-btn" onclick="saveCareerContent()">Save Career</button>
                     <span class="admin-msg" id="careerMsg"></span>
                 </div>
+            </div>
+        </div>
+
+        <div id="transferModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2a2d35; padding: 1.5rem; border-radius: 8px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); width: 320px; border: 1px solid #3d4250;">
+            <h3 style="margin-top:0; color: #fff; font-size: 1.1rem; margin-bottom: 1rem;">Add Transfer</h3>
+            <div class="admin-field"><label>From</label><select id="tmFrom" class="admin-select" style="width:100%;"><option value="Free Agent">Free Agent</option><option value="Manchester City">Manchester City</option><option value="FC Barcelona">FC Barcelona</option><option value="Bayern Munich">Bayern Munich</option><option value="Paris Saint Germain">Paris Saint Germain</option><option value="Real Madrid">Real Madrid</option></select></div>
+            <div class="admin-field"><label>To</label><select id="tmTo" class="admin-select" style="width:100%;"><option value="Free Agent">Free Agent</option><option value="Manchester City">Manchester City</option><option value="FC Barcelona">FC Barcelona</option><option value="Bayern Munich">Bayern Munich</option><option value="Paris Saint Germain">Paris Saint Germain</option><option value="Real Madrid">Real Madrid</option></select></div>
+            <div class="admin-field"><label>Status</label><select id="tmStatus" class="admin-select" style="width:100%;"><option value="Completed">Completed</option><option value="Declined">Declined</option><option value="Cancelled">Cancelled</option></select></div>
+            <div class="admin-field"><label>Date</label><input type="date" id="tmDate" class="admin-select" style="width:100%;"></div>
+            <div style="display:flex; gap: 0.5rem; margin-top: 1.5rem;">
+                <button class="admin-save-btn" style="flex: 1;" onclick="applyTransferModal()">Add</button>
+                <button class="admin-save-btn" style="flex: 1; background: #555;" onclick="document.getElementById('transferModal').style.display='none'">Cancel</button>
             </div>
         </div>
     </section>
@@ -1106,9 +1118,35 @@
             row.className = 'admin-content-row';
             row.dataset.playerId = playerId;
             row.dataset.label = label;
-            row.innerHTML = '<span class="admin-content-key">' + label + '</span>' +
-                '<input class="admin-content-val" value="' + val.replace(/"/g, '&quot;') + '" placeholder="Enter text...">';
+            if (label === 'Transfer') {
+                row.innerHTML = '<span class="admin-content-key">' + label + '</span>' +
+                    '<textarea class="admin-content-val" style="min-height: 80px; width: 100%; resize: vertical; margin-top: 5px; background: #1f2128; color: #fff; border: 1px solid #3d4250; border-radius: 4px; padding: 0.5rem; font-family: inherit;" placeholder="Enter text...">' + val.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</textarea>';
+            } else {
+                row.innerHTML = '<span class="admin-content-key">' + label + '</span>' +
+                    '<input class="admin-content-val" value="' + val.replace(/"/g, '&quot;') + '" placeholder="Enter text...">';
+            }
             container.appendChild(row);
+        }
+
+        function applyTransferModal() {
+            const from = document.getElementById('tmFrom').value;
+            const to = document.getElementById('tmTo').value;
+            const status = document.getElementById('tmStatus').value;
+            const date = document.getElementById('tmDate').value || 'TBD';
+            
+            const htmlString = `<div style="display:flex; justify-content:space-between; margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.1);"><span>Transfer from ${from} to ${to}</span><span style="color:var(--text); font-size:0.85em;">${status} - ${date}</span></div>`;
+            
+            const row = document.querySelector('#careerTransferEditor .admin-content-val');
+            if (row) {
+                let currentVal = row.value.trim();
+                if (currentVal === 'No transfers yet.' || currentVal === '') {
+                    row.value = htmlString;
+                } else {
+                    row.value = currentVal + '\n' + htmlString;
+                }
+            }
+            
+            document.getElementById('transferModal').style.display = 'none';
         }
 
         async function saveCareerContent() {
