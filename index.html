@@ -502,10 +502,10 @@
                     <div class="career-avatar-ring"></div>
                 </div>
                 <div style="margin-top:0.5rem;display:flex;gap:0.5rem;align-items:center;">
-                    <input id="robloxUsernameInput" placeholder="Roblox username" style="flex:1;padding:0.4rem 0.6rem;border-radius:6px;border:1px solid var(--line);background:rgba(0,0,0,0.3);color:#fff;font-size:0.82rem;">
+                    <input id="robloxUsernameInput" placeholder="Roblox user ID (numbers)" style="flex:1;padding:0.4rem 0.6rem;border-radius:6px;border:1px solid var(--line);background:rgba(0,0,0,0.3);color:#fff;font-size:0.82rem;">
                     <button onclick="saveRobloxUsername()" style="padding:0.4rem 0.8rem;border-radius:6px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:0.82rem;">Save</button>
                 </div>
-                <div id="robloxUsernameMsg" style="font-size:0.75rem;margin-top:0.25rem;color:var(--muted);"></div>
+                <div id="robloxUsernameMsg" style="font-size:0.75rem;margin-top:0.25rem;color:var(--muted);">Find your ID: open your Roblox profile URL → the number after /users/</div>
                 <div class="career-info">
                     <h1 class="career-name" id="careerName">Player Name</h1>
                     <div class="career-badges">
@@ -2163,43 +2163,14 @@
         window.admin = function() { location.hash = 'admin'; };
 
         // ===== Roblox Avatar =====
-        const CORS_PROXIES = [
-            url => 'https://corsproxy.io/?' + encodeURIComponent(url),
-            url => 'https://api.allorigins.win/get?url=' + encodeURIComponent(url),
-            url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url)
-        ];
-
-        async function fetchWithProxy(url) {
-            for (const makeUrl of CORS_PROXIES) {
-                try {
-                    const proxyUrl = makeUrl(url);
-                    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
-                    if (!res.ok) continue;
-                    const text = await res.text();
-                    try { return JSON.parse(text); } catch(e) { return text; }
-                } catch (e) { console.log('[proxy] failed:', e.message); continue; }
-            }
-            return null;
-        }
-
-        async function getRobloxUserIdFromUsername(username) {
-            try {
-                const target = 'https://api.roblox.com/users/get-by-username?username=' + encodeURIComponent(username);
-                const data = await fetchWithProxy(target);
-                console.log('[avatar] lookup response:', data);
-                if (data && data.Id) {
-                    return String(data.Id);
-                }
-            } catch (e) { console.log('[avatar] username lookup failed:', e); }
-            return null;
-        }
 
         async function fetchRobloxAvatar(userId, imgEl, fallbackEl) {
             try {
-                const target = 'https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + userId + '&size=150x150&format=Png&isCircular=false';
-                const thumbData = await fetchWithProxy(target);
+                const res = await fetch('https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + userId + '&size=150x150&format=Png&isCircular=false');
+                if (!res.ok) return false;
+                const thumbData = await res.json();
                 console.log('[avatar] thumbnail response:', thumbData);
-                if (thumbData && thumbData.data && thumbData.data.length > 0 && thumbData.data[0].state === 'Completed') {
+                if (thumbData.data && thumbData.data.length > 0 && thumbData.data[0].state === 'Completed') {
                     imgEl.src = thumbData.data[0].imageUrl;
                     imgEl.onload = function() {
                         imgEl.style.display = 'block';
@@ -2214,7 +2185,6 @@
 
         async function loadRobloxAvatar(discordId, displayName, imgEl, fallbackEl) {
             let robloxUserId = null;
-            // Check cache first
             try {
                 if (initSupabase() && supabaseClient) {
                     const { data: sc } = await supabaseClient.from('SiteContent').select('value').eq('key', 'roblox-' + discordId).maybeSingle();
@@ -2225,22 +2195,8 @@
                 }
             } catch (e) { console.log('[avatar] cache read error:', e); }
 
-            // If no cached ID, try Discord display name as Roblox username
-            if (!robloxUserId && displayName && displayName !== 'User') {
-                console.log('[avatar] trying display name as Roblox username:', displayName);
-                robloxUserId = await getRobloxUserIdFromUsername(displayName);
-                if (robloxUserId) {
-                    console.log('[avatar] found userId from username:', robloxUserId);
-                    try {
-                        if (initSupabase() && supabaseClient) {
-                            await supabaseClient.from('SiteContent').upsert({ key: 'roblox-' + discordId, value: robloxUserId }, { onConflict: 'key' });
-                        }
-                    } catch (e) {}
-                }
-            }
-
             if (!robloxUserId) {
-                console.log('[avatar] no Roblox userId found, showing initials');
+                console.log('[avatar] no Roblox userId set, showing initials');
                 return;
             }
 
@@ -2250,11 +2206,9 @@
         async function saveRobloxUsername() {
             const input = document.getElementById('robloxUsernameInput');
             const msg = document.getElementById('robloxUsernameMsg');
-            const username = input.value.trim();
-            if (!username) { msg.textContent = 'Enter a username'; msg.style.color = '#e74c3c'; return; }
-            msg.textContent = 'Looking up...'; msg.style.color = 'var(--muted)';
-            const userId = await getRobloxUserIdFromUsername(username);
-            if (!userId) { msg.textContent = 'User not found'; msg.style.color = '#e74c3c'; return; }
+            const userId = input.value.trim().replace(/[^0-9]/g, '');
+            if (!userId) { msg.textContent = 'Enter a Roblox user ID (numbers only)'; msg.style.color = '#e74c3c'; return; }
+            msg.textContent = 'Saving...'; msg.style.color = 'var(--muted)';
             try {
                 if (!initSupabase() || !supabaseClient) return;
                 const { data: sess } = await supabaseClient.auth.getSession();
