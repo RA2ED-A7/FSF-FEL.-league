@@ -846,6 +846,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
     position: relative;
 }
 .td-fixture-label { font-size: 0.8rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; }
+.td-fixture-date { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid var(--border); }
 .td-fixture-corner { position: absolute; top: 0.8rem; left: 1rem; font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; }
 .td-fixture-match { display: flex; align-items: center; justify-content: center; gap: 1.5rem; font-size: 1.2rem; }
 .td-fixture-team { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; }

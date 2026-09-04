@@ -1024,7 +1024,9 @@
                 const home = map['team-' + teamName + '-home'] || teamName;
                 const away = map['team-' + teamName + '-away'] || 'TBD';
                 const score = map['team-' + teamName + '-score'] || '0 - 0';
-                fxDiv.innerHTML = '<div class="td-fixture-box"><span class="td-fixture-corner">' + (team ? team.division : '') + '</span><div class="td-fixture-label">Next Match</div><div class="td-fixture-match"><div class="td-fixture-team"><div class="td-fixture-crest">' + home.charAt(0) + '</div>' + home + '</div><div class="td-fixture-score">' + score + '</div><div class="td-fixture-team">' + away + '<div class="td-fixture-crest">' + away.charAt(0) + '</div></div></div></div>';
+                const fxDate = map['team-' + teamName + '-date'] || '';
+                const dateHtml = fxDate ? '<div class="td-fixture-date">' + fxDate + '</div>' : '';
+                fxDiv.innerHTML = '<div class="td-fixture-box"><span class="td-fixture-corner">' + (team ? team.division : '') + '</span><div class="td-fixture-label">Next Match</div><div class="td-fixture-match"><div class="td-fixture-team"><div class="td-fixture-crest">' + home.charAt(0) + '</div>' + home + '</div><div class="td-fixture-score">' + score + '</div><div class="td-fixture-team">' + away + '<div class="td-fixture-crest">' + away.charAt(0) + '</div></div></div>' + dateHtml + '</div>';
             } catch (e) { console.warn('[team] error:', e); }
         }
 
@@ -1549,6 +1551,7 @@
                 addCareerRow(fxDiv, 'Home Team', teamName, map['team-' + teamName + '-home'] || teamName);
                 addCareerRow(fxDiv, 'Away Team', teamName, map['team-' + teamName + '-away'] || 'TBD');
                 addCareerRow(fxDiv, 'Score', teamName, map['team-' + teamName + '-score'] || '0 - 0');
+                addCareerRow(fxDiv, 'Date', teamName, map['team-' + teamName + '-date'] || '');
                 document.getElementById('teamBudgetInput').value = map['team-' + teamName + '-budget'] || 250000000;
                 document.getElementById('teamTrajectoryInput').value = map['team-' + teamName + '-trajectory'] || '';
                 document.getElementById('teamRecWins').value = map['team-' + teamName + '-rec-wins'] || '';
@@ -1586,7 +1589,7 @@
                 for (const row of rows) {
                     const val = row.querySelector('.admin-content-val').value;
                     const label = row.dataset.label;
-                    const keyMap = { 'Home Team': 'home', 'Away Team': 'away', 'Score': 'score' };
+                    const keyMap = { 'Home Team': 'home', 'Away Team': 'away', 'Score': 'score', 'Date': 'date' };
                     kv['team-' + teamName + '-' + (keyMap[label] || label)] = val;
                 }
                 kv['team-' + teamName + '-budget'] = document.getElementById('teamBudgetInput').value;
