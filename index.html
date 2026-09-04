@@ -2158,6 +2158,8 @@
         window.admin = function() { location.hash = 'admin'; };
 
         // ===== Roblox Avatar =====
+        const CORS_PROXY = 'https://corsproxy.io/?url=';
+
         async function getRobloxUserId(discordId) {
             try {
                 const res = await fetch('https://api.bloxlink.net/v2/users/' + discordId);
@@ -2172,7 +2174,7 @@
 
         async function getRobloxUserIdFromUsername(username) {
             try {
-                const res = await fetch('https://users.roblox.com/v1/usernames/users', {
+                const res = await fetch(CORS_PROXY + encodeURIComponent('https://users.roblox.com/v1/usernames/users'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ usernames: [username], excludeBannedUsers: false })
@@ -2187,7 +2189,8 @@
 
         async function fetchRobloxAvatar(userId, imgEl, fallbackEl) {
             try {
-                const thumbRes = await fetch('https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + userId + '&size=150x150&format=Png&isCircular=false');
+                const thumbUrl = 'https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + userId + '&size=150x150&format=Png&isCircular=false';
+                const thumbRes = await fetch(CORS_PROXY + encodeURIComponent(thumbUrl));
                 const thumbData = await thumbRes.json();
                 console.log('[avatar] thumbnail response:', thumbData);
                 if (thumbData.data && thumbData.data.length > 0 && thumbData.data[0].state === 'Completed') {
