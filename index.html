@@ -427,7 +427,6 @@
             <div class="td-section">
                 <h3>Club Records</h3>
                 <div class="td-records">
-                    <div class="td-record-row"><span class="td-record-label">Matches</span><div class="td-record-bar-bg"><div class="td-record-bar" id="tdRecMatches" style="width:0%"></div></div><span class="td-record-val" id="tdRecMatchesVal">0</span></div>
                     <div class="td-record-row"><span class="td-record-label">Wins</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-wins" id="tdRecWins" style="width:0%"></div></div><span class="td-record-val" id="tdRecWinsVal">0</span></div>
                     <div class="td-record-row"><span class="td-record-label">Losses</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-losses" id="tdRecLosses" style="width:0%"></div></div><span class="td-record-val" id="tdRecLossesVal">0</span></div>
                     <div class="td-record-row"><span class="td-record-label">Ties</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-ties" id="tdRecTies" style="width:0%"></div></div><span class="td-record-val" id="tdRecTiesVal">0</span></div>
@@ -935,8 +934,6 @@
                 const tLosses = sorted.reduce((s, p) => s + (p.Loses || 0), 0);
                 const tTies = Math.max(0, tMatches - tWins - tLosses);
                 const maxRec = Math.max(tMatches, 1);
-                document.getElementById('tdRecMatches').style.width = '100%';
-                document.getElementById('tdRecMatchesVal').textContent = tMatches;
                 document.getElementById('tdRecWins').style.width = Math.round(tWins / maxRec * 100) + '%';
                 document.getElementById('tdRecWinsVal').textContent = tWins;
                 document.getElementById('tdRecLosses').style.width = Math.round(tLosses / maxRec * 100) + '%';
