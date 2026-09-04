@@ -1073,14 +1073,16 @@
                     document.getElementById('faTable').innerHTML = '<p class="muted" style="text-align:center;padding:2rem;">No results.</p>';
                     return;
                 }
-                document.getElementById('faTable').innerHTML = filtered.map((p, i) =>
-                    '<div class="fa-row" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer">' +
-                    '<span class="fa-rank">#' + (i + 1) + '</span>' +
+                document.getElementById('faTable').innerHTML = filtered.map((p, i) => {
+                    const av = avatarMap[p.id];
+                    const avHtml = av ? '<img src="' + av + '" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;">' : '';
+                    return '<div class="fa-row" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer">' +
+                    '<span class="fa-rank">#' + (i + 1) + '</span>' + avHtml +
                     '<span class="fa-name">' + (p.display_name || 'Player') + '</span>' +
                     '<span class="fa-pos">' + (p.position || 'None') + '</span>' +
                     '<span class="fa-val">€' + (p["Market Value"] || 0).toLocaleString() + '</span>' +
-                    '</div>'
-                ).join('');
+                    '</div>';
+                }).join('');
             } catch (e) { console.warn('[free-agents] error:', e); }
         }
 
