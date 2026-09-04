@@ -437,10 +437,7 @@
 
     <section class="admin-page" id="adminPage" style="display:none;">
         <h2 class="admin-title">Admin Panel</h2>
-        <p class="muted" style="margin-bottom:1.5rem; display: flex; justify-content: space-between; align-items: center;">
-            <span>Edit player stats. Only visible to Team Managers.</span>
-            <button onclick="forceGlobalUpdate()" style="background: #e74c3c; color: #fff; border: none; border-radius: 4px; padding: 6px 12px; cursor: pointer; font-weight: bold; font-size: 0.8rem;">Force Update Popup</button>
-        </p>
+        <p class="muted" style="margin-bottom:1.5rem;">Edit player stats. Only visible to Team Managers.</p>
         <p class="muted" style="font-size:0.75rem;margin-bottom:1.5rem;">Admin Panel Version 1.2</p>
         <div class="admin-player-select">
             <label>Select Player:</label>
@@ -539,51 +536,8 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Update Notification -->
-    <div class="update-popup" id="updatePopup" style="display:none; align-items:center; justify-content:center;">
-        <div class="update-popup-inner">
-            <div class="update-popup-icon">🔔</div>
-            <h3>New Update Available!</h3>
-            <p>A new version of the site is ready. Click below to refresh.</p>
-            <button class="update-popup-btn" onclick="location.reload(true)">Refresh Now</button>
-        </div>
-    </div>
 
     <script>
-        let lastUpdateTrigger = null;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setInterval(checkForUpdates, 30000); // Check every 30 seconds
-        });
-
-        async function checkForUpdates() {
-            if (!supabaseClient) return;
-            try {
-                const { data } = await supabaseClient.from('SiteContent').select('value').eq('key', 'global-update-trigger').single();
-                if (data && data.value) {
-                    if (lastUpdateTrigger && lastUpdateTrigger !== data.value) {
-                        document.getElementById('updatePopup').style.display = 'flex';
-                    }
-                    lastUpdateTrigger = data.value;
-                }
-            } catch (e) {
-                // ignore
-            }
-        }
-
-        async function forceGlobalUpdate() {
-            if (!confirm('Are you sure you want to force an update popup for all users currently on the site?')) return;
-            initSupabase();
-            if (!supabaseClient) return;
-            try {
-                const timestamp = Date.now().toString();
-                await supabaseClient.from('SiteContent').upsert({ key: 'global-update-trigger', value: timestamp }, { onConflict: 'key' });
-                alert("Global update triggered! Users will see the popup within 30 seconds.");
-            } catch (e) {
-                alert("Error triggering update: " + e.message);
-            }
-        }
-
         function switchFixture(id) {
             document.querySelectorAll('.fixture-tab').forEach(b => b.classList.remove('active'));
             document.querySelector('.fixture-tab[data-fixture="' + id + '"]').classList.add('active');
