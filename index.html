@@ -243,7 +243,7 @@
                     <option value="all">All Teams</option>
                     <option value="Manchester City">Manchester City</option>
                     <option value="FC Barcelona">FC Barcelona</option>
-                    <option value="Bayern Munich">Bayern Munich</option>
+                    <option value="Bayern Munchen">Bayern Munchen</option>
                     <option value="Paris Saint Germain">Paris Saint Germain</option>
                     <option value="Real Madrid">Real Madrid</option>
                 </select>
@@ -529,7 +529,7 @@
         <div class="admin-form" id="adminForm" style="display:none;">
             <div class="admin-grid">
                 <div class="admin-field"><label>Display Name</label><input id="afDisplay" type="text"></div>
-                <div class="admin-field"><label>Team</label><select id="afTeam"><option value="">None</option><option value="Manchester City">Manchester City</option><option value="FC Barcelona">FC Barcelona</option><option value="Bayern Munich">Bayern Munich</option><option value="Paris Saint Germain">Paris Saint Germain</option><option value="Real Madrid">Real Madrid</option></select></div>
+                <div class="admin-field"><label>Team</label><select id="afTeam"><option value="">None</option><option value="Manchester City">Manchester City</option><option value="FC Barcelona">FC Barcelona</option><option value="Bayern Munchen">Bayern Munchen</option><option value="Paris Saint Germain">Paris Saint Germain</option><option value="Real Madrid">Real Madrid</option></select></div>
                 <div class="admin-field"><label>Position</label><select id="afPosition"><option value="None">None</option><option value="CB">CB</option><option value="CF">CF</option><option value="RWB">RWB</option><option value="LWB">LWB</option><option value="CAM">CAM</option><option value="LW">LW</option><option value="RW">RW</option><option value="CDM">CDM</option><option value="CM">CM</option><option value="GK">GK</option></select></div>
                 <div class="admin-field"><label>Rank</label><select id="afRank"><option value="Unranked">Unranked</option><option value="New Star">New Star</option><option value="Bronze">Bronze</option><option value="Silver">Silver</option><option value="Gold">Gold</option><option value="Platinum">Platinum</option></select></div>
                 <div class="admin-field"><label>Matches</label><input id="afMatches" type="number" min="0"></div>
@@ -599,7 +599,7 @@
                     <option value="">Select a team...</option>
                     <option value="Manchester City">Manchester City</option>
                     <option value="FC Barcelona">FC Barcelona</option>
-                    <option value="Bayern Munich">Bayern Munich</option>
+                    <option value="Bayern Munchen">Bayern Munchen</option>
                     <option value="Paris Saint Germain">Paris Saint Germain</option>
                     <option value="Real Madrid">Real Madrid</option>
                 </select>
@@ -647,8 +647,8 @@
 
         <div id="transferModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2a2d35; padding: 1.5rem; border-radius: 8px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); width: 320px; border: 1px solid #3d4250;">
             <h3 style="margin-top:0; color: #fff; font-size: 1.1rem; margin-bottom: 1rem;">Add Transfer</h3>
-            <div class="admin-field"><label>From</label><select id="tmFrom" class="admin-select" style="width:100%;"><option value="Free Agent">Free Agent</option><option value="Manchester City">Manchester City</option><option value="FC Barcelona">FC Barcelona</option><option value="Bayern Munich">Bayern Munich</option><option value="Paris Saint Germain">Paris Saint Germain</option><option value="Real Madrid">Real Madrid</option></select></div>
-            <div class="admin-field"><label>To</label><select id="tmTo" class="admin-select" style="width:100%;"><option value="Free Agent">Free Agent</option><option value="Manchester City">Manchester City</option><option value="FC Barcelona">FC Barcelona</option><option value="Bayern Munich">Bayern Munich</option><option value="Paris Saint Germain">Paris Saint Germain</option><option value="Real Madrid">Real Madrid</option></select></div>
+            <div class="admin-field"><label>From</label><select id="tmFrom" class="admin-select" style="width:100%;"><option value="Free Agent">Free Agent</option><option value="Manchester City">Manchester City</option><option value="FC Barcelona">FC Barcelona</option><option value="Bayern Munchen">Bayern Munchen</option><option value="Paris Saint Germain">Paris Saint Germain</option><option value="Real Madrid">Real Madrid</option></select></div>
+            <div class="admin-field"><label>To</label><select id="tmTo" class="admin-select" style="width:100%;"><option value="Free Agent">Free Agent</option><option value="Manchester City">Manchester City</option><option value="FC Barcelona">FC Barcelona</option><option value="Bayern Munchen">Bayern Munchen</option><option value="Paris Saint Germain">Paris Saint Germain</option><option value="Real Madrid">Real Madrid</option></select></div>
             <div class="admin-field"><label>Status</label><select id="tmStatus" class="admin-select" style="width:100%;"><option value="Completed">Completed</option><option value="Declined">Declined</option><option value="Cancelled">Cancelled</option></select></div>
             <div class="admin-field"><label>Type</label><select id="tmType" class="admin-select" style="width:100%;"><option value="Signing">Signing</option><option value="Trade">Trade</option><option value="Loan">Loan</option><option value="Release">Release</option><option value="Free Agency">Free Agency</option></select></div>
             <div class="admin-field"><label>Date</label><input type="date" id="tmDate" class="admin-select" style="width:100%;"></div>
@@ -881,7 +881,7 @@
         const TEAMS = [
             { name: 'Manchester City', division: '1.FEL' },
             { name: 'FC Barcelona', division: '1.FEL' },
-            { name: 'Bayern Munich', division: '1.FEL' },
+            { name: 'Bayern Munchen', division: '1.FEL' },
             { name: 'Paris Saint Germain', division: '1.FEL' },
             { name: 'Real Madrid', division: '1.FEL' }
         ];
@@ -1490,7 +1490,7 @@
 
         async function syncCareerTransferToTeam(playerId, playerName, from, to, transferType, status, date) {
             if (!initSupabase() || !supabaseClient) return;
-            const TEAMS_LIST = ['Manchester City', 'FC Barcelona', 'Bayern Munich', 'Paris Saint Germain', 'Real Madrid'];
+            const TEAMS_LIST = ['Manchester City', 'FC Barcelona', 'Bayern Munchen', 'Paris Saint Germain', 'Real Madrid'];
             const finalType = status === 'Declined' ? 'Declined' : status === 'Cancelled' ? 'Cancelled' : transferType;
             try {
                 const { data } = await supabaseClient.from('SiteContent').select('*');
