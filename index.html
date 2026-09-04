@@ -488,7 +488,7 @@
     </section>
 
     <footer>
-        <p id="footerText">Freestyle Elite league &mdash; Season 1 &middot; By A7M | .vortex700</p>
+        <p id="footerText">FEL website by A7M | .Vortex700<br>Freestyle elite league By Gadt</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -620,6 +620,32 @@
                 const wWins = data.Wins || 0;
                 const wRate = data.win_rate != null ? data.win_rate : (wMatches > 0 ? Math.round(wWins / wMatches * 100) : 0);
                 document.getElementById('statWinRate').textContent = wRate + '%';
+
+                // Load career content (transfers + matches)
+                try {
+                    const { data: sc } = await supabaseClient.from('SiteContent').select('*');
+                    if (sc) {
+                        const scm = {};
+                        sc.forEach(r => { scm[r.key] = r.value; });
+                        const tDiv = document.getElementById('transferList');
+                        const mDiv = document.getElementById('matchesList');
+                        const tVal = scm['career-' + u.id + '-transfer'];
+                        if (tDiv && tVal) tDiv.innerHTML = '<div class="career-placeholder">' + tVal + '</div>';
+                        if (mDiv) {
+                            let mHtml = '';
+                            for (let i = 1; i <= 3; i++) {
+                                const mv = scm['career-' + u.id + '-match' + i];
+                                if (mv) {
+                                    mHtml += '<div class="career-match-row"><span class="cm-teams">' + mv + '</span></div>';
+                                } else {
+                                    mHtml += '<div class="career-match-row"><span class="cm-date">—</span><span class="cm-teams">No match</span><span class="cm-result">—</span></div>';
+                                }
+                            }
+                            mDiv.innerHTML = mHtml;
+                        }
+                    }
+                } catch (e) { console.warn('[career] content load error:', e); }
+
             } catch (e) {
                 console.warn('[career] Failed to load player stats:', e);
             }
