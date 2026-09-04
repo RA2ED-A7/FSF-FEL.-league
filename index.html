@@ -889,7 +889,7 @@
                     }
                 });
                 const fxDiv = document.getElementById('tdFixture');
-                fxDiv.innerHTML = '<div class="td-fixture-box"><span>' + teamName + '</span><span class="td-fixture-vs">VS</span><span>TBD</span></div>';
+                fxDiv.innerHTML = '<div class="td-fixture-box"><span class="td-fixture-corner">' + (team ? team.division : '') + '</span><div class="td-fixture-label">Next Match</div><div class="td-fixture-match"><div class="td-fixture-team"><div class="td-fixture-crest">' + teamName.charAt(0) + '</div>' + teamName + '</div><span class="td-fixture-vs">VS</span><div class="td-fixture-team">TBD<div class="td-fixture-crest">?</div></div></div></div>';
             } catch (e) { console.warn('[team] error:', e); }
         }
 

@@ -837,9 +837,24 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .td-roster-pos { color: var(--muted); }
 .td-roster-val { color: var(--accent); font-weight: 600; }
 .td-fixture-box {
-    padding: 1rem; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; text-align: center; font-size: 0.95rem;
+    background: linear-gradient(135deg, var(--surface-2), var(--surface));
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 2rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    position: relative;
 }
+.td-fixture-label { font-size: 0.8rem; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; }
+.td-fixture-corner { position: absolute; top: 0.8rem; left: 1rem; font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; }
+.td-fixture-match { display: flex; align-items: center; justify-content: center; gap: 1.5rem; font-size: 1.2rem; }
+.td-fixture-team { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; }
+.td-fixture-crest {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--surface-2);
+    border: 2px solid var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; color: var(--muted); font-weight: 700;
+}
+.td-fixture-score { font-size: 1.4rem; font-weight: 800; color: var(--muted); }
 .td-fixture-vs { color: var(--accent); font-weight: 700; margin: 0 0.5rem; }
 @media (max-width: 600px) {
     .td-field-slot { width: 60px; height: 36px; }
