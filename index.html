@@ -501,11 +501,6 @@
                     <div class="career-avatar-fallback" id="careerAvatarFallback" style="display:none;"></div>
                     <div class="career-avatar-ring"></div>
                 </div>
-                <div style="margin-top:0.5rem;display:flex;gap:0.5rem;align-items:center;">
-                    <input id="robloxUsernameInput" placeholder="Roblox user ID (numbers)" style="flex:1;padding:0.4rem 0.6rem;border-radius:6px;border:1px solid var(--line);background:rgba(0,0,0,0.3);color:#fff;font-size:0.82rem;">
-                    <button onclick="saveRobloxUsername()" style="padding:0.4rem 0.8rem;border-radius:6px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:0.82rem;">Save</button>
-                </div>
-                <div id="robloxUsernameMsg" style="font-size:0.75rem;margin-top:0.25rem;color:var(--muted);">Find your ID: open your Roblox profile URL → the number after /users/</div>
                 <div class="career-info">
                     <h1 class="career-name" id="careerName">Player Name</h1>
                     <div class="career-badges">
@@ -860,8 +855,14 @@
                 if (sess.session) u = sess.session.user;
             }
             if (!u) { console.log('[career] no user'); return; }
-            // Fetch Roblox avatar
-            loadRobloxAvatar(u.id, name, img, fallback);
+            // Load Discord avatar
+            loadDiscordAvatar(u, img, fallback);
+            // Store Discord avatar for other pages
+            try {
+                const meta = u.user_metadata || {};
+                const avUrl = meta.avatar_url || '';
+                if (avUrl) supabaseClient.from('SiteContent').upsert({ key: 'discord-avatar-' + u.id, value: avUrl }, { onConflict: 'key' });
+            } catch(e) {}
             console.log('[career] user id:', u.id);
             try {
                 let { data, error } = await supabaseClient.from('Player').select('*').eq('id', u.id).single();
@@ -1276,14 +1277,21 @@
                 const { data: p, error } = await supabaseClient.from('Player').select('*').eq('id', playerId).single();
                 if (error || !p) return;
                 document.getElementById('profileName').textContent = p.display_name || 'Player';
-                // Load Roblox avatar for profile
+                // Load Discord avatar for profile
                 const pImg = document.getElementById('profileAvatar');
                 const pFallback = document.getElementById('profileAvatarFallback');
                 pImg.style.display = 'none';
                 const pName = p.display_name || 'Player';
                 pFallback.textContent = pName.substring(0, 2).toUpperCase();
                 pFallback.style.display = 'flex';
-                loadRobloxAvatar(p.id, pName, pImg, pFallback);
+                try {
+                    const { data: avSc } = await supabaseClient.from('SiteContent').select('value').eq('key', 'discord-avatar-' + p.id).maybeSingle();
+                    if (avSc && avSc.value) {
+                        pImg.src = avSc.value;
+                        pImg.onload = function() { pImg.style.display = 'block'; pFallback.style.display = 'none'; };
+                        pImg.onerror = function() { pImg.style.display = 'none'; pFallback.style.display = 'flex'; };
+                    }
+                } catch(e) { console.log('[avatar] profile load failed:', e); }
                 document.getElementById('profileTeam').textContent = p.team || 'No Team';
                 document.getElementById('profilePosition').textContent = p.position || 'None';
                 const rank = (p.rank || 'Unranked').toLowerCase();
@@ -1320,7 +1328,6 @@
                         }
                     }
                 } catch (e) {}
-                document.getElementById('profileAvatar').style.display = 'none';
 
                 try {
                     const { data: sc } = await supabaseClient.from('SiteContent').select('*');
@@ -2162,71 +2169,21 @@
 
         window.admin = function() { location.hash = 'admin'; };
 
-        // ===== Roblox Avatar =====
-
-        async function fetchRobloxAvatar(userId, imgEl, fallbackEl) {
-            try {
-                let thumbData = null;
-                const proxies = [
-                    'https://roproxy.com/',
-                    'https://corsproxy.io/?'
-                ];
-                for (const proxy of proxies) {
-                    try {
-                        const url = proxy + 'https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + userId + '&size=150x150&format=Png&isCircular=false';
-                        const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
-                        if (res.ok) { thumbData = await res.json(); break; }
-                    } catch(e) { console.log('[avatar] proxy failed:', proxy, e.message); }
-                }
-                console.log('[avatar] thumbnail response:', thumbData);
-                if (thumbData && thumbData.data && thumbData.data.length > 0 && thumbData.data[0].state === 'Completed') {
-                    imgEl.src = thumbData.data[0].imageUrl;
-                    imgEl.onload = function() {
-                        imgEl.style.display = 'block';
-                        fallbackEl.style.display = 'none';
-                    };
-                    imgEl.onerror = function() { imgEl.style.display = 'none'; fallbackEl.style.display = 'flex'; };
-                    return true;
-                }
-            } catch (e) { console.log('[avatar] thumbnail fetch failed:', e); }
-            return false;
-        }
-
-        async function loadRobloxAvatar(discordId, displayName, imgEl, fallbackEl) {
-            let robloxUserId = null;
-            try {
-                if (initSupabase() && supabaseClient) {
-                    const { data: sc } = await supabaseClient.from('SiteContent').select('value').eq('key', 'roblox-' + discordId).maybeSingle();
-                    if (sc && sc.value) {
-                        robloxUserId = sc.value;
-                        console.log('[avatar] cached userId:', robloxUserId);
-                    }
-                }
-            } catch (e) { console.log('[avatar] cache read error:', e); }
-
-            if (!robloxUserId) {
-                console.log('[avatar] no Roblox userId set, showing initials');
-                return;
+        // ===== Discord Avatar =====
+        function loadDiscordAvatar(user, imgEl, fallbackEl) {
+            const meta = user.user_metadata || user.user_metadata || {};
+            const avatar = meta.avatar_url || null;
+            if (avatar) {
+                imgEl.src = avatar;
+                imgEl.onload = function() {
+                    imgEl.style.display = 'block';
+                    fallbackEl.style.display = 'none';
+                };
+                imgEl.onerror = function() { imgEl.style.display = 'none'; fallbackEl.style.display = 'flex'; };
+            } else {
+                imgEl.style.display = 'none';
+                fallbackEl.style.display = 'flex';
             }
-
-            await fetchRobloxAvatar(robloxUserId, imgEl, fallbackEl);
-        }
-
-        async function saveRobloxUsername() {
-            const input = document.getElementById('robloxUsernameInput');
-            const msg = document.getElementById('robloxUsernameMsg');
-            const userId = input.value.trim().replace(/[^0-9]/g, '');
-            if (!userId) { msg.textContent = 'Enter a Roblox user ID (numbers only)'; msg.style.color = '#e74c3c'; return; }
-            msg.textContent = 'Saving...'; msg.style.color = 'var(--muted)';
-            try {
-                if (!initSupabase() || !supabaseClient) return;
-                const { data: sess } = await supabaseClient.auth.getSession();
-                if (!sess.session) return;
-                const discordId = sess.session.user.id;
-                await supabaseClient.from('SiteContent').upsert({ key: 'roblox-' + discordId, value: userId }, { onConflict: 'key' });
-                msg.textContent = 'Saved! Refreshing...'; msg.style.color = '#4caf50';
-                setTimeout(() => location.reload(), 1000);
-            } catch (e) { msg.textContent = 'Error: ' + e.message; msg.style.color = '#e74c3c'; }
         }
 
         // ===== Bug Report =====
