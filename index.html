@@ -980,6 +980,11 @@
                 const { data: players, error } = await supabaseClient.from('Player').select('*').order('display_name');
                 console.log('[rankings] result:', players, error);
                 if (error || !players) { console.warn('[rankings] query error:', error); return; }
+                let avatarMap = {};
+                try {
+                    const { data: avRows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'discord-avatar-%');
+                    if (avRows) avRows.forEach(r => { avatarMap[r.key.replace('discord-avatar-', '')] = r.value; });
+                } catch(e) {}
                 document.querySelectorAll('.rung-roster').forEach(r => r.innerHTML = '');
                 players.forEach(p => {
                     const rank = (p.rank || 'Unranked').toLowerCase();
@@ -989,7 +994,9 @@
                     const team = p.team || 'No Team';
                     const val = p["Market Value"] || 0;
                     const name = p.display_name || 'Player';
-                    const html = '<div class="rp" data-tier="' + tier + '" data-pos="' + pos + '" data-team="' + team + '" data-val="' + val + '" data-name="' + name + '" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer"><div class="rp-left"><span class="rp-name">' + name + '</span><span class="rp-pos">' + posCat + ' · <span class="rp-sub">' + (pos || 'None') + '</span></span></div><div class="rp-right"><span class="rp-team">' + team + '</span><span class="rp-val">€' + val.toLocaleString() + '</span></div></div>';
+                    const av = avatarMap[p.id];
+                    const avHtml = av ? '<img src="' + av + '" style="width:22px;height:22px;border-radius:50%;object-fit:cover;margin-right:0.35rem;flex-shrink:0;">' : '';
+                    const html = '<div class="rp" data-tier="' + tier + '" data-pos="' + pos + '" data-team="' + team + '" data-val="' + val + '" data-name="' + name + '" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer;display:flex;align-items:center;"><div class="rp-left" style="display:flex;align-items:center;">' + avHtml + '<span class="rp-name">' + name + '</span><span class="rp-pos">' + posCat + ' · <span class="rp-sub">' + (pos || 'None') + '</span></span></div><div class="rp-right"><span class="rp-team">' + team + '</span><span class="rp-val">€' + val.toLocaleString() + '</span></div></div>';
                     const roster = document.querySelector('.rung-roster[data-tier="' + tier + '"]');
                     if (roster) roster.insertAdjacentHTML('beforeend', html);
                 });
@@ -1135,19 +1142,24 @@
                 if (sorted.length === 0) {
                     rosterDiv.innerHTML = '<p class="muted">No players on this team yet.</p>';
                 } else {
-                    rosterDiv.innerHTML = '<div class="td-roster-list">' + sorted.map((p, i) =>
-                        '<div class="td-roster-row" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer">' +
+                    rosterDiv.innerHTML = '<div class="td-roster-list">' + sorted.map((p, i) => {
+                        const av = map['discord-avatar-' + p.id];
+                        const avHtml = av ? '<img src="' + av + '" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:0.5rem;flex-shrink:0;">' : '';
+                        return '<div class="td-roster-row" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer;display:flex;align-items:center;">' +
+                        avHtml +
                         '<span class="td-roster-name">#' + (i + 1) + ' ' + (p.display_name || 'Player') + '</span>' +
                         '<span class="td-roster-pos">' + (p.position || 'None') + '</span>' +
                         '<span class="td-roster-val">€' + (p["Market Value"] || 0).toLocaleString() + '</span>' +
-                        '</div>'
-                    ).join('') + '</div>';
+                        '</div>';
+                    }).join('') + '</div>';
                 }
                 document.querySelectorAll('.td-field-slot').forEach(slot => {
                     const pos = slot.dataset.pos;
                     const posMatch = { 'RB': ['RB', 'RWB'], 'LB': ['LB', 'LWB'] };
                     const player = sorted.find(p => p.position === pos || (posMatch[pos] && posMatch[pos].includes(p.position)));
-                    slot.innerHTML = '<span class="slot-pos">' + pos + '</span><span class="slot-name">' + (player ? player.display_name : '—') + '</span>';
+                    const av = player ? map['discord-avatar-' + player.id] : null;
+                    const avHtml = av ? '<img src="' + av + '" style="width:20px;height:20px;border-radius:50%;object-fit:cover;margin-right:0.3rem;">' : '';
+                    slot.innerHTML = '<span class="slot-pos">' + pos + '</span>' + avHtml + '<span class="slot-name">' + (player ? player.display_name : '—') + '</span>';
                     if (player) slot.classList.add('filled');
                     else slot.classList.remove('filled');
                     if (player) {
