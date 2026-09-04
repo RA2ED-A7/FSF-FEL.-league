@@ -19,6 +19,7 @@ body {
     flex-direction: column;
     position: relative;
     overflow-x: hidden;
+    padding-bottom: 60px;
 }
 body::before {
     content: '';
@@ -486,6 +487,13 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
     width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
     border: 3px solid var(--accent); display: block;
     background: var(--surface-2);
+}
+.career-avatar-fallback {
+    width: 96px; height: 96px; border-radius: 50%;
+    border: 3px solid var(--accent);
+    background: linear-gradient(135deg, var(--accent), #00b894);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; font-weight: 700; color: #fff;
 }
 .career-avatar-ring {
     position: absolute; inset: -5px; border-radius: 50%;
@@ -964,7 +972,17 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 }
 .back-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); box-shadow: 0 -1px 0 rgba(47,214,176,0.1); position: sticky; bottom: 0; background: var(--bg); z-index: 10; }
+footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); box-shadow: 0 -1px 0 rgba(47,214,176,0.1); position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); z-index: 10; }
+
+.bug-report-btn {
+    position: fixed; bottom: 80px; left: 20px; z-index: 999;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-size: 1.3rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 10px rgba(0,230,200,0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.bug-report-btn:hover { transform: scale(1.1); box-shadow: 0 4px 16px rgba(0,230,200,0.5); }
 
 @media (max-width: 720px) {
     header { flex-wrap: wrap; padding: 0.9rem 1rem; }

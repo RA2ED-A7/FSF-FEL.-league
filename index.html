@@ -369,6 +369,7 @@
         <div class="career-header">
             <div class="career-avatar-wrap">
                 <img class="career-avatar" id="profileAvatar" src="" alt="Avatar">
+                <div class="career-avatar-fallback" id="profileAvatarFallback" style="display:none;"></div>
                 <div class="career-avatar-ring"></div>
             </div>
             <div class="career-info">
@@ -497,6 +498,7 @@
             <div class="career-header">
                 <div class="career-avatar-wrap">
                     <img class="career-avatar" id="careerAvatar" src="" alt="Avatar">
+                    <div class="career-avatar-fallback" id="careerAvatarFallback" style="display:none;"></div>
                     <div class="career-avatar-ring"></div>
                 </div>
                 <div class="career-info">
@@ -711,6 +713,17 @@
 
     </section>
 
+    <div class="bug-report-btn" onclick="document.getElementById('bugReportModal').style.display='block'">!</div>
+    <div id="bugReportModal" style="display:none; position:fixed; bottom:80px; left:20px; background:#2a2d35; border:1px solid #3d4250; border-radius:12px; padding:1.2rem; z-index:1000; box-shadow:0 4px 20px rgba(0,0,0,0.5); width:300px;">
+        <h3 style="margin:0 0 0.8rem; font-size:1rem; color:#fff;">Report a Bug</h3>
+        <textarea id="bugReportText" placeholder="Describe the bug..." style="width:100%; height:80px; padding:0.5rem; background:#1f2128; color:#fff; border:1px solid #3d4250; border-radius:6px; font-size:0.85rem; resize:vertical; outline:none; font-family:inherit;"></textarea>
+        <div style="display:flex; gap:0.5rem; margin-top:0.6rem;">
+            <button class="admin-save-btn" style="flex:1;" onclick="submitBugReport()">Send</button>
+            <button class="admin-save-btn" style="flex:1; background:#555;" onclick="document.getElementById('bugReportModal').style.display='none'">Cancel</button>
+        </div>
+        <p id="bugReportMsg" style="font-size:0.75rem; margin-top:0.4rem;"></p>
+    </div>
+
     <footer>
         <p id="footerText">FEL website by &middot; A7M | .Vortex700<br>&mdash; Freestyle elite league By Gadt &mdash;</p>
     </footer>
@@ -828,7 +841,15 @@
             const name = (nameBox && nameBox.textContent !== 'Username') ? nameBox.textContent : 'User';
             document.getElementById('careerName').textContent = name;
             const img = document.getElementById('careerAvatar');
+            const fallback = document.getElementById('careerAvatarFallback');
             img.style.display = 'none';
+            fallback.style.display = 'none';
+            // Show initials fallback immediately
+            const initials = name.substring(0, 2).toUpperCase();
+            fallback.textContent = initials;
+            fallback.style.display = 'flex';
+            // Fetch Roblox avatar
+            if (u && u.id) loadRobloxAvatar(u.id, name, img, fallback);
             if (!signedIn || !supabaseClient) { console.log('[career] no auth'); return; }
             let u = supabaseClient.auth._currentUser;
             if (!u) {
@@ -1250,6 +1271,14 @@
                 const { data: p, error } = await supabaseClient.from('Player').select('*').eq('id', playerId).single();
                 if (error || !p) return;
                 document.getElementById('profileName').textContent = p.display_name || 'Player';
+                // Load Roblox avatar for profile
+                const pImg = document.getElementById('profileAvatar');
+                const pFallback = document.getElementById('profileAvatarFallback');
+                pImg.style.display = 'none';
+                const pName = p.display_name || 'Player';
+                pFallback.textContent = pName.substring(0, 2).toUpperCase();
+                pFallback.style.display = 'flex';
+                loadRobloxAvatar(p.id, pName, pImg, pFallback);
                 document.getElementById('profileTeam').textContent = p.team || 'No Team';
                 document.getElementById('profilePosition').textContent = p.position || 'None';
                 const rank = (p.rank || 'Unranked').toLowerCase();
@@ -2127,6 +2156,89 @@
         refreshAuth().then(() => { route(); renderCareer(); });
 
         window.admin = function() { location.hash = 'admin'; };
+
+        // ===== Roblox Avatar =====
+        async function getRobloxUsername(discordId, displayName) {
+            // Try Bloxlink first
+            try {
+                const res = await fetch('https://api.bloxlink.net/v2/users/' + discordId);
+                const data = await res.json();
+                if (data.status === 'ok' && data.primaryAccount) {
+                    // primaryAccount is the Roblox username
+                    return data.primaryAccount;
+                }
+            } catch (e) { console.log('[avatar] Bloxlink failed:', e); }
+            // Fallback to Discord display name
+            return displayName;
+        }
+
+        async function loadRobloxAvatar(discordId, displayName, imgEl, fallbackEl) {
+            // Check if we already saved a Roblox username
+            let robloxName = null;
+            try {
+                if (initSupabase() && supabaseClient) {
+                    const { data: sc } = await supabaseClient.from('SiteContent').select('value').eq('key', 'roblox-' + discordId).single();
+                    if (sc && sc.value) robloxName = sc.value;
+                }
+            } catch (e) {}
+
+            // If not saved, fetch from Bloxlink and save
+            if (!robloxName) {
+                robloxName = await getRobloxUsername(discordId, displayName);
+                try {
+                    if (initSupabase() && supabaseClient) {
+                        await supabaseClient.from('SiteContent').upsert({ key: 'roblox-' + discordId, value: robloxName }, { onConflict: 'key' });
+                    }
+                } catch (e) { console.log('[avatar] save roblox name failed:', e); }
+            }
+
+            // Fetch avatar by Roblox username
+            try {
+                const res = await fetch('https://users.roblox.com/v1/usernames/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usernames: [robloxName], excludeBannedUsers: false })
+                });
+                const data = await res.json();
+                if (data.data && data.data.length > 0) {
+                    const userId = data.data[0].id;
+                    const thumbRes = await fetch('https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=' + userId + '&size=150x150&format=Png&isCircular=false');
+                    const thumbData = await thumbRes.json();
+                    if (thumbData.data && thumbData.data.length > 0 && thumbData.data[0].state === 'Completed') {
+                        imgEl.src = thumbData.data[0].imageUrl;
+                        imgEl.onload = function() {
+                            imgEl.style.display = 'block';
+                            fallbackEl.style.display = 'none';
+                        };
+                        imgEl.onerror = function() { imgEl.style.display = 'none'; fallbackEl.style.display = 'flex'; };
+                    }
+                }
+            } catch (e) { console.log('[avatar] Roblox fetch failed:', e); }
+        }
+
+        // ===== Bug Report =====
+        async function submitBugReport() {
+            const text = document.getElementById('bugReportText').value.trim();
+            const msg = document.getElementById('bugReportMsg');
+            if (!text) { msg.textContent = 'Please describe the bug.'; msg.style.color = '#e74c3c'; return; }
+            msg.textContent = 'Sending...'; msg.style.color = 'var(--muted)';
+            try {
+                if (initSupabase() && supabaseClient) {
+                    let user = 'Anonymous';
+                    const { data: sess } = await supabaseClient.auth.getSession();
+                    if (sess.session) {
+                        const m = sess.session.user.user_metadata || {};
+                        user = m.full_name || m.user_name || m.name || sess.session.user.email || 'Anonymous';
+                    }
+                    await supabaseClient.from('BugReports').insert({ user, text, created_at: new Date().toISOString() });
+                }
+                msg.textContent = 'Sent! Thank you.'; msg.style.color = '#4caf50';
+                document.getElementById('bugReportText').value = '';
+                setTimeout(() => { document.getElementById('bugReportModal').style.display = 'none'; msg.textContent = ''; }, 2000);
+            } catch (e) {
+                msg.textContent = 'Error sending report.'; msg.style.color = '#e74c3c';
+            }
+        }
 
         document.getElementById('rostersDivFilter').addEventListener('change', renderRosters);
     </script>
