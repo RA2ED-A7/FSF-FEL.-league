@@ -848,8 +848,6 @@
             const initials = name.substring(0, 2).toUpperCase();
             fallback.textContent = initials;
             fallback.style.display = 'flex';
-            // Fetch Roblox avatar
-            if (u && u.id) loadRobloxAvatar(u.id, name, img, fallback);
             if (!signedIn || !supabaseClient) { console.log('[career] no auth'); return; }
             let u = supabaseClient.auth._currentUser;
             if (!u) {
@@ -857,6 +855,8 @@
                 if (sess.session) u = sess.session.user;
             }
             if (!u) { console.log('[career] no user'); return; }
+            // Fetch Roblox avatar
+            loadRobloxAvatar(u.id, name, img, fallback);
             console.log('[career] user id:', u.id);
             try {
                 let { data, error } = await supabaseClient.from('Player').select('*').eq('id', u.id).single();
