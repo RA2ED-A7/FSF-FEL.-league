@@ -807,7 +807,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 }
 .td-field-row { display: flex; justify-content: center; gap: 0.6rem; z-index: 1; }
 .td-field-slot {
-    width: 80px; height: 42px; border-radius: 8px;
+    width: 80px; height: 42px; border-radius: 20px;
     background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     font-size: 0.7rem; color: rgba(255,255,255,0.7); text-align: center;

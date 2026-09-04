@@ -390,8 +390,6 @@
         <div class="team-detail-header">
             <h2 id="tdTeamName">Team Name</h2>
             <span class="team-detail-badge" id="tdTeamDiv">1.FEL</span>
-            <span class="team-detail-badge" id="tdPlayerCount">0 Players</span>
-            <span class="team-detail-badge accent" id="tdBudget">€0</span>
         </div>
         <div class="team-detail-tabs">
             <button class="td-tab active" onclick="switchTeamTab('overview')">Overview</button>
@@ -402,10 +400,10 @@
             <div class="td-section td-field-section">
                 <h3>Team Lineup</h3>
                 <div id="tdLineup" class="td-field">
-                    <div class="td-field-row td-field-gk"><div class="td-field-slot" data-pos="GK"></div></div>
-                    <div class="td-field-row td-field-def"><div class="td-field-slot" data-pos="LB"></div><div class="td-field-slot" data-pos="CB"></div><div class="td-field-slot" data-pos="CB"></div><div class="td-field-slot" data-pos="RB"></div></div>
-                    <div class="td-field-row td-field-mid"><div class="td-field-slot" data-pos="CDM"></div><div class="td-field-slot" data-pos="CM"></div><div class="td-field-slot" data-pos="CAM"></div></div>
                     <div class="td-field-row td-field-att"><div class="td-field-slot" data-pos="LW"></div><div class="td-field-slot" data-pos="ST"></div><div class="td-field-slot" data-pos="RW"></div></div>
+                    <div class="td-field-row td-field-mid"><div class="td-field-slot" data-pos="CDM"></div><div class="td-field-slot" data-pos="CM"></div><div class="td-field-slot" data-pos="CAM"></div></div>
+                    <div class="td-field-row td-field-def"><div class="td-field-slot" data-pos="LB"></div><div class="td-field-slot" data-pos="CB"></div><div class="td-field-slot" data-pos="CB"></div><div class="td-field-slot" data-pos="RB"></div></div>
+                    <div class="td-field-row td-field-gk"><div class="td-field-slot" data-pos="GK"></div></div>
                 </div>
             </div>
             <div class="td-section">
@@ -861,7 +859,7 @@
                 const sorted = players.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
                 const totalBudget = sorted.reduce((s, p) => s + (p["Market Value"] || 0), 0);
                 document.getElementById('tdPlayerCount').textContent = players.length + ' Players';
-                document.getElementById('tdBudget').textContent = '€' + totalBudget.toLocaleString();
+                document.getElementById('tdBudget').textContent = '€250,000,000';
                 const team = TEAMS.find(t => t.name === teamName);
                 document.getElementById('tdTeamDiv').textContent = team ? team.division : '—';
                 const rosterDiv = document.getElementById('tdRoster');
