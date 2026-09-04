@@ -1054,6 +1054,11 @@
                     document.getElementById('faStats').innerHTML = '';
                     return;
                 }
+                let avatarMap = {};
+                try {
+                    const { data: avRows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'discord-avatar-%');
+                    if (avRows) avRows.forEach(r => { avatarMap[r.key.replace('discord-avatar-', '')] = r.value; });
+                } catch(e) {}
                 const posFilter = document.getElementById('faPosFilter').value;
                 const search = (document.getElementById('faSearch').value || '').toLowerCase();
                 let filtered = players;
