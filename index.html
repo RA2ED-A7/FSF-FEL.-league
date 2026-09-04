@@ -30,6 +30,7 @@
                 <div class="dropdown">
                     <a href="#rankings">Rankings</a>
                     <a href="#rosters">Rosters</a>
+                    <a href="#freeagents">Free Agents</a>
                 </div>
             </div>
             <div class="menu-item">
@@ -338,6 +339,34 @@
         <div class="rosters-grid" id="rostersGrid"></div>
     </section>
 
+    <section class="rosters-page" id="freeAgentsPage" style="display:none;">
+        <div class="page-head">
+            <h2>Free Agents</h2>
+            <p class="muted">Unattached players available for signing</p>
+        </div>
+        <div class="fa-stats" id="faStats"></div>
+        <div class="rosters-filter">
+            <label>Position:</label>
+            <select id="faPosFilter" class="lb-select" onchange="renderFreeAgents()">
+                <option value="All">All Positions</option>
+                <option value="GK">GK</option>
+                <option value="CB">CB</option>
+                <option value="LB">LB</option>
+                <option value="RB">RB</option>
+                <option value="LWB">LWB</option>
+                <option value="RWB">RWB</option>
+                <option value="CDM">CDM</option>
+                <option value="CM">CM</option>
+                <option value="CAM">CAM</option>
+                <option value="LW">LW</option>
+                <option value="RW">RW</option>
+                <option value="CF">CF</option>
+            </select>
+            <input id="faSearch" type="text" placeholder="Search player..." class="lb-search" oninput="renderFreeAgents()" style="margin-left:0.5rem;">
+        </div>
+        <div class="fa-table" id="faTable"></div>
+    </section>
+
     <section class="player-profile-page" id="playerProfilePage" style="display:none;">
         <button class="back-btn" onclick="history.back()">&larr; Back</button>
         <div class="career-header">
@@ -366,6 +395,7 @@
         <div class="career-stats">
             <div class="stat-card"><div class="stat-val" id="pStatSaves">0</div><div class="stat-lbl">Saves</div></div>
             <div class="stat-card"><div class="stat-val" id="pStatApps">0</div><div class="stat-lbl">Appearances</div></div>
+            <div class="stat-card"><div class="stat-val" id="pStatAvgRating">—</div><div class="stat-lbl">Avg Rating</div></div>
             <div class="stat-card"><div class="stat-val" id="pStatMVP">0</div><div class="stat-lbl">MVP Awards</div></div>
         </div>
         <div class="career-boxes">
@@ -493,9 +523,10 @@
                 <div class="stat-card"><div class="stat-val" id="statLosses">0</div><div class="stat-lbl">Losses</div></div>
                 <div class="stat-card"><div class="stat-val" id="statApps">0</div><div class="stat-lbl">Appearances</div></div>
                 <div class="stat-card"><div class="stat-val" id="statTeam">—</div><div class="stat-lbl">Team</div></div>
-                <div class="stat-card"><div class="stat-val" id="statPosition">—</div><div class="stat-lbl">Position</div></div>
+                <div class="stat-card" style="position:relative;"><div class="stat-val" id="statPosition">—</div><div class="stat-lbl">Position <button id="posChangeBtn" onclick="openPosChangeModal()" style="display:none; background:var(--accent); color:#fff; border:none; border-radius:4px; padding:1px 6px; cursor:pointer; font-size:0.6rem; margin-left:4px;">Change</button></div></div>
                 <div class="stat-card"><div class="stat-val" id="statMVP">0</div><div class="stat-lbl">MVP Awards</div></div>
                 <div class="stat-card"><div class="stat-val" id="statWinRate">0%</div><div class="stat-lbl">Win Rate</div></div>
+                <div class="stat-card"><div class="stat-val" id="statAvgRating">—</div><div class="stat-lbl">Avg Rating</div></div>
             </div>
             <div class="career-boxes">
                 <div class="career-section career-box-large">
@@ -584,6 +615,9 @@
                 <div class="admin-content-editor" id="careerTransferEditor"></div>
                 <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">Recent Matches</h4>
                 <div class="admin-content-editor" id="careerMatchesEditor"></div>
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 0.95rem;">Match Ratings</h4>
+                <p class="muted" style="font-size:0.75rem;margin-bottom:0.5rem;">Comma-separated ratings per match (e.g. "8.5,7.2,9.0")</p>
+                <input id="careerRatingsInput" type="text" placeholder="8.5,7.2,9.0" style="width:100%; padding:0.5rem 0.8rem; background:var(--surface-2); color:var(--text); border:1px solid var(--border); border-radius:8px; font-size:0.85rem; outline:none;">
                 <div class="admin-actions">
                     <button class="admin-save-btn" onclick="saveCareerContent()">Save Career</button>
                     <span class="admin-msg" id="careerMsg"></span>
@@ -667,6 +701,17 @@
                 <button class="admin-save-btn" style="background: #555;" onclick="document.getElementById('removeTransferModal').style.display='none'">Close</button>
             </div>
         </div>
+
+        <div id="posChangeModal" style="display:none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2a2d35; padding: 1.5rem; border-radius: 8px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5); width: 280px; border: 1px solid #3d4250;">
+            <h3 style="margin-top:0; color: #fff; font-size: 1.1rem; margin-bottom: 0.5rem;">Change Position</h3>
+            <p id="posChangeMsg" style="font-size:0.75rem; color: var(--muted); margin-bottom: 1rem;"></p>
+            <div class="admin-field"><label>New Position</label><select id="posChangeSelect" class="admin-select" style="width:100%;"><option value="CB">CB</option><option value="CF">CF</option><option value="RWB">RWB</option><option value="LWB">LWB</option><option value="CAM">CAM</option><option value="LW">LW</option><option value="RW">RW</option><option value="CDM">CDM</option><option value="CM">CM</option><option value="GK">GK</option></select></div>
+            <div style="display:flex; gap: 0.5rem; margin-top: 1rem;">
+                <button class="admin-save-btn" style="flex: 1;" onclick="applyPosChange()">Confirm</button>
+                <button class="admin-save-btn" style="flex: 1; background: #555;" onclick="document.getElementById('posChangeModal').style.display='none'">Cancel</button>
+            </div>
+        </div>
+
     </section>
 
     <footer>
@@ -746,6 +791,39 @@
             }
         }
 
+        // ===== Position Change =====
+        let posChangePlayerId = null;
+        function openPosChangeModal() {
+            if (!posChangePlayerId) return;
+            const msg = document.getElementById('posChangeMsg');
+            msg.textContent = 'You have a limited number of position changes.';
+            document.getElementById('posChangeModal').style.display = 'block';
+        }
+        async function applyPosChange() {
+            if (!posChangePlayerId || !supabaseClient) return;
+            const msg = document.getElementById('posChangeMsg');
+            const newPos = document.getElementById('posChangeSelect').value;
+            try {
+                const { data } = await supabaseClient.from('Player').select('position_changes').eq('id', posChangePlayerId).single();
+                const used = data ? (data.position_changes || 0) : 0;
+                if (used >= 2) {
+                    msg.textContent = 'Position locked! Ask an admin to change it.';
+                    msg.style.color = '#e74c3c';
+                    return;
+                }
+                const { error } = await supabaseClient.from('Player').update({ position: newPos, position_changes: used + 1 }).eq('id', posChangePlayerId);
+                if (error) { msg.textContent = 'Error: ' + error.message; msg.style.color = '#e74c3c'; return; }
+                document.getElementById('statPosition').textContent = newPos;
+                const remaining = 1 - used;
+                if (remaining <= 0) {
+                    document.getElementById('posChangeBtn').style.display = 'none';
+                }
+                msg.textContent = 'Position changed! ' + (remaining > 0 ? remaining + ' change left.' : 'Locked permanently.');
+                msg.style.color = '#4caf50';
+                setTimeout(() => { document.getElementById('posChangeModal').style.display = 'none'; }, 1200);
+            } catch (e) { msg.textContent = 'Error: ' + e.message; msg.style.color = '#e74c3c'; }
+        }
+
         async function renderCareer() {
             console.log('[career] called, signedIn:', signedIn);
             const nameBox = document.getElementById('userName');
@@ -789,11 +867,29 @@
                 document.getElementById('statApps').textContent = s(data.appearances, 0);
                 document.getElementById('statTeam').textContent = s(data.team, '—');
                 document.getElementById('statPosition').textContent = s(data.position, '—');
+                posChangePlayerId = u.id;
+                const posChanges = data.position_changes || 0;
+                const posBtn = document.getElementById('posChangeBtn');
+                if (posChanges < 2) { posBtn.style.display = 'inline'; } else { posBtn.style.display = 'none'; }
                 document.getElementById('statMVP').textContent = s(data.MVP_Awards, 0);
                 const wMatches = data.matches || 0;
                 const wWins = data.Wins || 0;
                 const wRate = data.win_rate != null ? data.win_rate : (wMatches > 0 ? Math.round(wWins / wMatches * 100) : 0);
                 document.getElementById('statWinRate').textContent = wRate + '%';
+                // Avg Rating from SiteContent
+                try {
+                    const { data: sc2 } = await supabaseClient.from('SiteContent').select('*');
+                    if (sc2) {
+                        const scm2 = {};
+                        sc2.forEach(r => { scm2[r.key] = r.value; });
+                        const ratingsRaw = scm2['career-' + u.id + '-ratings'] || '';
+                        const ratings = ratingsRaw.split(',').map(Number).filter(n => !isNaN(n) && n > 0);
+                        if (ratings.length > 0) {
+                            const avg = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
+                            document.getElementById('statAvgRating').textContent = avg;
+                        }
+                    }
+                } catch (e) {}
 
                 // Load career content (transfers + matches)
                 try {
@@ -840,7 +936,7 @@
                     display_name: displayName,
                     team: '', position: 'None', rank: 'Unranked',
                     goals: 0, assists: 0, saves: 0, matches: 0,
-                    Wins: 0, Loses: 0, "Market Value": 5000000, "MVP_Awards": 0
+                    Wins: 0, Loses: 0, "Market Value": 5000000, "MVP_Awards": 0, position_changes: 0
                 });
                 if (error) console.warn('[player] create row failed:', error.message);
             } catch (e) {
@@ -912,6 +1008,42 @@
             } catch (e) {
                 console.warn('[rosters] error:', e);
             }
+        }
+
+        // ===== Free Agents =====
+        async function renderFreeAgents() {
+            initSupabase();
+            if (!supabaseClient) return;
+            try {
+                const { data: players } = await supabaseClient.from('Player').select('*').eq('team', '');
+                if (!players || players.length === 0) {
+                    document.getElementById('faTable').innerHTML = '<p class="muted" style="text-align:center;padding:2rem;">No free agents available.</p>';
+                    document.getElementById('faStats').innerHTML = '';
+                    return;
+                }
+                const posFilter = document.getElementById('faPosFilter').value;
+                const search = (document.getElementById('faSearch').value || '').toLowerCase();
+                let filtered = players;
+                if (posFilter !== 'All') filtered = filtered.filter(p => p.position === posFilter);
+                if (search) filtered = filtered.filter(p => (p.display_name || '').toLowerCase().includes(search));
+                const totalValue = players.reduce((s, p) => s + (p["Market Value"] || 0), 0);
+                document.getElementById('faStats').innerHTML =
+                    '<div class="fa-stat-box"><div class="fa-stat-val">' + players.length + '</div><div class="fa-stat-lbl">Free Agents</div></div>' +
+                    '<div class="fa-stat-box"><div class="fa-stat-val">€' + totalValue.toLocaleString() + '</div><div class="fa-stat-lbl">Combined Value</div></div>';
+                filtered.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
+                if (filtered.length === 0) {
+                    document.getElementById('faTable').innerHTML = '<p class="muted" style="text-align:center;padding:2rem;">No results.</p>';
+                    return;
+                }
+                document.getElementById('faTable').innerHTML = filtered.map((p, i) =>
+                    '<div class="fa-row" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer">' +
+                    '<span class="fa-rank">#' + (i + 1) + '</span>' +
+                    '<span class="fa-name">' + (p.display_name || 'Player') + '</span>' +
+                    '<span class="fa-pos">' + (p.position || 'None') + '</span>' +
+                    '<span class="fa-val">€' + (p["Market Value"] || 0).toLocaleString() + '</span>' +
+                    '</div>'
+                ).join('');
+            } catch (e) { console.warn('[free-agents] error:', e); }
         }
 
         const RANK_COLORS = {
@@ -1142,6 +1274,20 @@
                 document.getElementById('pStatSaves').textContent = s(p.saves, 0);
                 document.getElementById('pStatMVP').textContent = s(p.MVP_Awards, 0);
                 document.getElementById('pStatApps').textContent = s(p.appearances, 0);
+                // Avg Rating
+                try {
+                    const { data: sc2 } = await supabaseClient.from('SiteContent').select('*');
+                    if (sc2) {
+                        const scm2 = {};
+                        sc2.forEach(r => { scm2[r.key] = r.value; });
+                        const ratingsRaw = scm2['career-' + id + '-ratings'] || '';
+                        const ratings = ratingsRaw.split(',').map(Number).filter(n => !isNaN(n) && n > 0);
+                        if (ratings.length > 0) {
+                            const avg = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
+                            document.getElementById('pStatAvgRating').textContent = avg;
+                        }
+                    }
+                } catch (e) {}
                 document.getElementById('profileAvatar').style.display = 'none';
 
                 try {
@@ -1200,7 +1346,7 @@
                         id: u.id, display_name: displayName,
                         team: '', position: 'None', rank: 'Unranked',
                         goals: 0, assists: 0, saves: 0, matches: 0,
-                    Wins: 0, Loses: 0, "Market Value": 5000000, "MVP_Awards": 0, appearances: 0
+                    Wins: 0, Loses: 0, "Market Value": 5000000, "MVP_Awards": 0, appearances: 0, position_changes: 0
                     });
                     if (insertErr) { sel.innerHTML = '<option>Error creating player</option>'; console.warn('[admin] insert error:', insertErr); return; }
                     players = [{ id: u.id, display_name: displayName }];
@@ -1443,6 +1589,7 @@
                     const val = map['career-' + id + '-match' + i] || '';
                     addCareerRow(matchDiv, 'Match ' + i + ' (e.g. Team A 2-1 Team B)', id, val);
                 }
+                document.getElementById('careerRatingsInput').value = map['career-' + id + '-ratings'] || '';
                 editor.style.display = '';
             } catch (e) { console.warn('[career-content] load error:', e); }
         }
@@ -1588,6 +1735,10 @@
                     const { error } = await supabaseClient.from('SiteContent').upsert({ key, value: val }, { onConflict: 'key' });
                     if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
                 }
+                // Save ratings
+                const ratingsVal = document.getElementById('careerRatingsInput').value;
+                const { error: rErr } = await supabaseClient.from('SiteContent').upsert({ key: 'career-' + id + '-ratings', value: ratingsVal }, { onConflict: 'key' });
+                if (rErr) { msg.textContent = 'Error: ' + rErr.message; msg.className = 'admin-msg err'; return; }
                 msg.textContent = 'Saved!';
                 msg.className = 'admin-msg ok';
             } catch (e) {
@@ -1729,6 +1880,7 @@
                 career: 'careerPage',
                 admin: 'adminPage',
                 rosters: 'rostersPage',
+                freeagents: 'freeAgentsPage',
                 player: 'playerProfilePage',
                 team: 'teamDetailPage'
             };
@@ -1752,6 +1904,7 @@
             crEl.style.display = 'none';
             adEl.style.display = 'none';
             roEl.style.display = 'none';
+            document.getElementById('freeAgentsPage').style.display = 'none';
             prEl.style.display = 'none';
             tdEl.style.display = 'none';
 
@@ -1766,6 +1919,9 @@
             } else if (page === 'rosters') {
                 roEl.style.display = '';
                 renderRosters();
+            } else if (page === 'freeagents') {
+                document.getElementById('freeAgentsPage').style.display = '';
+                renderFreeAgents();
             } else if (page.startsWith('player')) {
                 prEl.style.display = '';
                 loadPlayerProfile();
