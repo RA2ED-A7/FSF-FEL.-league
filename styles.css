@@ -888,6 +888,18 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .td-rc-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
 .td-rc-val { font-size: 1.1rem; font-weight: 700; color: var(--text); }
 .td-rc-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; }
+
+.td-goals-boxes { display: flex; gap: 1rem; margin-top: 0.8rem; }
+.td-goals-box {
+    flex: 1; border-radius: 8px; padding: 1rem 1.2rem; text-align: center;
+    border: 1px solid var(--border);
+}
+.td-goals-scored { background: rgba(33,150,243,0.12); border-color: rgba(33,150,243,0.3); }
+.td-goals-conceded { background: rgba(233,30,99,0.12); border-color: rgba(233,30,99,0.3); }
+.td-gb-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem; }
+.td-gb-val { font-size: 1.5rem; font-weight: 700; }
+.td-goals-scored .td-gb-val { color: #2196f3; }
+.td-goals-conceded .td-gb-val { color: #e91e63; }
 @media (max-width: 600px) {
     .td-field-slot { width: 70px; height: 38px; }
     .td-field-slot .slot-name { font-size: 0.65rem; }

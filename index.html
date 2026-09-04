@@ -436,8 +436,10 @@
                     <div class="td-record-row"><span class="td-record-label">Wins</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-wins" id="tdRecWins" style="width:0%"></div></div><span class="td-record-val" id="tdRecWinsVal">0</span></div>
                     <div class="td-record-row"><span class="td-record-label">Losses</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-losses" id="tdRecLosses" style="width:0%"></div></div><span class="td-record-val" id="tdRecLossesVal">0</span></div>
                     <div class="td-record-row"><span class="td-record-label">Ties</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-ties" id="tdRecTies" style="width:0%"></div></div><span class="td-record-val" id="tdRecTiesVal">0</span></div>
-                    <div class="td-record-row"><span class="td-record-label">Goals Scored</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-gs" id="tdRecGS" style="width:0%"></div></div><span class="td-record-val" id="tdRecGSVal">0</span></div>
-                    <div class="td-record-row"><span class="td-record-label">Goals Conceded</span><div class="td-record-bar-bg"><div class="td-record-bar td-record-gc" id="tdRecGC" style="width:0%"></div></div><span class="td-record-val" id="tdRecGCVal">0</span></div>
+                </div>
+                <div class="td-goals-boxes">
+                    <div class="td-goals-box td-goals-scored"><div class="td-gb-label">Goals Scored</div><div class="td-gb-val" id="tdRecGSVal">0</div></div>
+                    <div class="td-goals-box td-goals-conceded"><div class="td-gb-label">Goals Conceded</div><div class="td-gb-val" id="tdRecGCVal">0</div></div>
                 </div>
             </div>
             <div class="td-section">
@@ -986,9 +988,7 @@
                 document.getElementById('tdRecLossesVal').textContent = sLosses;
                 document.getElementById('tdRecTies').style.width = Math.round(sTies / maxRec * 100) + '%';
                 document.getElementById('tdRecTiesVal').textContent = sTies;
-                document.getElementById('tdRecGS').style.width = Math.round(sGS / maxRec * 100) + '%';
                 document.getElementById('tdRecGSVal').textContent = sGS;
-                document.getElementById('tdRecGC').style.width = Math.round(sGC / maxRec * 100) + '%';
                 document.getElementById('tdRecGCVal').textContent = sGC;
                 // All-time records from SiteContent
                 const bigWin = map['team-' + teamName + '-bigwin'] || '—';
