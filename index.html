@@ -537,16 +537,42 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Update Notification -->
-    <div class="update-popup" id="updatePopup" style="display:none;">
+    <div class="update-popup" id="updatePopup" style="display:none; align-items:center; justify-content:center;">
         <div class="update-popup-inner">
             <div class="update-popup-icon">🔔</div>
             <h3>New Update Available!</h3>
-            <p>A new version of the site is ready. Click below to refresh.</p>
+            <p>A new version of the site (v<span id="newVersionNum"></span>) is ready. Click below to refresh.</p>
             <button class="update-popup-btn" onclick="location.reload(true)">Refresh Now</button>
         </div>
     </div>
 
     <script>
+        // UPDATE THIS VERSION TO TRIGGER THE POPUP FOR USERS
+        const SITE_VERSION = "1.0";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const footerTxt = document.getElementById('footerText');
+            if(footerTxt) {
+                footerTxt.innerHTML += `<br><span style="font-size: 0.8em; color: var(--muted);">v${SITE_VERSION}</span>`;
+            }
+            setInterval(checkForUpdates, 60000); // Check every 60 seconds
+        });
+
+        async function checkForUpdates() {
+            try {
+                const res = await fetch(window.location.href.split('#')[0].split('?')[0] + '?t=' + new Date().getTime(), { cache: "no-store" });
+                if (!res.ok) return;
+                const text = await res.text();
+                const match = text.match(/const\s+SITE_VERSION\s*=\s*['"]([^'"]+)['"]/);
+                if (match && match[1] && match[1] !== SITE_VERSION) {
+                    document.getElementById('newVersionNum').textContent = match[1];
+                    document.getElementById('updatePopup').style.display = 'flex';
+                }
+            } catch (e) {
+                console.warn('[update-checker] error:', e);
+            }
+        }
+
         function switchFixture(id) {
             document.querySelectorAll('.fixture-tab').forEach(b => b.classList.remove('active'));
             document.querySelector('.fixture-tab[data-fixture="' + id + '"]').classList.add('active');
