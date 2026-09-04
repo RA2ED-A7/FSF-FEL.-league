@@ -1509,11 +1509,14 @@
                     arrFrom.push({ player: playerName, direction: 'From', team: to, type: finalType, date: date });
                     await supabaseClient.from('SiteContent').upsert({ key: keyFrom, value: JSON.stringify(arrFrom) }, { onConflict: 'key' });
                 }
-                // Update player's team if transfer is completed
-                if (status === 'Completed') {
+                // Update player's team if transfer is completed or released
+                if (status === 'Completed' || transferType === 'Release') {
                     const playerId = document.getElementById('careerPlayerSelect').value;
-                    if (playerId && TEAMS_LIST.includes(to)) {
-                        await supabaseClient.from('Player').update({ team: to }).eq('id', playerId);
+                    if (playerId) {
+                        const newTeam = transferType === 'Release' ? '' : (TEAMS_LIST.includes(to) ? to : null);
+                        if (newTeam !== null) {
+                            await supabaseClient.from('Player').update({ team: newTeam }).eq('id', playerId);
+                        }
                     }
                 }
             } catch (e) { console.warn('[sync-transfer] error:', e); }
