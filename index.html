@@ -621,6 +621,7 @@
             <button class="admin-tab active" onclick="switchContentTab('home')">Home Page</button>
             <button class="admin-tab" onclick="switchContentTab('career')">My Career</button>
             <button class="admin-tab" onclick="switchContentTab('teams')">Teams</button>
+            <button class="admin-tab" onclick="switchContentTab('matches')">Matches History</button>
         </div>
         <div id="contentHome" class="admin-panel-content active">
             <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit home page text. Changes are saved permanently.</p>
@@ -712,6 +713,28 @@
                 <div class="admin-actions" style="margin-top:1rem;">
                     <button class="admin-save-btn" onclick="saveTeamContent()">Save Team</button>
                     <span class="admin-msg" id="teamMsg"></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="contentMatches" class="admin-panel-content">
+            <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit match cards for the Schedule page. Use dropdowns for teams, status, date & time. Only results are text inputs.</p>
+            <div style="display:flex;gap:2rem;align-items:flex-start;">
+                <div style="flex:1;min-width:0;">
+                    <div id="matchEditorContainer" style="max-height:70vh;overflow-y:auto;padding-right:0.5rem;">
+                        <p class="muted">Loading matches...</p>
+                    </div>
+                    <div class="admin-actions" style="margin-top:1rem;">
+                        <button class="admin-save-btn" onclick="saveMatchesContent()">Save Matches</button>
+                        <span class="admin-msg" id="matchesMsg"></span>
+                    </div>
+                </div>
+                <div style="width:320px;flex-shrink:0;position:sticky;top:1rem;">
+                    <div style="background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:1rem;">
+                        <h4 style="margin:0 0 0.6rem;font-size:0.9rem;">Quick Info</h4>
+                        <p class="muted" style="font-size:0.72rem;margin-bottom:0.5rem;">Changes are saved permanently to SiteContent under <code>match-gw{N}-{M}</code> keys.</p>
+                        <p class="muted" style="font-size:0.72rem;margin:0;">Each match stores: home, away, status, date, result.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1226,47 +1249,81 @@
         }
 
         // ===== Schedule =====
-        function renderSchedule() {
+        async function renderSchedule() {
             const container = document.getElementById('schContent');
             const TEAMS_OBJ = {
-                'Manchester City': { short: 'MCI', color: '#6CABDD' },
-                'FC Barcelona': { short: 'BAR', color: '#A50044' },
-                'Bayern Munchen': { short: 'BAY', color: '#DC052D' },
-                'Paris Saint Germain': { short: 'PSG', color: '#004170' },
-                'Real Madrid': { short: 'RMA', color: '#FEBE10' }
+                'Manchester City': { color: '#6CABDD' },
+                'FC Barcelona': { color: '#A50044' },
+                'Bayern Munchen': { color: '#DC052D' },
+                'Paris Saint Germain': { color: '#004170' },
+                'Real Madrid': { color: '#FEBE10' }
             };
             const teamNames = Object.keys(TEAMS_OBJ);
-            const statuses = ['FINISHED', 'SCHEDULED', 'NOT SCHEDULED', 'FORFEIT', 'DOUBLE FORFEIT'];
+            const defaultStatuses = ['FINISHED', 'SCHEDULED', 'NOT SCHEDULED', 'FORFEIT', 'DOUBLE FORFEIT'];
             const statusColors = { 'FINISHED': '#4caf50', 'SCHEDULED': 'var(--accent)', 'NOT SCHEDULED': 'var(--muted)', 'FORFEIT': '#e74c3c', 'DOUBLE FORFEIT': '#ff9800' };
-            let fixtureIdx = 0;
+            const resultStatuses = ['FINISHED', 'FORFEIT', 'DOUBLE FORFEIT'];
+            let matchData = [];
+            initSupabase();
+            if (supabaseClient) {
+                try {
+                    const { data: rows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'match-gw%');
+                    for (let gw = 1; gw <= 7; gw++) {
+                        for (let m = 0; m < 4; m++) {
+                            const prefix = 'match-gw' + gw + '-' + m;
+                            const getKey = (suffix) => {
+                                const r = rows?.find(x => x.key === prefix + '-' + suffix);
+                                return r ? r.value : '';
+                            };
+                            matchData.push({
+                                gw, idx: m,
+                                home: getKey('home') || teamNames[((gw - 1) * 4 + m * 2) % teamNames.length],
+                                away: getKey('away') || teamNames[((gw - 1) * 4 + m * 2 + 1) % teamNames.length],
+                                status: getKey('status') || defaultStatuses[(gw + m) % defaultStatuses.length],
+                                date: getKey('date') || '',
+                                result: getKey('result') || ''
+                            });
+                        }
+                    }
+                } catch(e) { console.warn('[schedule] load error:', e); }
+            }
+            if (!matchData.length) {
+                let fixtureIdx = 0;
+                for (let gw = 1; gw <= 7; gw++) {
+                    for (let m = 0; m < 4; m++) {
+                        matchData.push({
+                            gw, idx: m,
+                            home: teamNames[fixtureIdx % teamNames.length],
+                            away: teamNames[(fixtureIdx + 1) % teamNames.length],
+                            status: defaultStatuses[(gw + m) % defaultStatuses.length],
+                            date: '', result: ''
+                        });
+                        fixtureIdx += 2;
+                    }
+                }
+            }
             let html = '';
             for (let gw = 1; gw <= 7; gw++) {
-                const matches = [];
-                for (let m = 0; m < 4; m++) {
-                    const h = teamNames[fixtureIdx % teamNames.length];
-                    const a = teamNames[(fixtureIdx + 1) % teamNames.length];
-                    fixtureIdx += 2;
-                    matches.push({ home: h, away: a });
-                }
-                html += '<div style="margin-bottom:2.5rem;">' +
-                    '<div style="font-size:0.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1rem;">Gameweek ' + gw + '</div>' +
-                    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;">';
-                matches.forEach((match, mi) => {
+                const gwMatches = matchData.filter(m => m.gw === gw);
+                html += '<div style="margin-bottom:3rem;">' +
+                    '<div style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1.2rem;">Gameweek ' + gw + '</div>' +
+                    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1.2rem;">';
+                gwMatches.forEach(match => {
                     const hc = TEAMS_OBJ[match.home]?.color || '#888';
                     const ac = TEAMS_OBJ[match.away]?.color || '#888';
-                    const hs = TEAMS_OBJ[match.home]?.short || '???';
-                    const as_ = TEAMS_OBJ[match.away]?.short || '???';
-                    const status = statuses[(gw + mi) % statuses.length];
+                    const status = match.status;
                     const sColor = statusColors[status] || 'var(--muted)';
-                    const result = status === 'FINISHED' ? (mi + 1) + ' - ' + ((mi + 3) % 5) : '—  —';
-                    html += '<div class="sch-match-card" style="background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:1rem;cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s;" onclick="location.hash=\'schedule-match\'" onmouseenter="this.style.borderColor=\'' + hc + '\';this.style.boxShadow=\'0 2px 14px \' + hc + \'33\'" onmouseleave="this.style.borderColor=\'var(--line)\';this.style.boxShadow=\'none\'">' +
-                        '<div style="display:flex;justify-content:center;margin-bottom:0.6rem;"><span style="font-size:0.6rem;font-weight:700;color:' + sColor + ';background:' + sColor + '18;border:1px solid ' + sColor + '44;border-radius:4px;padding:2px 10px;letter-spacing:0.5px;">' + status + '</span></div>' +
-                        '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.8rem;">' +
-                            '<div style="text-align:center;flex:1;min-width:0;"><div style="font-size:0.9rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.home + '</div><div style="font-size:0.72rem;font-weight:600;color:' + hc + ';margin-top:0.25rem;">' + hs + '</div></div>' +
-                            '<div style="text-align:center;flex-shrink:0;"><div style="font-size:0.95rem;font-weight:800;color:var(--text);letter-spacing:1px;">' + result + '</div></div>' +
-                            '<div style="text-align:center;flex:1;min-width:0;"><div style="font-size:0.9rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.away + '</div><div style="font-size:0.72rem;font-weight:600;color:' + ac + ';margin-top:0.25rem;">' + as_ + '</div></div>' +
+                    const isResult = resultStatuses.includes(status);
+                    const result = match.result || (isResult ? '—  —' : 'VS');
+                    const resultColor = isResult ? 'var(--text)' : 'var(--muted)';
+                    const dateStr = match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Date & Time TBD';
+                    html += '<div class="sch-match-card" style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem;cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s;" onclick="location.hash=\'schedule-match\'" onmouseenter="this.style.borderColor=\'' + hc + '\';this.style.boxShadow=\'0 4px 20px \' + hc + \'33\'" onmouseleave="this.style.borderColor=\'var(--line)\';this.style.boxShadow=\'none\'">' +
+                        '<div style="display:flex;justify-content:center;margin-bottom:0.8rem;"><span style="font-size:0.62rem;font-weight:700;color:' + sColor + ';background:' + sColor + '18;border:1px solid ' + sColor + '44;border-radius:4px;padding:3px 12px;letter-spacing:0.5px;">' + status + '</span></div>' +
+                        '<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">' +
+                            '<div style="text-align:center;flex:1;min-width:0;"><div style="font-size:1rem;font-weight:700;color:' + hc + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.home + '</div></div>' +
+                            '<div style="text-align:center;flex-shrink:0;"><div style="font-size:1.1rem;font-weight:800;color:' + resultColor + ';letter-spacing:2px;">' + result + '</div></div>' +
+                            '<div style="text-align:center;flex:1;min-width:0;"><div style="font-size:1rem;font-weight:700;color:' + ac + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.away + '</div></div>' +
                         '</div>' +
-                        '<div style="margin-top:0.8rem;display:flex;justify-content:center;"><span style="display:inline-block;font-size:0.65rem;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:3px 10px;">Date & Time TBD</span></div>' +
+                        '<div style="margin-top:1rem;display:flex;justify-content:center;"><span style="display:inline-block;font-size:0.68rem;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:3px 12px;">' + dateStr + '</span></div>' +
                     '</div>';
                 });
                 html += '</div></div>';
@@ -1812,10 +1869,11 @@
         function switchContentTab(tab) {
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.admin-panel-content').forEach(p => p.classList.remove('active'));
-            const tabMap = { home: 0, career: 1, teams: 2 };
+            const tabMap = { home: 0, career: 1, teams: 2, matches: 3 };
             document.querySelectorAll('.admin-tab')[tabMap[tab]].classList.add('active');
             document.getElementById('content' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
             sessionStorage.setItem('adminTab', tab);
+            if (tab === 'matches') loadMatchEditor();
         }
 
         async function loadCareerPlayers() {
@@ -2092,6 +2150,101 @@
                 for (const [key, val] of Object.entries(kv)) {
                     const { error } = await supabaseClient.from('SiteContent').upsert({ key, value: val }, { onConflict: 'key' });
                     if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
+                }
+                msg.textContent = 'Saved!';
+                msg.className = 'admin-msg ok';
+            } catch (e) {
+                msg.textContent = 'Error: ' + e.message;
+                msg.className = 'admin-msg err';
+            }
+        }
+
+        // ===== Match Editor (Admin) =====
+        const TEAM_NAMES = ['Manchester City', 'FC Barcelona', 'Bayern Munchen', 'Paris Saint Germain', 'Real Madrid'];
+        const MATCH_STATUSES = ['FINISHED', 'SCHEDULED', 'NOT SCHEDULED', 'FORFEIT', 'DOUBLE FORFEIT'];
+        const RESULT_STATUSES = ['FINISHED', 'FORFEIT', 'DOUBLE FORFEIT'];
+        let _matchData = [];
+
+        async function loadMatchEditor() {
+            initSupabase();
+            if (!supabaseClient) return;
+            const container = document.getElementById('matchEditorContainer');
+            try {
+                const { data: rows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'match-gw%');
+                _matchData = [];
+                for (let gw = 1; gw <= 7; gw++) {
+                    for (let m = 0; m < 4; m++) {
+                        const prefix = 'match-gw' + gw + '-' + m;
+                        const getKey = (suffix) => {
+                            const r = rows?.find(x => x.key === prefix + '-' + suffix);
+                            return r ? r.value : '';
+                        };
+                        _matchData.push({
+                            gw, idx: m,
+                            home: getKey('home') || TEAM_NAMES[(gw * 4 + m * 2) % TEAM_NAMES.length],
+                            away: getKey('away') || TEAM_NAMES[(gw * 4 + m * 2 + 1) % TEAM_NAMES.length],
+                            status: getKey('status') || MATCH_STATUSES[(gw + m) % MATCH_STATUSES.length],
+                            date: getKey('date') || '',
+                            result: getKey('result') || ''
+                        });
+                    }
+                }
+                renderMatchEditorUI(container);
+            } catch (e) {
+                container.innerHTML = '<p class="muted">Error loading matches.</p>';
+            }
+        }
+
+        function renderMatchEditorUI(container) {
+            const resultStatuses = RESULT_STATUSES;
+            let html = '';
+            for (let gw = 1; gw <= 7; gw++) {
+                html += '<div style="margin-bottom:2rem;">' +
+                    '<div style="font-size:0.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.8rem;">Gameweek ' + gw + '</div>';
+                const gwMatches = _matchData.filter(m => m.gw === gw);
+                gwMatches.forEach((match, localIdx) => {
+                    const gi = _matchData.indexOf(match);
+                    const isResult = resultStatuses.includes(match.status);
+                    const teamOpts = TEAM_NAMES.map(t => '<option value="' + t + '"' + (t === match.home ? ' selected' : '') + '>' + t + '</option>').join('');
+                    const teamOptsAway = TEAM_NAMES.map(t => '<option value="' + t + '"' + (t === match.away ? ' selected' : '') + '>' + t + '</option>').join('');
+                    const statusOpts = MATCH_STATUSES.map(s => '<option value="' + s + '"' + (s === match.status ? ' selected' : '') + '>' + s + '</option>').join('');
+                    html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0.8rem 1rem;margin-bottom:0.6rem;">' +
+                        '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.6rem;align-items:end;">' +
+                            '<div class="admin-field"><label style="font-size:0.7rem;">Home</label><select class="admin-select" style="width:100%;font-size:0.8rem;" onchange="_matchData[' + gi + '].home=this.value">' + teamOpts + '</select></div>' +
+                            '<div class="admin-field"><label style="font-size:0.7rem;">Status</label><select class="admin-select" style="width:100%;font-size:0.8rem;" onchange="_matchData[' + gi + '].status=this.value;renderMatchEditorUI(document.getElementById(\'matchEditorContainer\'))">' + statusOpts + '</select></div>' +
+                            '<div class="admin-field"><label style="font-size:0.7rem;">Away</label><select class="admin-select" style="width:100%;font-size:0.8rem;" onchange="_matchData[' + gi + '].away=this.value">' + teamOptsAway + '</select></div>' +
+                        '</div>' +
+                        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:0.6rem;">' +
+                            '<div class="admin-field"><label style="font-size:0.7rem;">Date & Time</label><input type="datetime-local" class="admin-input" style="width:100%;font-size:0.8rem;" value="' + (match.date || '') + '" onchange="_matchData[' + gi + '].date=this.value"></div>' +
+                            '<div class="admin-field"><label style="font-size:0.7rem;">Result</label><input type="text" class="admin-input" style="width:100%;font-size:0.8rem;" placeholder="' + (isResult ? 'e.g. 3 - 2' : 'VS') + '" value="' + (match.result || '') + '" ' + (isResult ? '' : 'disabled style="width:100%;font-size:0.8rem;opacity:0.4;cursor:not-allowed;"') + ' onchange="_matchData[' + gi + '].result=this.value"></div>' +
+                        '</div>' +
+                    '</div>';
+                });
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        async function saveMatchesContent() {
+            initSupabase();
+            if (!supabaseClient) return;
+            const msg = document.getElementById('matchesMsg');
+            msg.textContent = 'Saving...';
+            msg.className = 'admin-msg';
+            try {
+                for (const match of _matchData) {
+                    const prefix = 'match-gw' + match.gw + '-' + match.idx;
+                    const kv = {
+                        [prefix + '-home']: match.home,
+                        [prefix + '-away']: match.away,
+                        [prefix + '-status']: match.status,
+                        [prefix + '-date']: match.date,
+                        [prefix + '-result']: match.result
+                    };
+                    for (const [key, value] of Object.entries(kv)) {
+                        const { error } = await supabaseClient.from('SiteContent').upsert({ key, value }, { onConflict: 'key' });
+                        if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
+                    }
                 }
                 msg.textContent = 'Saved!';
                 msg.className = 'admin-msg ok';
