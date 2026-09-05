@@ -1732,6 +1732,16 @@
 
             container.innerHTML = html;
 
+            // Attach MVP vote button listeners
+            if (currentUserId) {
+                container.querySelectorAll('.mvp-vote-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const pid = this.getAttribute('data-player-id');
+                        if (pid) voteMVP(pid);
+                    });
+                });
+            }
+
             // Fill field slots for both lineups
             const fillFieldSlots = (fieldId, lineup, teamColor) => {
                 const field = document.getElementById(fieldId);
