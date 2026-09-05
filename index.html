@@ -2371,12 +2371,15 @@
         function resolveBugReport(idx) {
             const card = document.getElementById('br-card-' + idx);
             if (!card) return;
-            card.style.opacity = '0.3';
-            card.style.background = 'var(--bg)';
-            setTimeout(() => {
-                bugReportsData.splice(idx, 1);
-                renderBugReports();
-            }, 500);
+            card.style.opacity = '0';
+            card.style.transform = 'translateX(20px)';
+            card.style.transition = 'opacity 0.4s, transform 0.4s';
+            const report = bugReportsData[idx];
+            bugReportsData.splice(idx, 1);
+            setTimeout(() => renderBugReports(), 450);
+            if (report && report.id) {
+                supabaseClient.from('BugReports').delete().eq('id', report.id).then(() => {}).catch(e => console.warn('[bug] delete failed:', e));
+            }
         }
 
         document.getElementById('rostersDivFilter').addEventListener('change', renderRosters);
