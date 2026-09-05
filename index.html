@@ -3048,6 +3048,33 @@
             }
         }
 
+        // Page loader + enter animations
+        let _loaderMinDone = false;
+        let _loaderPageDone = false;
+        let _loaderTimer = null;
+        function showLoader() {
+            _loaderMinDone = false;
+            _loaderPageDone = false;
+            document.getElementById('pageLoader').classList.add('active');
+            clearTimeout(_loaderTimer);
+            _loaderTimer = setTimeout(function() {
+                _loaderMinDone = true;
+                if (_loaderPageDone) document.getElementById('pageLoader').classList.remove('active');
+            }, 1200);
+        }
+        function hideLoader() {
+            _loaderPageDone = true;
+            if (_loaderMinDone) {
+                document.getElementById('pageLoader').classList.remove('active');
+            }
+        }
+        function animatePage(el) {
+            if (!el) return;
+            el.classList.remove('page-enter');
+            void el.offsetWidth;
+            el.classList.add('page-enter');
+        }
+
         // ===== Hash router =====
         function route() {
             const page = (location.hash.replace('#', '') || '').toLowerCase();
@@ -3484,33 +3511,6 @@
         function toggleSettings() {
             document.getElementById('settingsOverlay').classList.toggle('open');
             document.getElementById('settingsSidebar').classList.toggle('open');
-        }
-
-        // Page loader + enter animations
-        let _loaderMinDone = false;
-        let _loaderPageDone = false;
-        let _loaderTimer = null;
-        function showLoader() {
-            _loaderMinDone = false;
-            _loaderPageDone = false;
-            document.getElementById('pageLoader').classList.add('active');
-            clearTimeout(_loaderTimer);
-            _loaderTimer = setTimeout(function() {
-                _loaderMinDone = true;
-                if (_loaderPageDone) document.getElementById('pageLoader').classList.remove('active');
-            }, 1200);
-        }
-        function hideLoader() {
-            _loaderPageDone = true;
-            if (_loaderMinDone) {
-                document.getElementById('pageLoader').classList.remove('active');
-            }
-        }
-        function animatePage(el) {
-            if (!el) return;
-            el.classList.remove('page-enter');
-            void el.offsetWidth;
-            el.classList.add('page-enter');
         }
     </script>
 </body>
