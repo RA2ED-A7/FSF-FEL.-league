@@ -8,10 +8,8 @@
 </head>
 <body>
     <header>
-        <div style="display:flex;align-items:center;gap:0.6rem;">
-            <button style="background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:0.35rem 0.5rem;cursor:pointer;color:var(--text);font-size:0.85rem;line-height:1;transition:border-color 0.15s;" onmouseenter="this.style.borderColor='var(--accent)'" onmouseleave="this.style.borderColor='var(--line)'" title="Settings">\u2699</button>
-            <div class="brand"><span id="site-title">Freestyle Elite league</span> <span class="season" id="site-subtitle">| Season 1</span></div>
-        </div>
+        <button style="background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:0.3rem 0.5rem;cursor:pointer;color:var(--text);font-size:0.9rem;line-height:1;transition:border-color 0.15s;" onmouseenter="this.style.borderColor='var(--accent)'" onmouseleave="this.style.borderColor='var(--line)'" title="Settings">\u2699\uFE0F</button>
+        <div class="brand"><span id="site-title">Freestyle Elite league</span> <span class="season" id="site-subtitle">| Season 1</span></div>
         <a href="#admin" class="admin-line" id="adminLine" style="display:none;"></a>
         <nav class="menu">
             <div class="menu-item">
@@ -2674,7 +2672,6 @@
         let _matchEvents = [];
         let _matchHomeLineup = [];
         let _matchAwayLineup = [];
-        let _matchStatsArr = [];
 
         async function loadMatchEditor() {
             initSupabase();
@@ -2773,10 +2770,11 @@
                 try { _matchHomeLineup = JSON.parse(get('home-lineup')) || []; } catch(e) { _matchHomeLineup = []; }
                 try { _matchAwayLineup = JSON.parse(get('away-lineup')) || []; } catch(e) { _matchAwayLineup = []; }
                 try { _matchEvents = JSON.parse(get('events')) || []; } catch(e) { _matchEvents = []; }
-                try { _matchStatsArr = JSON.parse(get('stats')) || []; } catch(e) { _matchStatsArr = []; }
+                let statsArr = [];
+                try { statsArr = JSON.parse(get('stats')) || []; } catch(e) { statsArr = []; }
                 populatePlayerSelects();
                 renderEventsList();
-                renderMatchStatsTable(_matchStatsArr);
+                renderMatchStatsTable(statsArr);
             } catch(e) { console.warn('[match-detail-editor] load error:', e); }
         }
 
@@ -2832,12 +2830,8 @@
         }
         function removeLineupPlayer(containerId, idx) {
             const arr = containerId === 'homeLineupList' ? _matchHomeLineup : _matchAwayLineup;
-            const removed = arr.splice(idx, 1);
-            if (removed[0]) {
-                _matchStatsArr = _matchStatsArr.filter(s => s.id !== removed[0].id);
-            }
+            arr.splice(idx, 1);
             renderLineupList(containerId, arr);
-            renderMatchStatsTable(_matchStatsArr);
         }
 
         // Events
