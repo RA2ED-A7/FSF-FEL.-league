@@ -795,7 +795,11 @@
                                 <div class="admin-field" id="eventAssisterField" style="width:150px;display:none;"><label>Assister</label>
                                     <select id="eventAssisterSelect" class="admin-select" style="width:100%;"></select>
                                 </div>
-                                <div class="admin-field" style="width:80px;"><label>Minute</label><input type="text" id="eventMinute" class="admin-input" placeholder="45" style="width:100%;"></div>
+                                <div class="admin-field" style="width:80px;"><label>Minute</label><input type="number" id="eventMinute" class="admin-input" placeholder="17" min="1" max="17" style="width:100%;"></div>
+                                <div style="display:flex;align-items:end;gap:0.3rem;padding-bottom:2px;">
+                                    <input type="checkbox" id="event2ndLeg" style="margin:0;cursor:pointer;">
+                                    <label for="event2ndLeg" style="font-size:0.68rem;color:var(--muted);cursor:pointer;white-space:nowrap;">2nd leg</label>
+                                </div>
                                 <div class="admin-field" id="eventSubField" style="width:120px;display:none;"><label>Sub Detail</label><input type="text" id="eventSubDetail" class="admin-input" placeholder="in/out" style="width:100%;"></div>
                                 <button class="admin-save-btn" style="height:32px;" onclick="addMatchEvent()">+ Add</button>
                             </div>
@@ -1569,7 +1573,11 @@
             '</div>';
 
             // ===== MVP VOTING =====
-            const currentUserId = supabaseClient?.auth?._currentUser?.id || '';
+            let currentUserId = '';
+            try {
+                const { data: sessData } = await supabaseClient.auth.getSession();
+                currentUserId = sessData?.session?.user?.id || '';
+            } catch(e) {}
             const hasVoted = votes[currentUserId] !== undefined;
             const maxVotes = Math.max(1, ...Object.values(voteCounts));
             html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">' +
@@ -1629,11 +1637,11 @@
             // ===== MATCH EVENTS (Two Columns) =====
             const eventColorMap = { goal: '#4caf50', own_goal: '#e74c3c', yellow_card: '#f1c40f', red_card: '#e74c3c', sub: '#5c9ce6' };
             const eventBadgeMap = {
-                goal: '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#4caf5022;border:1.5px solid #4caf5055;font-size:0.75rem;line-height:1;">\u26BD</span>',
-                own_goal: '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e74c3c22;border:1.5px solid #e74c3c55;font-size:0.75rem;line-height:1;">\u26BD</span>',
+                goal: '<span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:0.95rem;line-height:1;">\u26BD</span>',
+                own_goal: '<span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:0.95rem;line-height:1;">\u26BD</span>',
                 yellow_card: '<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:22px;border-radius:3px;background:#f1c40f;border:1px solid #c9a20a;font-size:0.5rem;line-height:1;"></span>',
                 red_card: '<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:22px;border-radius:3px;background:#e74c3c;border:1px solid #b33a2e;font-size:0.5rem;line-height:1;"></span>',
-                sub: '<span style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:20px;height:22px;border-radius:4px;background:#5c9ce622;border:1.5px solid #5c9ce655;font-size:0.5rem;line-height:1;gap:1px;"><span style="font-size:0.55rem;line-height:1;">\u25B2</span><span style="font-size:0.55rem;line-height:1;">\u25BC</span></span>'
+                sub: '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;gap:3px;line-height:1;"><span style="font-size:0.7rem;line-height:1;color:#5c9ce6;">\u25B2</span><span style="font-size:0.7rem;line-height:1;color:#5c9ce6;">\u25BC</span></span>'
             };
             const homeEvents = events.filter(ev => homeLineup.some(p => p.name === ev.player));
             const awayEvents = events.filter(ev => awayLineup.some(p => p.name === ev.player));
@@ -1653,9 +1661,9 @@
                         const subText = ev.type === 'sub' && ev.detail ? ' <span style="color:var(--muted);font-size:0.7rem;">(' + ev.detail + ')</span>' : '';
                         col += '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.6rem;border-radius:6px;background:var(--surface-2);font-size:0.82rem;">' +
                             '<span style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">' + badge + '</span>' +
-                            '<span style="font-weight:600;color:var(--text);flex:1;">' + (ev.player || '—') + '</span>' +
+                            '<span style="font-weight:600;color:' + (ev.type === 'goal' ? '#4caf50' : ev.type === 'own_goal' ? '#e74c3c' : 'var(--text)') + ';flex:1;">' + (ev.player || '—') + '</span>' +
                             assText + subText +
-                            (ev.minute ? '<span style="font-size:0.68rem;color:var(--muted);">' + ev.minute + '"</span>' : '') +
+                            (ev.minute ? '<span style="font-size:0.68rem;color:var(--muted);">' + ev.minute + (ev.leg === 2 ? ' <span style="color:var(--accent);font-size:0.6rem;font-weight:600;">(2nd leg)</span>' : '') + '</span>' : '') +
                         '</div>';
                     });
                 } else {
@@ -1792,10 +1800,11 @@
         async function voteMVP(playerId) {
             const { gw, idx } = _getMatchParams();
             const prefix = 'match-gw' + gw + '-' + idx;
-            const userId = supabaseClient?.auth?._currentUser?.id;
-            if (!userId) return;
             initSupabase();
             if (!supabaseClient) return;
+            const { data: sessData } = await supabaseClient.auth.getSession();
+            const userId = sessData?.session?.user?.id;
+            if (!userId) return;
             try {
                 const { data: row } = await supabaseClient.from('SiteContent').select('value').eq('key', prefix + '-votes').single();
                 let votes = {};
@@ -2832,11 +2841,12 @@
                     const ec = eventColorMap[ev.type] || 'var(--muted)';
                     const assText = ev.assister ? ' <span style="color:var(--muted);font-size:0.72rem;">(ast: ' + ev.assister + ')</span>' : '';
                     const subText = ev.type === 'sub' && ev.detail ? ' <span style="color:var(--muted);font-size:0.72rem;">(' + ev.detail + ')</span>' : '';
+                    const minuteStr = ev.minuteDisplay || (ev.minute ? ev.minute + "'" : '');
                     return '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0.5rem;border-bottom:1px solid var(--line);font-size:0.8rem;">' +
                         '<span style="font-size:0.58rem;font-weight:700;color:' + ec + ';background:' + ec + '18;border:1px solid ' + ec + '33;border-radius:3px;padding:1px 6px;min-width:26px;text-align:center;">' + (eventLabelMap[ev.type] || ev.type) + '</span>' +
-                        '<span style="font-weight:600;flex:1;">' + (ev.player || '—') + '</span>' +
+                        '<span style="font-weight:600;color:' + (ev.type === 'goal' ? '#4caf50' : ev.type === 'own_goal' ? '#e74c3c' : 'var(--text)') + ';flex:1;">' + (ev.player || '—') + '</span>' +
                         assText + subText +
-                        (ev.minute ? '<span style="color:var(--muted);font-size:0.7rem;">' + ev.minute + '"</span>' : '') +
+                        (minuteStr ? '<span style="color:var(--muted);font-size:0.7rem;">' + minuteStr + '</span>' : '') +
                         '<button onclick="removeMatchEvent(' + globalIdx + ')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:0.85rem;">&times;</button>' +
                     '</div>';
                 }).join('');
@@ -2849,6 +2859,7 @@
             const action = document.getElementById('eventActionSelect').value;
             const minute = document.getElementById('eventMinute').value;
             const detail = document.getElementById('eventSubDetail')?.value || '';
+            const is2ndLeg = document.getElementById('event2ndLeg')?.checked || false;
             if (!playerId) return;
             const p = _matchAllPlayers.find(x => x.id === playerId);
             let assisterName = '';
@@ -2859,10 +2870,12 @@
                     assisterName = a ? a.display_name : '';
                 }
             }
-            const ev = { type: action, player: p ? p.display_name : 'Unknown', minute: minute || '', detail: action === 'sub' ? detail : '', assister: assisterName };
+            const minuteDisplay = minute ? (is2ndLeg ? minute + "' (2nd leg)" : minute + "'") : '';
+            const ev = { type: action, player: p ? p.display_name : 'Unknown', minute: minute || '', minuteDisplay: minuteDisplay, leg: is2ndLeg ? 2 : 1, detail: action === 'sub' ? detail : '', assister: assisterName };
             _matchEvents.push(ev);
             renderEventsList();
             document.getElementById('eventMinute').value = '';
+            document.getElementById('event2ndLeg').checked = false;
         }
         function removeMatchEvent(idx) {
             _matchEvents.splice(idx, 1);
