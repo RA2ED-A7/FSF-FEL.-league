@@ -1522,9 +1522,10 @@
             let voteCounts = {};
             Object.values(votes).forEach(votedId => { voteCounts[votedId] = (voteCounts[votedId] || 0) + 1; });
             let topVotes = 0;
-            Object.values(voteCounts).forEach(c => { if (c > topVotes) topVotes = c; });
+            let topVoteId = '';
+            Object.entries(voteCounts).forEach(([id, c]) => { if (c > topVotes) { topVotes = c; topVoteId = id; } });
             const mvpVotes = topVotes > 0 ? Object.entries(voteCounts).filter(([,c]) => c === topVotes).map(([id]) => id) : [];
-            const mvpId = mvp || (mvpVotes.length === 1 ? mvpVotes[0] : '');
+            const mvpId = mvp || (mvpVotes.length === 1 ? topVoteId : (mvpVotes.length > 1 ? '' : ''));
 
             let allPlayers = [
                 ...homeLineup.map(p => ({...p, team: home, teamColor: hc})),
@@ -1570,19 +1571,28 @@
             // ===== MVP VOTING =====
             const currentUserId = supabaseClient?.auth?._currentUser?.id || '';
             const hasVoted = votes[currentUserId] !== undefined;
+            const maxVotes = Math.max(1, ...Object.values(voteCounts));
             html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">' +
                 '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 0.8rem;">Vote for MVP</h3>';
             if (!currentUserId) {
-                html += '<p class="muted" style="font-size:0.8rem;margin:0;">Sign in to vote.</p>';
-            } else if (hasVoted) {
-                html += '<p style="font-size:0.8rem;color:var(--accent);margin:0;">You voted for: <strong>' + (allPlayers.find(p => p.id === votes[currentUserId])?.name || '—') + '</strong></p>';
-            } else {
-                html += '<div style="display:flex;flex-wrap:wrap;gap:0.5rem;">';
-                allPlayers.forEach(p => {
-                    html += '<button onclick="voteMVP(\'' + p.id + '\')" style="background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:0.3rem 0.8rem;font-size:0.78rem;color:var(--text);cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor=\'' + p.teamColor + '\'" onmouseleave="this.style.borderColor=\'var(--line)\'">' + p.name + '</button>';
-                });
-                html += '</div>';
+                html += '<p class="muted" style="font-size:0.8rem;margin:0 0 0.5rem;">Sign in to vote.</p>';
             }
+            html += '<div style="display:flex;flex-direction:column;gap:0.4rem;">';
+            allPlayers.forEach(p => {
+                const vc = voteCounts[p.id] || 0;
+                const pct = maxVotes > 0 ? (vc / maxVotes * 100) : 0;
+                const isMotm = mvpId === p.id;
+                const votedFor = votes[currentUserId] === p.id;
+                const rowBorder = isMotm ? '2px solid #f1c40f' : votedFor ? '2px solid var(--accent)' : '1px solid var(--line)';
+                const rowBg = isMotm ? '#f1c40f12' : votedFor ? 'var(--accent)' + '12' : 'transparent';
+                html += '<div onclick="' + (!currentUserId ? 'void(0)' : 'voteMVP(\'' + p.id + '\')') + '" style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.8rem;border-radius:8px;border:' + rowBorder + ';background:' + rowBg + ';position:relative;overflow:hidden;' + (currentUserId ? 'cursor:pointer;' : '') + 'transition:all 0.15s;" onmouseenter="this.style.opacity=\'0.85\'" onmouseleave="this.style.opacity=\'1\'">' +
+                    '<div style="position:absolute;top:0;left:0;height:100%;width:' + pct + '%;background:' + (isMotm ? '#f1c40f18' : 'var(--accent)15') + ';border-radius:8px;transition:width 0.4s ease;pointer-events:none;z-index:0;"></div>' +
+                    '<span style="position:relative;z-index:1;font-size:0.85rem;">' + (isMotm ? '\u2B50' : votedFor ? '\u2713' : '\u25CB') + '</span>' +
+                    '<span style="position:relative;z-index:1;font-weight:600;font-size:0.82rem;color:var(--text);flex:1;">' + p.name + '</span>' +
+                    '<span style="position:relative;z-index:1;font-size:0.72rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1px 6px;min-width:20px;text-align:center;font-weight:600;">' + vc + '</span>' +
+                '</div>';
+            });
+            html += '</div>';
             html += '</div>';
 
             // ===== LINEUPS (Football Field) =====
@@ -1617,8 +1627,14 @@
             html += '</div></div>';
 
             // ===== MATCH EVENTS (Two Columns) =====
-            const eventColorMap = { goal: '#4caf50', own_goal: '#e74c3c', yellow_card: '#f1c40f', red_card: '#e74c3c', sub: 'var(--accent)' };
-            const eventLabelMap = { goal: 'GOAL', own_goal: 'OG', yellow_card: 'YC', red_card: 'RC', sub: 'SUB' };
+            const eventColorMap = { goal: '#4caf50', own_goal: '#e74c3c', yellow_card: '#f1c40f', red_card: '#e74c3c', sub: '#5c9ce6' };
+            const eventBadgeMap = {
+                goal: '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#4caf5022;border:1.5px solid #4caf5055;font-size:0.75rem;line-height:1;">\u26BD</span>',
+                own_goal: '<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e74c3c22;border:1.5px solid #e74c3c55;font-size:0.75rem;line-height:1;">\u26BD</span>',
+                yellow_card: '<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:22px;border-radius:3px;background:#f1c40f;border:1px solid #c9a20a;font-size:0.5rem;line-height:1;"></span>',
+                red_card: '<span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:22px;border-radius:3px;background:#e74c3c;border:1px solid #b33a2e;font-size:0.5rem;line-height:1;"></span>',
+                sub: '<span style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:20px;height:22px;border-radius:4px;background:#5c9ce622;border:1.5px solid #5c9ce655;font-size:0.5rem;line-height:1;gap:1px;"><span style="font-size:0.55rem;line-height:1;">\u25B2</span><span style="font-size:0.55rem;line-height:1;">\u25BC</span></span>'
+            };
             const homeEvents = events.filter(ev => homeLineup.some(p => p.name === ev.player));
             const awayEvents = events.filter(ev => awayLineup.some(p => p.name === ev.player));
             const unmatchedEvents = events.filter(ev => !homeLineup.some(p => p.name === ev.player) && !awayLineup.some(p => p.name === ev.player));
@@ -1632,11 +1648,11 @@
                 if (evList.length) {
                     evList.forEach(ev => {
                         const eColor = eventColorMap[ev.type] || 'var(--muted)';
-                        const typeLabel = eventLabelMap[ev.type] || ev.type;
-                        const assText = ev.assister ? ' <span style="color:var(--muted);font-size:0.7rem;">(ast: ' + ev.assister + ')</span>' : '';
+                        const badge = eventBadgeMap[ev.type] || '<span style="font-size:0.8rem;">' + ev.type + '</span>';
+                        const assText = ev.assister ? ' <span style="color:var(--muted);font-size:0.7rem;">\uD83D\uDC5F ' + ev.assister + '</span>' : '';
                         const subText = ev.type === 'sub' && ev.detail ? ' <span style="color:var(--muted);font-size:0.7rem;">(' + ev.detail + ')</span>' : '';
                         col += '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.6rem;border-radius:6px;background:var(--surface-2);font-size:0.82rem;">' +
-                            '<span style="font-size:0.58rem;font-weight:700;color:' + eColor + ';background:' + eColor + '18;border:1px solid ' + eColor + '33;border-radius:3px;padding:1px 6px;min-width:28px;text-align:center;">' + typeLabel + '</span>' +
+                            '<span style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">' + badge + '</span>' +
                             '<span style="font-weight:600;color:var(--text);flex:1;">' + (ev.player || '—') + '</span>' +
                             assText + subText +
                             (ev.minute ? '<span style="font-size:0.68rem;color:var(--muted);">' + ev.minute + '"</span>' : '') +
@@ -1662,29 +1678,31 @@
                 '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1rem;">Match Stats</h3>';
             if (allStats.length) {
                 const thStyle = 'padding:0.5rem 0.6rem;font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;text-align:center;white-space:nowrap;';
-                const tdStyle = 'padding:0.45rem 0.6rem;font-size:0.8rem;text-align:center;border-bottom:1px solid var(--line);';
+                const tdStyle = 'padding:0.5rem 0.6rem;font-size:0.8rem;text-align:center;border-bottom:1px solid var(--line);';
+                const rowBg = 'rgba(0,0,0,0.15)';
                 html += '<table style="width:100%;border-collapse:collapse;min-width:700px;">' +
                     '<thead><tr style="border-bottom:2px solid var(--line);">' +
                     '<th style="' + thStyle + 'text-align:left;">Player</th>' +
                     '<th style="' + thStyle + '">POS</th>' +
-                    '<th style="' + thStyle + '">G</th>' +
-                    '<th style="' + thStyle + '">A</th>' +
+                    '<th style="' + thStyle + '">\u26BD</th>' +
+                    '<th style="' + thStyle + '">\uD83E\uDDB6</th>' +
                     '<th style="' + thStyle + '">OOB</th>' +
                     '<th style="' + thStyle + '">OFF</th>' +
-                    '<th style="' + thStyle + '">YC</th>' +
-                    '<th style="' + thStyle + '">RC</th>' +
+                    '<th style="' + thStyle + '">\uD83D\uDFE8</th>' +
+                    '<th style="' + thStyle + '">\uD83D\uDD34</th>' +
                     '<th style="' + thStyle + '">Rating</th>' +
                     '</tr></thead><tbody>';
                 let lastTeam = '';
-                allStats.forEach(s => {
+                allStats.forEach((s, si) => {
                     if (s.team !== lastTeam) {
                         html += '<tr><td colspan="9" style="padding:0.5rem 0.6rem;font-size:0.72rem;font-weight:700;color:' + (s.teamColor || 'var(--muted)') + ';text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--line);">' + (s.team || '—') + '</td></tr>';
                         lastTeam = s.team;
                     }
+                    const rowBgColor = si % 2 === 0 ? rowBg : 'transparent';
                     const isMvpStat = s.id === mvpId;
                     const ratingNum = parseFloat(s.rating) || 0;
                     const ratingColor = ratingNum >= 8 ? '#4caf50' : ratingNum >= 6 ? 'var(--accent)' : ratingNum > 0 ? '#e74c3c' : 'var(--muted)';
-                    html += '<tr>' +
+                    html += '<tr style="background:' + rowBgColor + ';">' +
                         '<td style="' + tdStyle + 'text-align:left;display:flex;align-items:center;gap:0.5rem;"><span style="font-weight:600;">' + (s.name || '—') + '</span>' + (isMvpStat ? ' <span style="color:#f1c40f;font-size:0.7rem;">&#9733;</span>' : '') + '</td>' +
                         '<td style="' + tdStyle + 'color:var(--muted);font-size:0.72rem;">' + (s.position || '—') + '</td>' +
                         '<td style="' + tdStyle + '">' + (s.goals || 0) + '</td>' +
@@ -1785,6 +1803,16 @@
                 if (votes[userId]) return;
                 votes[userId] = playerId;
                 await supabaseClient.from('SiteContent').upsert({ key: prefix + '-votes', value: JSON.stringify(votes) }, { onConflict: 'key' });
+                // Auto-select MOTM from highest votes
+                const vc = {};
+                Object.values(votes).forEach(vId => { vc[vId] = (vc[vId] || 0) + 1; });
+                let best = 0, bestId = '';
+                Object.entries(vc).forEach(([id, c]) => { if (c > best) { best = c; bestId = id; } });
+                const { data: mvpRow } = await supabaseClient.from('SiteContent').select('value').eq('key', prefix + '-mvp').single();
+                const currentMvp = mvpRow?.value || '';
+                if (best > 0 && bestId !== currentMvp) {
+                    await supabaseClient.from('SiteContent').upsert({ key: prefix + '-mvp', value: bestId }, { onConflict: 'key' });
+                }
                 renderMatchDetail();
             } catch(e) { console.warn('[vote-mvp] error:', e); }
         }
