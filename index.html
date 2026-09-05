@@ -550,6 +550,17 @@
         <h2 class="admin-title">Admin Panel</h2>
         <p class="muted" style="margin-bottom:1.5rem;">Edit player stats. Only visible to Team Managers.</p>
         <p class="muted" style="font-size:0.75rem;margin-bottom:1.5rem;">Admin Panel Version 3.0</p>
+        <div style="display:flex;gap:2rem;align-items:flex-start;">
+            <!-- Left: Bug Reports -->
+            <div style="flex:0 0 420px;position:sticky;top:1rem;">
+                <h3 class="admin-subtitle">Bug Reports</h3>
+                <div id="bugReportsContainer" style="display:flex;flex-direction:column;gap:0.8rem;margin-top:0.8rem;"></div>
+                <div class="admin-actions" style="margin-top:0.8rem;">
+                    <button class="admin-save-btn" onclick="loadBugReports()">Refresh</button>
+                </div>
+            </div>
+            <!-- Right: Player Editor + Site Content -->
+            <div style="flex:1;min-width:0;">
         <div class="admin-player-select">
             <label>Select Player:</label>
             <select id="adminPlayerSelect" class="admin-select">
