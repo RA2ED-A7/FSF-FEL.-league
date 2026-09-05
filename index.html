@@ -1535,6 +1535,8 @@
             let html = '';
 
             // ===== RESULT CARD =====
+            const mvpTeamSide = mvpPlayer ? (mvpPlayer.team === home ? 'home' : mvpPlayer.team === away ? 'away' : '') : '';
+            const mvpHtml = mvpPlayer ? '<div style="font-size:0.68rem;color:#f1c40f;margin-top:0.3rem;">&#9733; MOTM - ' + mvpPlayer.name + '</div>' : '';
             html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:2rem;">' +
                 '<div style="background:linear-gradient(135deg,' + hc + '22,transparent 40%,transparent 60%,' + ac + '22);padding:0.8rem 1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);">' +
                     '<span style="font-size:0.65rem;font-weight:700;color:' + sColor + ';background:' + sColor + '15;border:1px solid ' + sColor + '33;border-radius:4px;padding:3px 12px;letter-spacing:1px;text-transform:uppercase;">' + status + '</span>' +
@@ -1545,6 +1547,7 @@
                     '<div style="text-align:center;flex:1;">' +
                         '<div style="width:72px;height:72px;border-radius:50%;background:' + hc + '18;border:3px solid ' + hc + '55;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:' + hc + ';">' + home.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
                         '<div style="font-size:1.3rem;font-weight:700;color:var(--text);">' + home + '</div>' +
+                        (mvpTeamSide === 'home' ? mvpHtml : '') +
                     '</div>' +
                     '<div style="text-align:center;flex-shrink:0;">' +
                         '<div style="font-size:3rem;font-weight:900;color:var(--text);letter-spacing:6px;line-height:1;">' + displayResult + '</div>' +
@@ -1552,6 +1555,7 @@
                     '<div style="text-align:center;flex:1;">' +
                         '<div style="width:72px;height:72px;border-radius:50%;background:' + ac + '18;border:3px solid ' + ac + '55;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:' + ac + ';">' + away.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
                         '<div style="font-size:1.3rem;font-weight:700;color:var(--text);">' + away + '</div>' +
+                        (mvpTeamSide === 'away' ? mvpHtml : '') +
                     '</div>' +
                 '</div>' +
                 '<div style="height:4px;background:linear-gradient(90deg,' + hc + ',' + ac + ');"></div>' +
@@ -1561,16 +1565,6 @@
             html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">' +
                 '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 0.8rem;">Match Report</h3>' +
                 '<p style="font-size:0.9rem;color:var(--text);line-height:1.6;margin:0;">' + (report || '<span class="muted">No report yet.</span>') + '</p>' +
-            '</div>';
-
-            // ===== MVP =====
-            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1.5rem;">' +
-                '<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#f1c40f,#e67e22);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">&#9733;</div>' +
-                '<div>' +
-                    '<div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Man of the Match</div>' +
-                    '<div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-top:0.2rem;">' + (mvpPlayer ? mvpPlayer.name : 'Not awarded yet') + '</div>' +
-                    (mvpPlayer ? '<div style="font-size:0.75rem;color:' + mvpPlayer.teamColor + ';margin-top:0.1rem;">' + mvpPlayer.team + '</div>' : '') +
-                '</div>' +
             '</div>';
 
             // ===== MVP VOTING =====
@@ -1592,7 +1586,7 @@
             html += '</div>';
 
             // ===== LINEUPS (Football Field) =====
-            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:2rem;margin-bottom:1.5rem;">' +
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:2rem;margin:0 -3rem 1.5rem;padding-left:3rem;padding-right:3rem;">' +
                 '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1.2rem;">Lineups</h3>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;">';
 
