@@ -1687,7 +1687,7 @@
             if (allStats.length) {
                 const thStyle = 'padding:0.5rem 0.6rem;font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;text-align:center;white-space:nowrap;';
                 const tdStyle = 'padding:0.5rem 0.6rem;font-size:0.8rem;text-align:center;border-bottom:1px solid var(--line);';
-                const rowBg = 'rgba(0,0,0,0.15)';
+                const rowBg = 'rgba(255,255,255,0.035)';
                 html += '<table style="width:100%;border-collapse:collapse;min-width:700px;">' +
                     '<thead><tr style="border-bottom:2px solid var(--line);">' +
                     '<th style="' + thStyle + 'text-align:left;">Player</th>' +
@@ -1806,7 +1806,7 @@
             const userId = sessData?.session?.user?.id;
             if (!userId) return;
             try {
-                const { data: row } = await supabaseClient.from('SiteContent').select('value').eq('key', prefix + '-votes').single();
+                const { data: row } = await supabaseClient.from('SiteContent').select('value').eq('key', prefix + '-votes').maybeSingle();
                 let votes = {};
                 try { votes = JSON.parse(row?.value || '{}'); } catch(e) { votes = {}; }
                 if (votes[userId]) return;
@@ -1817,12 +1817,12 @@
                 Object.values(votes).forEach(vId => { vc[vId] = (vc[vId] || 0) + 1; });
                 let best = 0, bestId = '';
                 Object.entries(vc).forEach(([id, c]) => { if (c > best) { best = c; bestId = id; } });
-                const { data: mvpRow } = await supabaseClient.from('SiteContent').select('value').eq('key', prefix + '-mvp').single();
+                const { data: mvpRow } = await supabaseClient.from('SiteContent').select('value').eq('key', prefix + '-mvp').maybeSingle();
                 const currentMvp = mvpRow?.value || '';
                 if (best > 0 && bestId !== currentMvp) {
                     await supabaseClient.from('SiteContent').upsert({ key: prefix + '-mvp', value: bestId }, { onConflict: 'key' });
                 }
-                renderMatchDetail();
+                await renderMatchDetail();
             } catch(e) { console.warn('[vote-mvp] error:', e); }
         }
 
