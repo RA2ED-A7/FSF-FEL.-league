@@ -1587,83 +1587,74 @@
             }
             html += '</div>';
 
-            // ===== LINEUPS =====
+            // ===== LINEUPS (Football Field) =====
             html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">' +
                 '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1rem;">Lineups</h3>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">';
 
             const homeFormation = homeLineup.length ? _guessFormation(homeLineup) : '4-3-3';
-            html += '<div style="background:' + hc + '08;border:1px solid ' + hc + '22;border-radius:10px;padding:1.2rem;">' +
-                '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">' +
+            html += '<div>' +
+                '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.8rem;">' +
                     '<div style="width:32px;height:32px;border-radius:50%;background:' + hc + '22;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:' + hc + ';">' + home.split(' ').map(w=>w[0]).join('').slice(0,2) + '</div>' +
                     '<div><div style="font-weight:700;color:var(--text);font-size:0.95rem;">' + home + '</div><div style="font-size:0.7rem;color:var(--muted);">' + homeFormation + '</div></div>' +
                 '</div>';
-            if (homeLineup.length) {
-                html += '<div style="display:flex;flex-direction:column;gap:0.35rem;">';
-                homeLineup.forEach(p => {
-                    const isMvp = p.id === mvpId;
-                    const gLabel = p.goals ? ' <span style="color:#4caf50;font-size:0.65rem;font-weight:700;">' + p.goals + 'G</span>' : '';
-                    const aLabel = p.assists ? ' <span style="color:var(--accent);font-size:0.65rem;font-weight:700;">' + p.assists + 'A</span>' : '';
-                    html += '<div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;">' +
-                        '<span style="color:var(--text);font-weight:600;">' + p.name + (isMvp ? ' <span style="color:#f1c40f;">&#9733;</span>' : '') + gLabel + aLabel + '</span>' +
-                        '<span style="font-size:0.68rem;color:var(--muted);margin-left:auto;">' + (p.position || '') + '</span>' +
-                    '</div>';
-                });
-                html += '</div>';
-            } else {
-                html += '<p class="muted" style="font-size:0.78rem;margin:0;">No lineup set.</p>';
-            }
-            html += '</div>';
+            html += '<div class="td-field" style="max-width:100%;margin:0 auto;" id="matchHomeField">';
+            html += '<div class="td-field-row td-field-att"><div class="td-field-slot" data-pos="LW"></div><div class="td-field-slot" data-pos="CF"></div><div class="td-field-slot" data-pos="RW"></div></div>';
+            html += '<div class="td-field-row td-field-mid"><div class="td-field-slot" data-pos="CM"></div><div class="td-field-slot" data-pos="CAM"></div><div class="td-field-slot" data-pos="CM"></div></div>';
+            html += '<div class="td-field-row td-field-def"><div class="td-field-slot" data-pos="LB"></div><div class="td-field-slot" data-pos="CB"></div><div class="td-field-slot" data-pos="CB"></div><div class="td-field-slot" data-pos="RB"></div></div>';
+            html += '<div class="td-field-row td-field-gk"><div class="td-field-slot" data-pos="GK"></div></div>';
+            html += '</div></div>';
 
             const awayFormation = awayLineup.length ? _guessFormation(awayLineup) : '4-3-3';
-            html += '<div style="background:' + ac + '08;border:1px solid ' + ac + '22;border-radius:10px;padding:1.2rem;">' +
-                '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">' +
+            html += '<div>' +
+                '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.8rem;">' +
                     '<div style="width:32px;height:32px;border-radius:50%;background:' + ac + '22;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:' + ac + ';">' + away.split(' ').map(w=>w[0]).join('').slice(0,2) + '</div>' +
                     '<div><div style="font-weight:700;color:var(--text);font-size:0.95rem;">' + away + '</div><div style="font-size:0.7rem;color:var(--muted);">' + awayFormation + '</div></div>' +
                 '</div>';
-            if (awayLineup.length) {
-                html += '<div style="display:flex;flex-direction:column;gap:0.35rem;">';
-                awayLineup.forEach(p => {
-                    const isMvp = p.id === mvpId;
-                    const gLabel = p.goals ? ' <span style="color:#4caf50;font-size:0.65rem;font-weight:700;">' + p.goals + 'G</span>' : '';
-                    const aLabel = p.assists ? ' <span style="color:var(--accent);font-size:0.65rem;font-weight:700;">' + p.assists + 'A</span>' : '';
-                    html += '<div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;">' +
-                        '<span style="color:var(--text);font-weight:600;">' + p.name + (isMvp ? ' <span style="color:#f1c40f;">&#9733;</span>' : '') + gLabel + aLabel + '</span>' +
-                        '<span style="font-size:0.68rem;color:var(--muted);margin-left:auto;">' + (p.position || '') + '</span>' +
-                    '</div>';
-                });
-                html += '</div>';
-            } else {
-                html += '<p class="muted" style="font-size:0.78rem;margin:0;">No lineup set.</p>';
-            }
-            html += '</div></div></div>';
+            html += '<div class="td-field" style="max-width:100%;margin:0 auto;" id="matchAwayField">';
+            html += '<div class="td-field-row td-field-att"><div class="td-field-slot" data-pos="LW"></div><div class="td-field-slot" data-pos="CF"></div><div class="td-field-slot" data-pos="RW"></div></div>';
+            html += '<div class="td-field-row td-field-mid"><div class="td-field-slot" data-pos="CM"></div><div class="td-field-slot" data-pos="CAM"></div><div class="td-field-slot" data-pos="CM"></div></div>';
+            html += '<div class="td-field-row td-field-def"><div class="td-field-slot" data-pos="LB"></div><div class="td-field-slot" data-pos="CB"></div><div class="td-field-slot" data-pos="CB"></div><div class="td-field-slot" data-pos="RB"></div></div>';
+            html += '<div class="td-field-row td-field-gk"><div class="td-field-slot" data-pos="GK"></div></div>';
+            html += '</div></div>';
 
-            // ===== MATCH EVENTS =====
+            html += '</div></div>';
+
+            // ===== MATCH EVENTS (Two Columns) =====
             const eventColorMap = { goal: '#4caf50', own_goal: '#e74c3c', yellow_card: '#f1c40f', red_card: '#e74c3c', sub: 'var(--accent)' };
-            const eventIconMap = { goal: '\u26AB', own_goal: '\u26AB', yellow_card: '\u{1F7E1}', red_card: '\u{1F534}', sub: '\u21C5' };
+            const eventLabelMap = { goal: 'GOAL', own_goal: 'OG', yellow_card: 'YC', red_card: 'RC', sub: 'SUB' };
+            const homeEvents = events.filter(ev => homeLineup.some(p => p.name === ev.player));
+            const awayEvents = events.filter(ev => awayLineup.some(p => p.name === ev.player));
+            const unmatchedEvents = events.filter(ev => !homeLineup.some(p => p.name === ev.player) && !awayLineup.some(p => p.name === ev.player));
+            const allHomeEvents = [...homeEvents, ...unmatchedEvents];
             html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">' +
-                '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1rem;">Match Events</h3>';
-            if (events.length) {
-                html += '<div style="display:flex;flex-direction:column;gap:0.5rem;">';
-                events.forEach(ev => {
-                    const eColor = eventColorMap[ev.type] || 'var(--muted)';
-                    const eIcon = eventIconMap[ev.type] || '';
-                    const typeLabel = ev.type === 'own_goal' ? 'OG' : ev.type === 'yellow_card' ? 'YC' : ev.type === 'red_card' ? 'RC' : ev.type === 'sub' ? 'SUB' : ev.type === 'goal' ? 'GOAL' : ev.type;
-                    const assText = ev.assister ? ' <span style="color:var(--muted);font-size:0.75rem;">(assist: ' + ev.assister + ')</span>' : '';
-                    const subText = ev.type === 'sub' && ev.detail ? ' <span style="color:var(--muted);font-size:0.75rem;">(' + ev.detail + ')</span>' : '';
-                    html += '<div style="display:flex;align-items:center;gap:0.7rem;padding:0.5rem 0.8rem;border-radius:6px;background:var(--surface-2);font-size:0.85rem;">' +
-                        '<span style="color:' + eColor + ';font-size:0.9rem;">' + eIcon + '</span>' +
-                        '<span style="font-size:0.6rem;font-weight:700;color:' + eColor + ';background:' + eColor + '18;border:1px solid ' + eColor + '33;border-radius:3px;padding:1px 6px;letter-spacing:0.5px;min-width:30px;text-align:center;">' + typeLabel + '</span>' +
-                        '<span style="font-weight:600;color:var(--text);">' + (ev.player || '—') + '</span>' +
-                        assText + subText +
-                        (ev.minute ? '<span style="margin-left:auto;font-size:0.7rem;color:var(--muted);">' + ev.minute + '"</span>' : '') +
-                    '</div>';
-                });
-                html += '</div>';
-            } else {
-                html += '<p class="muted" style="font-size:0.8rem;margin:0;">No events recorded.</p>';
-            }
-            html += '</div>';
+                '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1rem;">Match Events</h3>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">';
+            const buildEventCol = (evList, teamName, teamColor) => {
+                let col = '<div><div style="font-size:0.72rem;font-weight:700;color:' + teamColor + ';text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem;">' + teamName + '</div>';
+                col += '<div style="display:flex;flex-direction:column;gap:0.4rem;">';
+                if (evList.length) {
+                    evList.forEach(ev => {
+                        const eColor = eventColorMap[ev.type] || 'var(--muted)';
+                        const typeLabel = eventLabelMap[ev.type] || ev.type;
+                        const assText = ev.assister ? ' <span style="color:var(--muted);font-size:0.7rem;">(ast: ' + ev.assister + ')</span>' : '';
+                        const subText = ev.type === 'sub' && ev.detail ? ' <span style="color:var(--muted);font-size:0.7rem;">(' + ev.detail + ')</span>' : '';
+                        col += '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.6rem;border-radius:6px;background:var(--surface-2);font-size:0.82rem;">' +
+                            '<span style="font-size:0.58rem;font-weight:700;color:' + eColor + ';background:' + eColor + '18;border:1px solid ' + eColor + '33;border-radius:3px;padding:1px 6px;min-width:28px;text-align:center;">' + typeLabel + '</span>' +
+                            '<span style="font-weight:600;color:var(--text);flex:1;">' + (ev.player || '—') + '</span>' +
+                            assText + subText +
+                            (ev.minute ? '<span style="font-size:0.68rem;color:var(--muted);">' + ev.minute + '"</span>' : '') +
+                        '</div>';
+                    });
+                } else {
+                    col += '<p class="muted" style="font-size:0.72rem;margin:0;">No events.</p>';
+                }
+                col += '</div></div>';
+                return col;
+            };
+            html += buildEventCol(allHomeEvents, home, hc);
+            html += buildEventCol(awayEvents, away, ac);
+            html += '</div></div>';
 
             // ===== MATCH STATS TABLE =====
             const allStats = [...stats].sort((a, b) => {
@@ -1716,6 +1707,34 @@
             html += '</div>';
 
             container.innerHTML = html;
+
+            // Fill field slots for both lineups
+            const fillFieldSlots = (fieldId, lineup, teamColor) => {
+                const field = document.getElementById(fieldId);
+                if (!field) return;
+                const posMatch = { 'RB': ['RB', 'RWB'], 'LB': ['LB', 'LWB'] };
+                field.querySelectorAll('.td-field-slot').forEach(slot => {
+                    const pos = slot.dataset.pos;
+                    const player = lineup.find(p => p.position === pos || (posMatch[pos] && posMatch[pos].includes(p.position)));
+                    if (player) {
+                        const isMvp = player.id === mvpId;
+                        const gLabel = player.goals ? ' <span style="color:#4caf50;font-size:0.55rem;font-weight:700;">' + player.goals + 'G</span>' : '';
+                        const aLabel = player.assists ? ' <span style="color:var(--accent);font-size:0.55rem;font-weight:700;">' + player.assists + 'A</span>' : '';
+                        slot.innerHTML = '<span class="slot-pos">' + pos + '</span><span class="slot-name">' + player.name + (isMvp ? ' <span style="color:#f1c40f;">&#9733;</span>' : '') + gLabel + aLabel + '</span>';
+                        slot.classList.add('filled');
+                        slot.style.cursor = 'pointer';
+                        slot.onclick = function() { location.hash = 'player?id=' + player.id; };
+                    } else {
+                        slot.innerHTML = '<span class="slot-pos">' + pos + '</span><span class="slot-name">—</span>';
+                        slot.classList.remove('filled');
+                        slot.style.cursor = 'default';
+                        slot.onclick = null;
+                    }
+                });
+            };
+            fillFieldSlots('matchHomeField', homeLineup, hc);
+            fillFieldSlots('matchAwayField', awayLineup, ac);
+
             } catch(e) {
                 console.error('[match-detail] render error:', e);
                 container.innerHTML = '<p style="color:#e74c3c;text-align:center;padding:2rem;">Error loading match: ' + e.message + '</p>';
