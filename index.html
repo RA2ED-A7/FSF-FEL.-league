@@ -1519,7 +1519,7 @@
             '</div>';
 
             // ===== MVP VOTING =====
-            const currentUserId = _supabaseUser?.id || '';
+            const currentUserId = supabaseClient?.auth?._currentUser?.id || '';
             const hasVoted = votes[currentUserId] !== undefined;
             html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">' +
                 '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 0.8rem;">Vote for MVP</h3>';
@@ -1685,7 +1685,7 @@
         async function voteMVP(playerId) {
             const { gw, idx } = _getMatchParams();
             const prefix = 'match-gw' + gw + '-' + idx;
-            const userId = _supabaseUser?.id;
+            const userId = supabaseClient?.auth?._currentUser?.id;
             if (!userId) return;
             initSupabase();
             if (!supabaseClient) return;
