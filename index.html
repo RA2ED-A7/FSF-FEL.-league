@@ -1304,9 +1304,12 @@
             let html = '';
             for (let gw = 1; gw <= 7; gw++) {
                 const gwMatches = matchData.filter(m => m.gw === gw);
-                html += '<div style="margin-bottom:3rem;">' +
-                    '<div style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1.2rem;">Gameweek ' + gw + '</div>' +
-                    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1.2rem;">';
+                html += '<div style="margin-bottom:3.5rem;">' +
+                    '<div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1.5rem;">' +
+                        '<div style="font-size:0.85rem;font-weight:800;color:var(--accent);background:rgba(47,214,176,0.08);border:1px solid rgba(47,214,176,0.2);border-radius:6px;padding:4px 14px;letter-spacing:0.5px;">GW ' + gw + '</div>' +
+                        '<div style="flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);"></div>' +
+                    '</div>' +
+                    '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;">';
                 gwMatches.forEach(match => {
                     const hc = TEAMS_OBJ[match.home]?.color || '#888';
                     const ac = TEAMS_OBJ[match.away]?.color || '#888';
@@ -1315,15 +1318,29 @@
                     const isResult = resultStatuses.includes(status);
                     const result = match.result || (isResult ? '—  —' : 'VS');
                     const resultColor = isResult ? 'var(--text)' : 'var(--muted)';
-                    const dateStr = match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Date & Time TBD';
-                    html += '<div class="sch-match-card" style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem;cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s;" onclick="location.hash=\'schedule-match\'" onmouseenter="this.style.borderColor=\'' + hc + '\';this.style.boxShadow=\'0 4px 20px \' + hc + \'33\'" onmouseleave="this.style.borderColor=\'var(--line)\';this.style.boxShadow=\'none\'">' +
-                        '<div style="display:flex;justify-content:center;margin-bottom:0.8rem;"><span style="font-size:0.62rem;font-weight:700;color:' + sColor + ';background:' + sColor + '18;border:1px solid ' + sColor + '44;border-radius:4px;padding:3px 12px;letter-spacing:0.5px;">' + status + '</span></div>' +
-                        '<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">' +
-                            '<div style="text-align:center;flex:1;min-width:0;"><div style="font-size:1rem;font-weight:700;color:' + hc + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.home + '</div></div>' +
-                            '<div style="text-align:center;flex-shrink:0;"><div style="font-size:1.1rem;font-weight:800;color:' + resultColor + ';letter-spacing:2px;">' + result + '</div></div>' +
-                            '<div style="text-align:center;flex:1;min-width:0;"><div style="font-size:1rem;font-weight:700;color:' + ac + ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.away + '</div></div>' +
+                    const resultSize = isResult ? '1.8rem' : '1.2rem';
+                    const resultWeight = isResult ? '900' : '800';
+                    const resultSpacing = isResult ? '4px' : '6px';
+                    const dateStr = match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'TBD';
+                    html += '<div class="sch-match-card" style="background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.25s ease;position:relative;" onclick="location.hash=\'schedule-match\'" onmouseenter="this.style.borderColor=\'' + hc + '66\';this.style.boxShadow=\'0 8px 32px \' + hc + \'22\';this.style.transform=\'translateY(-2px)\'" onmouseleave="this.style.borderColor=\'var(--line)\';this.style.boxShadow=\'none\';this.style.transform=\'translateY(0)\'">' +
+                        '<div style="background:linear-gradient(135deg,' + hc + '22,transparent 60%);border-bottom:1px solid var(--line);padding:0.7rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">' +
+                            '<span style="font-size:0.6rem;font-weight:700;color:' + sColor + ';background:' + sColor + '15;border:1px solid ' + sColor + '33;border-radius:4px;padding:3px 10px;letter-spacing:1px;text-transform:uppercase;">' + status + '</span>' +
+                            '<span style="font-size:0.62rem;color:var(--muted);letter-spacing:0.3px;">' + dateStr + '</span>' +
                         '</div>' +
-                        '<div style="margin-top:1rem;display:flex;justify-content:center;"><span style="display:inline-block;font-size:0.68rem;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:3px 12px;">' + dateStr + '</span></div>' +
+                        '<div style="padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;">' +
+                            '<div style="text-align:center;flex:1;min-width:0;">' +
+                                '<div style="width:48px;height:48px;border-radius:50%;background:' + hc + '18;border:2px solid ' + hc + '44;margin:0 auto 0.6rem;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:' + hc + ';">' + match.home.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                                '<div style="font-size:0.95rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.home + '</div>' +
+                            '</div>' +
+                            '<div style="text-align:center;flex-shrink:0;min-width:60px;">' +
+                                '<div style="font-size:' + resultSize + ';font-weight:' + resultWeight + ';color:' + resultColor + ';letter-spacing:' + resultSpacing + ';line-height:1;">' + result + '</div>' +
+                            '</div>' +
+                            '<div style="text-align:center;flex:1;min-width:0;">' +
+                                '<div style="width:48px;height:48px;border-radius:50%;background:' + ac + '18;border:2px solid ' + ac + '44;margin:0 auto 0.6rem;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:' + ac + ';">' + match.away.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                                '<div style="font-size:0.95rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.away + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div style="height:3px;background:linear-gradient(90deg,' + hc + ',' + ac + ');opacity:0.6;"></div>' +
                     '</div>';
                 });
                 html += '</div></div>';
