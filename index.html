@@ -778,26 +778,37 @@
                             </div>
                         </div>
                         <div id="matchTabEvents" class="admin-panel-content" style="display:none;">
-                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">Select a player and action to add an event. Click X to remove.</p>
+                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">Select a player and action to add an event. For goals, optionally pick an assister. Click X to remove.</p>
                             <div style="display:flex;gap:0.5rem;align-items:end;margin-bottom:1rem;flex-wrap:wrap;">
                                 <div class="admin-field" style="flex:1;min-width:150px;"><label>Player</label>
                                     <select id="eventPlayerSelect" class="admin-select" style="width:100%;"></select>
                                 </div>
                                 <div class="admin-field" style="width:150px;"><label>Action</label>
-                                    <select id="eventActionSelect" class="admin-select" style="width:100%;">
+                                    <select id="eventActionSelect" class="admin-select" style="width:100%;" onchange="toggleAssisterField()">
                                         <option value="goal">Goal</option>
                                         <option value="own_goal">Own Goal</option>
-                                        <option value="assist">Assist</option>
                                         <option value="yellow_card">Yellow Card</option>
                                         <option value="red_card">Red Card</option>
                                         <option value="sub">Substitution</option>
                                     </select>
                                 </div>
+                                <div class="admin-field" id="eventAssisterField" style="width:150px;display:none;"><label>Assister</label>
+                                    <select id="eventAssisterSelect" class="admin-select" style="width:100%;"></select>
+                                </div>
                                 <div class="admin-field" style="width:80px;"><label>Minute</label><input type="text" id="eventMinute" class="admin-input" placeholder="45" style="width:100%;"></div>
-                                <div class="admin-field" style="width:120px;" id="eventSubField" style="display:none;"><label>Sub Detail</label><input type="text" id="eventSubDetail" class="admin-input" placeholder="in/out" style="width:100%;"></div>
+                                <div class="admin-field" id="eventSubField" style="width:120px;display:none;"><label>Sub Detail</label><input type="text" id="eventSubDetail" class="admin-input" placeholder="in/out" style="width:100%;"></div>
                                 <button class="admin-save-btn" style="height:32px;" onclick="addMatchEvent()">+ Add</button>
                             </div>
-                            <div id="eventsList" style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0.5rem;max-height:300px;overflow-y:auto;"></div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                                <div>
+                                    <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem;" id="eventsHomeLabel">Home Events</div>
+                                    <div id="eventsHomeList" style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0.5rem;max-height:300px;overflow-y:auto;"></div>
+                                </div>
+                                <div>
+                                    <div style="font-size:0.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem;" id="eventsAwayLabel">Away Events</div>
+                                    <div id="eventsAwayList" style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0.5rem;max-height:300px;overflow-y:auto;"></div>
+                                </div>
+                            </div>
                         </div>
                         <div id="matchTabStats" class="admin-panel-content" style="display:none;">
                             <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">Edit player stats for this match. Ratings contribute to player avg rating.</p>
@@ -2628,12 +2639,15 @@
             const homeOpts = '<option value="">Add player...</option>' + _matchHomePlayers.map(p => '<option value="' + p.id + '">' + p.display_name + ' (' + p.position + ')</option>').join('');
             const awayOpts = '<option value="">Add player...</option>' + _matchAwayPlayers.map(p => '<option value="' + p.id + '">' + p.display_name + ' (' + p.position + ')</option>').join('');
             document.getElementById('eventPlayerSelect').innerHTML = allOpts;
+            document.getElementById('eventAssisterSelect').innerHTML = allOpts;
             document.getElementById('homeLineupAdd').innerHTML = homeOpts;
             document.getElementById('awayLineupAdd').innerHTML = awayOpts;
             document.getElementById('mHomeLineupLabel').textContent = (_matchHomePlayers[0]?.team || 'Home') + ' Lineup';
             document.getElementById('mAwayLineupLabel').textContent = (_matchAwayPlayers[0]?.team || 'Away') + ' Lineup';
             renderLineupList('homeLineupList', _matchHomeLineup);
             renderLineupList('awayLineupList', _matchAwayLineup);
+            toggleAssisterField();
+            renderEventsList();
         }
 
         async function loadMatchDetailEditor() {
@@ -2739,21 +2753,39 @@
         }
 
         // Events
+        function toggleAssisterField() {
+            const action = document.getElementById('eventActionSelect').value;
+            document.getElementById('eventAssisterField').style.display = action === 'goal' ? '' : 'none';
+            document.getElementById('eventSubField').style.display = action === 'sub' ? '' : 'none';
+        }
         function renderEventsList() {
-            const c = document.getElementById('eventsList');
-            const eventColorMap = { goal: '#4caf50', own_goal: '#e74c3c', yellow_card: '#f1c40f', red_card: '#e74c3c', sub: 'var(--accent)', assist: '#888' };
-            const eventLabelMap = { goal: 'GOAL', own_goal: 'OG', yellow_card: 'YC', red_card: 'RC', sub: 'SUB', assist: 'AST' };
-            if (!_matchEvents.length) { c.innerHTML = '<p class="muted" style="font-size:0.75rem;padding:0.5rem;">No events yet.</p>'; return; }
-            c.innerHTML = _matchEvents.map((ev, i) => {
-                const ec = eventColorMap[ev.type] || 'var(--muted)';
-                return '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.6rem;border-bottom:1px solid var(--line);font-size:0.8rem;">' +
-                    '<span style="font-size:0.6rem;font-weight:700;color:' + ec + ';background:' + ec + '18;border:1px solid ' + ec + '33;border-radius:3px;padding:1px 6px;min-width:28px;text-align:center;">' + (eventLabelMap[ev.type] || ev.type) + '</span>' +
-                    '<span style="font-weight:600;flex:1;">' + (ev.player || '—') + '</span>' +
-                    (ev.assister ? '<span style="color:var(--muted);font-size:0.72rem;">(ast: ' + ev.assister + ')</span>' : '') +
-                    (ev.minute ? '<span style="color:var(--muted);font-size:0.7rem;">' + ev.minute + '"</span>' : '') +
-                    '<button onclick="removeMatchEvent(' + i + ')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:0.85rem;">&times;</button>' +
-                '</div>';
-            }).join('');
+            const home = document.getElementById('mEditHome').value;
+            const away = document.getElementById('mEditAway').value;
+            const homeEvents = _matchEvents.filter(ev => _matchHomePlayers.some(p => p.display_name === ev.player));
+            const awayEvents = _matchEvents.filter(ev => _matchAwayPlayers.some(p => p.display_name === ev.player));
+            document.getElementById('eventsHomeLabel').textContent = home + ' Events';
+            document.getElementById('eventsAwayLabel').textContent = away + ' Events';
+            const eventColorMap = { goal: '#4caf50', own_goal: '#e74c3c', yellow_card: '#f1c40f', red_card: '#e74c3c', sub: 'var(--accent)' };
+            const eventLabelMap = { goal: 'GOAL', own_goal: 'OG', yellow_card: 'YC', red_card: 'RC', sub: 'SUB' };
+            const buildEventHtml = (events, listId) => {
+                const c = document.getElementById(listId);
+                if (!events.length) { c.innerHTML = '<p class="muted" style="font-size:0.72rem;padding:0.4rem;">No events.</p>'; return; }
+                c.innerHTML = events.map((ev, _) => {
+                    const globalIdx = _matchEvents.indexOf(ev);
+                    const ec = eventColorMap[ev.type] || 'var(--muted)';
+                    const assText = ev.assister ? ' <span style="color:var(--muted);font-size:0.72rem;">(ast: ' + ev.assister + ')</span>' : '';
+                    const subText = ev.type === 'sub' && ev.detail ? ' <span style="color:var(--muted);font-size:0.72rem;">(' + ev.detail + ')</span>' : '';
+                    return '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0.5rem;border-bottom:1px solid var(--line);font-size:0.8rem;">' +
+                        '<span style="font-size:0.58rem;font-weight:700;color:' + ec + ';background:' + ec + '18;border:1px solid ' + ec + '33;border-radius:3px;padding:1px 6px;min-width:26px;text-align:center;">' + (eventLabelMap[ev.type] || ev.type) + '</span>' +
+                        '<span style="font-weight:600;flex:1;">' + (ev.player || '—') + '</span>' +
+                        assText + subText +
+                        (ev.minute ? '<span style="color:var(--muted);font-size:0.7rem;">' + ev.minute + '"</span>' : '') +
+                        '<button onclick="removeMatchEvent(' + globalIdx + ')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:0.85rem;">&times;</button>' +
+                    '</div>';
+                }).join('');
+            };
+            buildEventHtml(homeEvents, 'eventsHomeList');
+            buildEventHtml(awayEvents, 'eventsAwayList');
         }
         function addMatchEvent() {
             const playerId = document.getElementById('eventPlayerSelect').value;
@@ -2762,7 +2794,15 @@
             const detail = document.getElementById('eventSubDetail')?.value || '';
             if (!playerId) return;
             const p = _matchAllPlayers.find(x => x.id === playerId);
-            const ev = { type: action, player: p ? p.display_name : 'Unknown', minute: minute || '', detail: action === 'sub' ? detail : '', assister: action === 'assist' ? (p ? p.display_name : '') : '' };
+            let assisterName = '';
+            if (action === 'goal') {
+                const assisterId = document.getElementById('eventAssisterSelect')?.value;
+                if (assisterId) {
+                    const a = _matchAllPlayers.find(x => x.id === assisterId);
+                    assisterName = a ? a.display_name : '';
+                }
+            }
+            const ev = { type: action, player: p ? p.display_name : 'Unknown', minute: minute || '', detail: action === 'sub' ? detail : '', assister: assisterName };
             _matchEvents.push(ev);
             renderEventsList();
             document.getElementById('eventMinute').value = '';
