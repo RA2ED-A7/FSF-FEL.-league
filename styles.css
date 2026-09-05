@@ -685,7 +685,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .sign-msg.ok { color: var(--good); }
 .sign-msg.err { color: #ff7b8a; }
 
-.admin-page { max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem; }
+.admin-page { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
 .admin-title { font-size: 1.6rem; margin-bottom: 0.5rem; }
 .admin-player-select { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; }
 .admin-player-select label { color: var(--muted); font-size: 0.9rem; }

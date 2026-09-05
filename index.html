@@ -2310,6 +2310,10 @@
             }
         }
 
+        let bugReportsData = [];
+        let bugReportsPage = 1;
+        const BUG_REPORTS_PER_PAGE = 3;
+
         async function loadBugReports() {
             const container = document.getElementById('bugReportsContainer');
             if (!container) return;
@@ -2318,19 +2322,61 @@
                 if (!initSupabase() || !supabaseClient) { container.innerHTML = '<p class="muted">Not connected.</p>'; return; }
                 const { data, error } = await supabaseClient.from('BugReports').select('*').order('created_at', { ascending: false });
                 if (error) { container.innerHTML = '<p class="muted">Error: ' + error.message + '</p>'; return; }
-                if (!data || data.length === 0) { container.innerHTML = '<p class="muted" style="font-size:0.85rem;">No bug reports yet.</p>'; return; }
-                container.innerHTML = data.map(r => {
-                    const date = r.created_at ? new Date(r.created_at).toLocaleString() : 'Unknown date';
-                    return '<div style="background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:1rem 1.2rem;min-width:800px;max-width:100%;">' +
-                        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">' +
-                            '<h4 style="margin:0;color:#fff;font-size:0.95rem;">' + (r.title || 'Untitled') + '</h4>' +
-                            '<span style="font-size:0.7rem;color:var(--muted);">' + date + '</span>' +
-                        '</div>' +
-                        '<p style="margin:0.3rem 0 0;color:var(--muted);font-size:0.82rem;line-height:1.5;">' + (r.text || '') + '</p>' +
-                        '<div style="margin-top:0.5rem;font-size:0.72rem;color:var(--accent);">By ' + (r.user || 'Anonymous') + '</div>' +
-                    '</div>';
-                }).join('');
+                bugReportsData = data || [];
+                bugReportsPage = 1;
+                renderBugReports();
             } catch (e) { container.innerHTML = '<p class="muted">Error loading reports.</p>'; }
+        }
+
+        function renderBugReports() {
+            const container = document.getElementById('bugReportsContainer');
+            if (!container) return;
+            const totalPages = Math.max(1, Math.ceil(bugReportsData.length / BUG_REPORTS_PER_PAGE));
+            if (bugReportsPage > totalPages) bugReportsPage = totalPages;
+            const start = (bugReportsPage - 1) * BUG_REPORTS_PER_PAGE;
+            const pageData = bugReportsData.slice(start, start + BUG_REPORTS_PER_PAGE);
+            if (pageData.length === 0) { container.innerHTML = '<p class="muted" style="font-size:0.85rem;">No bug reports yet.</p>'; return; }
+            container.innerHTML = pageData.map((r, i) => {
+                const date = r.created_at ? new Date(r.created_at).toLocaleString() : 'Unknown date';
+                const idx = start + i;
+                return '<div id="br-card-' + idx + '" style="background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:0.8rem 1rem;transition:opacity 0.4s,background 0.4s;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.4rem;">' +
+                        '<h4 style="margin:0;color:#fff;font-size:0.9rem;flex:1;min-width:0;">' + (r.title || 'Untitled') + '</h4>' +
+                        '<span style="font-size:0.65rem;color:var(--muted);white-space:nowrap;margin-left:0.5rem;">' + date + '</span>' +
+                    '</div>' +
+                    '<p style="margin:0 0 0.4rem;color:var(--muted);font-size:0.8rem;line-height:1.4;word-wrap:break-word;">' + (r.text || '') + '</p>' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+                        '<span style="font-size:0.7rem;color:var(--accent);">By ' + (r.user || 'Anonymous') + '</span>' +
+                        '<button onclick="resolveBugReport(' + idx + ')" title="Mark as fixed" style="background:rgba(47,214,176,0.15);border:1px solid rgba(47,214,176,0.3);border-radius:50%;width:26px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--accent);transition:background 0.2s;" onmouseover="this.style.background=\'rgba(47,214,176,0.3)\'" onmouseout="this.style.background=\'rgba(47,214,176,0.15)\'">&#10003;</button>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+            let pagHtml = '';
+            if (totalPages > 1) {
+                pagHtml = '<div style="display:flex;justify-content:center;align-items:center;gap:0.6rem;margin-top:0.6rem;">' +
+                    '<button onclick="bugReportPrevPage()" ' + (bugReportsPage <= 1 ? 'disabled' : '') + ' style="padding:0.25rem 0.6rem;border-radius:4px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);cursor:pointer;font-size:0.75rem;' + (bugReportsPage <= 1 ? 'opacity:0.3;cursor:default;' : '') + '">&#9664;</button>' +
+                    '<span style="font-size:0.72rem;color:var(--muted);">' + bugReportsPage + ' / ' + totalPages + '</span>' +
+                    '<button onclick="bugReportNextPage()" ' + (bugReportsPage >= totalPages ? 'disabled' : '') + ' style="padding:0.25rem 0.6rem;border-radius:4px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);cursor:pointer;font-size:0.75rem;' + (bugReportsPage >= totalPages ? 'opacity:0.3;cursor:default;' : '') + '">&#9654;</button>' +
+                '</div>';
+            }
+            container.insertAdjacentHTML('beforeend', pagHtml);
+        }
+
+        function bugReportPrevPage() { if (bugReportsPage > 1) { bugReportsPage--; renderBugReports(); } }
+        function bugReportNextPage() {
+            const totalPages = Math.ceil(bugReportsData.length / BUG_REPORTS_PER_PAGE);
+            if (bugReportsPage < totalPages) { bugReportsPage++; renderBugReports(); }
+        }
+
+        function resolveBugReport(idx) {
+            const card = document.getElementById('br-card-' + idx);
+            if (!card) return;
+            card.style.opacity = '0.3';
+            card.style.background = 'var(--bg)';
+            setTimeout(() => {
+                bugReportsData.splice(idx, 1);
+                renderBugReports();
+            }, 500);
         }
 
         document.getElementById('rostersDivFilter').addEventListener('change', renderRosters);
