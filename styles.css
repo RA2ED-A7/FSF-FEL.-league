@@ -1018,3 +1018,6 @@ footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.
 #psTable th { background: var(--surface-2); }
 #psTable tr:hover { background: rgba(47,214,176,0.05); }
 #psTable td, #psTable th { padding: 0.7rem 1rem !important; }
+
+.schedule-page { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem; }
+.sch-match-card:hover { transform: translateY(-1px); }

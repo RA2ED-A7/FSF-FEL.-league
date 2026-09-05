@@ -20,6 +20,7 @@
             <div class="menu-item">
                 <a href="#notfound">Competition<span class="caret">&#9662;</span></a>
                 <div class="dropdown">
+                    <a href="#schedule">Schedule</a>
                     <a href="#notfound">Placeholder 1</a>
                     <a href="#notfound">Placeholder 2</a>
                     <a href="#notfound">Placeholder 3</a>
@@ -557,6 +558,16 @@
                 </div>
             </div>
         </div>
+    </section>
+
+    <section class="schedule-page" id="schedulePage" style="display:none;">
+        <h2 class="section-title" style="text-align:center;">Schedule</h2>
+        <div style="display:flex;gap:0.8rem;justify-content:center;margin:1.5rem 0;">
+            <select id="schDivFilter" style="padding:0.4rem 0.8rem;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:0.85rem;" onchange="renderSchedule()">
+                <option value="1.FEL">1.FEL</option>
+            </select>
+        </div>
+        <div id="schContent" style="max-width:1200px;margin:0 auto;padding:0 1.5rem;"></div>
     </section>
 
     <section class="admin-page" id="adminPage" style="display:none;">
@@ -1212,6 +1223,55 @@
                 html += '</tbody>';
                 table.innerHTML = html;
             } catch (e) { console.warn('[player-stats] error:', e); }
+        }
+
+        // ===== Schedule =====
+        function renderSchedule() {
+            const container = document.getElementById('schContent');
+            const TEAMS_OBJ = {
+                'Manchester City': { short: 'MCI', color: '#6CABDD' },
+                'FC Barcelona': { short: 'BAR', color: '#A50044' },
+                'Bayern Munchen': { short: 'BAY', color: '#DC052D' },
+                'Paris Saint Germain': { short: 'PSG', color: '#004170' },
+                'Real Madrid': { short: 'RMA', color: '#FEBE10' }
+            };
+            const teamNames = Object.keys(TEAMS_OBJ);
+            let fixtureIdx = 0;
+            const nextFixtures = [
+                { home: 'Real Madrid', away: 'FC Barcelona', time: 'TBD', status: 'upcoming' },
+                { home: 'Bayern Munchen', away: 'Manchester City', time: 'TBD', status: 'upcoming' },
+                { home: 'Paris Saint Germain', away: 'Real Madrid', time: 'TBD', status: 'upcoming' },
+                { home: 'FC Barcelona', away: 'Bayern Munchen', time: 'TBD', status: 'upcoming' }
+            ];
+            let html = '';
+            for (let gw = 1; gw <= 7; gw++) {
+                const matches = [];
+                for (let m = 0; m < 4; m++) {
+                    const h = teamNames[fixtureIdx % teamNames.length];
+                    const a = teamNames[(fixtureIdx + 1) % teamNames.length];
+                    fixtureIdx += 2;
+                    matches.push({ home: h, away: a });
+                }
+                html += '<div style="margin-bottom:2rem;">' +
+                    '<div style="font-size:0.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.8rem;">Gameweek ' + gw + '</div>' +
+                    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:0.8rem;">';
+                matches.forEach(match => {
+                    const hc = TEAMS_OBJ[match.home]?.color || '#888';
+                    const ac = TEAMS_OBJ[match.away]?.color || '#888';
+                    const hs = TEAMS_OBJ[match.home]?.short || '???';
+                    const as_ = TEAMS_OBJ[match.away]?.short || '???';
+                    html += '<div class="sch-match-card" style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0.8rem;cursor:pointer;transition:border-color 0.2s,box-shadow 0.2s;" onclick="location.hash=\'schedule-match\'" onmouseenter="this.style.borderColor=\'' + hc + '\';this.style.boxShadow=\'0 2px 12px \' + hc + \'33\'" onmouseleave="this.style.borderColor=\'var(--line)\';this.style.boxShadow=\'none\'">' +
+                        '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">' +
+                            '<div style="text-align:center;flex:1;min-width:0;"><div style="font-size:0.82rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.home + '</div><div style="font-size:0.68rem;font-weight:600;color:' + hc + ';margin-top:0.2rem;">' + hs + '</div></div>' +
+                            '<div style="font-size:0.7rem;color:var(--muted);font-weight:700;flex-shrink:0;">VS</div>' +
+                            '<div style="text-align:center;flex:1;min-width:0;"><div style="font-size:0.82rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.away + '</div><div style="font-size:0.68rem;font-weight:600;color:' + ac + ';margin-top:0.2rem;">' + as_ + '</div></div>' +
+                        '</div>' +
+                        '<div style="margin-top:0.6rem;display:flex;justify-content:center;"><span style="display:inline-block;font-size:0.62rem;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:4px;padding:2px 8px;">Date & Time TBD</span></div>' +
+                    '</div>';
+                });
+                html += '</div></div>';
+            }
+            container.innerHTML = html;
         }
 
         const RANK_COLORS = {
@@ -2086,6 +2146,7 @@
                 rosters: 'rostersPage',
                 freeagents: 'freeAgentsPage',
                 playerstats: 'playerStatsPage',
+                schedule: 'schedulePage',
                 player: 'playerProfilePage',
                 team: 'teamDetailPage'
             };
@@ -2111,6 +2172,7 @@
             roEl.style.display = 'none';
             document.getElementById('freeAgentsPage').style.display = 'none';
             document.getElementById('playerStatsPage').style.display = 'none';
+            document.getElementById('schedulePage').style.display = 'none';
             prEl.style.display = 'none';
             tdEl.style.display = 'none';
 
@@ -2131,6 +2193,9 @@
             } else if (page === 'playerstats') {
                 document.getElementById('playerStatsPage').style.display = '';
                 renderPlayerStats();
+            } else if (page === 'schedule') {
+                document.getElementById('schedulePage').style.display = '';
+                renderSchedule();
             } else if (page.startsWith('player')) {
                 prEl.style.display = '';
                 loadPlayerProfile();
