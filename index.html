@@ -3467,6 +3467,22 @@
         }
 
         document.getElementById('rostersDivFilter').addEventListener('change', renderRosters);
+
+        // Background glow random movement
+        (function() {
+            const glows = document.querySelectorAll('.bg-glow');
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            function randPos(el) {
+                el.style.top = (Math.random() * vh * 0.8 - vh * 0.2) + 'px';
+                el.style.left = (Math.random() * vw * 0.8 - vw * 0.2) + 'px';
+            }
+            glows.forEach(g => { randPos(g); });
+            setInterval(function() {
+                const el = glows[Math.floor(Math.random() * glows.length)];
+                randPos(el);
+            }, 6000);
+        })();
     </script>
 </body>
 </html>

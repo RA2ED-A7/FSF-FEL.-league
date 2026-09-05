@@ -1024,59 +1024,10 @@ footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.
     pointer-events: none;
     z-index: 0;
     filter: blur(80px);
+    transition: top 8s linear, left 8s linear;
 }
-.bg-glow-1 {
-    width: 900px; height: 500px;
-    background: rgba(47,214,176,0.12);
-    animation: floatGlow1 25s ease-in-out infinite;
-}
-.bg-glow-2 {
-    width: 800px; height: 500px;
-    background: rgba(20,107,90,0.15);
-    animation: floatGlow2 30s ease-in-out infinite;
-}
-.bg-glow-3 {
-    width: 600px; height: 400px;
-    background: rgba(14,36,33,0.6);
-    animation: floatGlow3 20s ease-in-out infinite;
-}
-.bg-glow-4 {
-    width: 400px; height: 300px;
-    background: rgba(47,214,176,0.04);
-    animation: floatGlow4 35s ease-in-out infinite;
-}
-.bg-glow-5 {
-    width: 500px; height: 350px;
-    background: rgba(47,214,176,0.03);
-    animation: floatGlow5 28s ease-in-out infinite;
-}
-@keyframes floatGlow1 {
-    0%, 100% { top: -10%; left: 80%; }
-    25% { top: 20%; left: 50%; }
-    50% { top: 5%; left: 20%; }
-    75% { top: 30%; left: 70%; }
-}
-@keyframes floatGlow2 {
-    0%, 100% { top: 90%; left: -5%; }
-    25% { top: 50%; left: 25%; }
-    50% { top: 70%; left: 60%; }
-    75% { top: 40%; left: 10%; }
-}
-@keyframes floatGlow3 {
-    0%, 100% { top: 40%; left: 40%; }
-    25% { top: 10%; left: 70%; }
-    50% { top: 60%; left: 15%; }
-    75% { top: 25%; left: 55%; }
-}
-@keyframes floatGlow4 {
-    0%, 100% { top: 20%; left: 15%; }
-    25% { top: 50%; left: 45%; }
-    50% { top: 10%; left: 75%; }
-    75% { top: 60%; left: 30%; }
-}
-@keyframes floatGlow5 {
-    0%, 100% { top: 65%; left: 75%; }
-    25% { top: 30%; left: 50%; }
-    50% { top: 50%; left: 25%; }
-    75% { top: 15%; left: 65%; }
-}
+.bg-glow-1 { width: 900px; height: 500px; background: rgba(47,214,176,0.12); }
+.bg-glow-2 { width: 800px; height: 500px; background: rgba(20,107,90,0.15); }
+.bg-glow-3 { width: 600px; height: 400px; background: rgba(14,36,33,0.6); }
+.bg-glow-4 { width: 400px; height: 300px; background: rgba(47,214,176,0.04); }
+.bg-glow-5 { width: 500px; height: 350px; background: rgba(47,214,176,0.03); }
