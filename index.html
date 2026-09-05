@@ -1126,6 +1126,21 @@
         }
 
         // ===== Player Stats Leaderboard =====
+        let psSortKey = 'goals';
+        let psSortAsc = false;
+        const PS_COLUMNS = [
+            { key: 'goals', label: 'Goals' },
+            { key: 'assists', label: 'Assists' },
+            { key: 'saves', label: 'Saves' },
+            { key: 'apps', label: 'Apps' },
+            { key: 'avgRating', label: 'Avg Rating' }
+        ];
+
+        function psSort(key) {
+            if (psSortKey === key) { psSortAsc = !psSortAsc; } else { psSortKey = key; psSortAsc = false; }
+            renderPlayerStats();
+        }
+
         async function renderPlayerStats() {
             initSupabase();
             if (!supabaseClient) return;
@@ -1133,20 +1148,12 @@
                 const { data: players, error } = await supabaseClient.from('Player').select('*');
                 if (error || !players) return;
                 const divFilter = document.getElementById('psDivFilter').value;
-                let filtered = players;
-                if (divFilter !== 'All') {
-                    const divTeams = TEAMS.filter(t => t.division === divFilter).map(t => t.name);
-                    filtered = players.filter(p => divTeams.includes(p.team));
-                }
+                const divTeams = TEAMS.filter(t => t.division === divFilter).map(t => t.name);
+                let filtered = players.filter(p => divTeams.includes(p.team));
                 let avatarMap = {};
                 try {
                     const { data: avRows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'discord-avatar-%');
                     if (avRows) avRows.forEach(r => { avatarMap[r.key.replace('discord-avatar-', '')] = r.value; });
-                } catch(e) {}
-                let badgeMap = {};
-                try {
-                    const { data: bRows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'badge-%');
-                    if (bRows) bRows.forEach(r => { badgeMap[r.key.replace('badge-', '')] = r.value; });
                 } catch(e) {}
                 let ratingMap = {};
                 try {
@@ -1163,31 +1170,36 @@
                     const saves = p.saves || 0;
                     const apps = p.appearances || p.matches || 0;
                     const avgRating = parseFloat(ratingMap[p.id]) || 0;
-                    return { ...p, goals, assists, saves, apps, avgRating, score: goals * 3 + assists * 2 + saves + apps + avgRating * 2 };
+                    return { ...p, goals, assists, saves, apps, avgRating };
                 });
-                scored.sort((a, b) => b.score - a.score);
+                scored.sort((a, b) => {
+                    const aVal = a[psSortKey] || 0;
+                    const bVal = b[psSortKey] || 0;
+                    return psSortAsc ? aVal - bVal : bVal - aVal;
+                });
                 const top = scored.slice(0, 150);
+                const arrow = (key) => {
+                    if (psSortKey !== key) return '';
+                    return psSortAsc ? ' &#9650;' : ' &#9660;';
+                };
+                const hdrStyle = 'padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;user-select:none;white-space:nowrap;';
                 const table = document.getElementById('psTable');
                 let html = '<thead><tr style="border-bottom:2px solid var(--line);text-align:left;">' +
-                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">#</th>' +
-                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Player</th>' +
-                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Team</th>' +
-                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Position</th>' +
-                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Goals</th>' +
-                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Assists</th>' +
-                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Saves</th>' +
-                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Apps</th>' +
-                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Avg Rating</th>' +
-                    '</tr></thead><tbody>';
+                    '<th style="' + hdrStyle + 'cursor:default;">#</th>' +
+                    '<th style="' + hdrStyle + 'cursor:default;">Player</th>' +
+                    '<th style="' + hdrStyle + 'cursor:default;">Team</th>' +
+                    '<th style="' + hdrStyle + 'cursor:default;">Position</th>';
+                PS_COLUMNS.forEach(col => {
+                    html += '<th style="' + hdrStyle + '" onclick="psSort(\'' + col.key + '\')">' + col.label + '<span style="font-size:0.6rem;">' + arrow(col.key) + '</span></th>';
+                });
+                html += '</tr></thead><tbody>';
                 top.forEach((p, i) => {
                     const av = avatarMap[p.id];
                     const avHtml = av ? '<img src="' + av + '" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.5rem;flex-shrink:0;">' : '';
-                    const badge = badgeMap[p.id];
-                    const badgeHtml = badge ? '<span style="font-size:0.6rem;padding:1px 5px;border-radius:999px;background:rgba(47,214,176,0.15);color:var(--accent);border:1px solid rgba(47,214,176,0.3);margin-left:0.3rem;">' + badge + '</span>' : '';
                     const ratingColor = p.avgRating >= 8 ? '#4caf50' : p.avgRating >= 6 ? 'var(--accent)' : p.avgRating > 0 ? '#e74c3c' : 'var(--muted)';
                     html += '<tr style="border-bottom:1px solid var(--line);cursor:pointer;" onclick="location.hash=\'player?id=' + p.id + '\'">' +
                         '<td style="padding:0.5rem 0.8rem;font-weight:700;color:var(--muted);font-size:0.8rem;">' + (i + 1) + '</td>' +
-                        '<td style="padding:0.5rem 0.8rem;display:flex;align-items:center;">' + avHtml + '<span style="font-weight:600;">' + (p.display_name || 'Player') + badgeHtml + '</span></td>' +
+                        '<td style="padding:0.5rem 0.8rem;display:flex;align-items:center;">' + avHtml + '<span style="font-weight:600;">' + (p.display_name || 'Player') + '</span></td>' +
                         '<td style="padding:0.5rem 0.8rem;font-size:0.85rem;">' + (p.team || '—') + '</td>' +
                         '<td style="padding:0.5rem 0.8rem;font-size:0.85rem;">' + (p.position || '—') + '</td>' +
                         '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:600;">' + p.goals + '</td>' +
