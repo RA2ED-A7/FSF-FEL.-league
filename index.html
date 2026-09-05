@@ -882,6 +882,9 @@
         <p id="bugReportMsg" style="font-size:0.75rem; margin-top:0.4rem;"></p>
     </div>
 
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to Top">↑</button>
+
     <!-- Settings Sidebar -->
     <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
     <div class="settings-sidebar" id="settingsSidebar">
@@ -907,6 +910,12 @@
             <div class="settings-item" id="settingTimezone" onclick="cycleTimezone()">
                 <span data-i18n="timezone">Timezone:</span> <span id="timezoneLabel">UTC</span>
             </div>
+            <div class="settings-item" id="settingDateFormat" onclick="cycleDateFormat()">
+                <span data-i18n="date_format">Date Format:</span> <span id="dateFormatLabel">DD/MM/YYYY</span>
+            </div>
+            <div class="settings-item" id="settingPageTransition" onclick="cyclePageTransition()">
+                <span data-i18n="page_transition">Page Transition:</span> <span id="pageTransitionLabel">Fade</span>
+            </div>
         </div>
         <div class="settings-panel" id="settingsPanelDisplay">
             <div class="settings-item" id="settingGlows" onclick="cycleGlows()">
@@ -918,6 +927,18 @@
             <div class="settings-item" id="settingCompactNums" onclick="toggleCompactNums()">
                 <span data-i18n="compact_numbers">Compact Numbers:</span> <span id="compactNumsLabel">Off</span>
             </div>
+            <div class="settings-item" id="settingBackToTop" onclick="toggleBackToTop()">
+                <span data-i18n="back_to_top">Back to Top Button:</span> <span id="backToTopLabel">On</span>
+            </div>
+            <div class="settings-item" id="settingHeaderBlur" onclick="toggleHeaderBlur()">
+                <span data-i18n="header_blur">Header Blur:</span> <span id="headerBlurLabel">On</span>
+            </div>
+            <div class="settings-item" id="settingAltRows" onclick="toggleAltRows()">
+                <span data-i18n="alt_rows">Alternating Rows:</span> <span id="altRowsLabel">On</span>
+            </div>
+            <div class="settings-item" id="settingCardBlur" onclick="toggleCardBlur()">
+                <span data-i18n="card_blur">Card Blur:</span> <span id="cardBlurLabel">Off</span>
+            </div>
         </div>
         <div class="settings-panel" id="settingsPanelGameday">
             <div class="settings-item" id="settingScrollLatest" onclick="toggleScrollLatest()">
@@ -925,6 +946,9 @@
             </div>
             <div class="settings-item" id="settingLoyaltyBadge" onclick="cycleLoyaltyBadge()">
                 <span data-i18n="loyalty_badge">Team Loyalty Badge:</span> <span id="loyaltyBadgeLabel">Off</span>
+            </div>
+            <div class="settings-item" id="settingOfflineMode" onclick="toggleOfflineMode()">
+                <span data-i18n="offline_mode">Offline Mode:</span> <span id="offlineModeLabel">On</span>
             </div>
         </div>
         <button class="settings-save-btn" onclick="saveAllSettings()"><span data-i18n="save_settings">Save Settings</span></button>
@@ -3102,6 +3126,7 @@
                 settings_tab_general: 'General', settings_tab_display: 'Display', settings_tab_gameday: 'Game Day',
                 glow_intensity: 'Glow Intensity:', bg_pattern: 'Background Pattern:', compact_numbers: 'Compact Numbers:',
                 scroll_to_latest: 'Scroll to Latest:', loyalty_badge: 'Team Loyalty Badge:', timezone: 'Timezone:',
+                date_format: 'Date Format:', page_transition: 'Page Transition:', back_to_top: 'Back to Top Button:', offline_mode: 'Offline Mode:',
                 nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule',
                 nav_teams: 'Teams', nav_rankings: 'Rankings', nav_rosters: 'Rosters', nav_playerstats: 'Player Stats',
                 nav_market: 'Market', nav_freeagents: 'Free Agents', nav_standings: 'Standings', nav_changelog: 'Update Log',
@@ -3165,6 +3190,7 @@
                 settings_tab_general: 'G\u00e9n\u00e9ral', settings_tab_display: 'Affichage', settings_tab_gameday: 'Jour de Match',
                 glow_intensity: 'Intensit\u00e9 des Lueurs:', bg_pattern: 'Motif de Fond:', compact_numbers: 'Nombres Compacts:',
                 scroll_to_latest: 'D\u00e9filer vers le Dernier:', loyalty_badge: 'Badge de Loyalit\u00e9:', timezone: 'Fuseau Horaire:',
+                date_format: 'Format de Date:', page_transition: 'Transition de Page:', back_to_top: 'Bouton Retour en Haut:', offline_mode: 'Mode Hors Ligne:',
                 nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier',
                 nav_teams: '\u00c9quipes', nav_rankings: 'Classement', nav_rosters: 'Effectifs', nav_playerstats: 'Stats Joueurs',
                 nav_market: 'March\u00e9', nav_freeagents: 'Agents Libres', nav_standings: 'Classement G\u00e9n\u00e9ral', nav_changelog: 'Journal des MAJ',
@@ -3859,6 +3885,83 @@
             document.documentElement.classList.add('fs-' + size.toLowerCase());
         }
 
+        // Page Transition
+        const PAGE_TRANSITIONS = ['Fade', 'Slide', 'Instant'];
+        function cyclePageTransition() {
+            const s = loadSettings();
+            const idx = PAGE_TRANSITIONS.indexOf(s.pageTransition || 'Fade');
+            s.pageTransition = PAGE_TRANSITIONS[(idx + 1) % PAGE_TRANSITIONS.length];
+            saveSettings(s);
+            applyPageTransition(s.pageTransition);
+        }
+        function applyPageTransition(mode) {
+            document.getElementById('pageTransitionLabel').textContent = mode;
+            document.body.classList.remove('trans-fade', 'trans-slide', 'trans-instant');
+            document.body.classList.add('trans-' + mode.toLowerCase());
+        }
+
+        // Back to Top
+        function toggleBackToTop() {
+            const s = loadSettings();
+            s.backToTop = s.backToTop === undefined ? true : !s.backToTop;
+            saveSettings(s);
+            applyBackToTop(s.backToTop);
+        }
+        function applyBackToTop(on) {
+            document.body.classList.toggle('no-backtotop', !on);
+            document.getElementById('backToTopLabel').textContent = on ? 'On' : 'Off';
+        }
+
+        // Date Format
+        const DATE_FORMATS = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD', 'Relative'];
+        function cycleDateFormat() {
+            const s = loadSettings();
+            const idx = DATE_FORMATS.indexOf(s.dateFormat || 'DD/MM/YYYY');
+            s.dateFormat = DATE_FORMATS[(idx + 1) % DATE_FORMATS.length];
+            saveSettings(s);
+            applyDateFormat(s.dateFormat);
+        }
+        function applyDateFormat(fmt) {
+            document.getElementById('dateFormatLabel').textContent = fmt;
+        }
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const s = loadSettings();
+            const fmt = s.dateFormat || 'DD/MM/YYYY';
+            const d = new Date(dateStr);
+            if (isNaN(d)) return dateStr;
+            if (fmt === 'Relative') {
+                const now = new Date();
+                const diff = Math.floor((now - d) / 1000);
+                if (diff < 60) return 'Just now';
+                if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+                if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+                if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+                return d.toLocaleDateString();
+            }
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            if (fmt === 'MM/DD/YYYY') return mm + '/' + dd + '/' + yyyy;
+            if (fmt === 'YYYY-MM-DD') return yyyy + '-' + mm + '-' + dd;
+            return dd + '/' + mm + '/' + yyyy;
+        }
+
+        // Offline Mode
+        function toggleOfflineMode() {
+            const s = loadSettings();
+            s.offlineMode = s.offlineMode === undefined ? true : !s.offlineMode;
+            saveSettings(s);
+            applyOfflineMode(s.offlineMode);
+        }
+        function applyOfflineMode(on) {
+            document.body.classList.toggle('offline-mode', on);
+            document.getElementById('offlineModeLabel').textContent = on ? 'On' : 'Off';
+            if (on && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            }
+        }
+
         // Save all settings
         function saveAllSettings() {
             const s = loadSettings();
@@ -3887,6 +3990,19 @@
             applyLoyaltyBadge(s.loyaltyBadge || 'Off');
             applyTimezone(s.timezone || 'UTC');
             applyFontSize(s.fontSize || 'Medium');
+            applyPageTransition(s.pageTransition || 'Fade');
+            applyBackToTop(s.backToTop !== undefined ? s.backToTop : true);
+            applyDateFormat(s.dateFormat || 'DD/MM/YYYY');
+            applyOfflineMode(s.offlineMode !== undefined ? s.offlineMode : true);
+
+            // Back to Top scroll listener
+            var btt = document.getElementById('backToTopBtn');
+            if (btt) {
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 400) btt.classList.add('visible');
+                    else btt.classList.remove('visible');
+                }, { passive: true });
+            }
         })();
     </script>
 </body>
