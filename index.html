@@ -1586,7 +1586,7 @@
             html += '</div>';
 
             // ===== LINEUPS (Football Field) =====
-            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:2rem;margin:0 -3rem 1.5rem;padding-left:3rem;padding-right:3rem;">' +
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:2rem 3rem;margin:0 -3rem 1.5rem;">' +
                 '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1.2rem;">Lineups</h3>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;">';
 
@@ -1716,7 +1716,7 @@
                         const isMvp = player.id === mvpId;
                         const gLabel = player.goals ? ' <span style="color:#4caf50;font-size:0.55rem;font-weight:700;">' + player.goals + 'G</span>' : '';
                         const aLabel = player.assists ? ' <span style="color:var(--accent);font-size:0.55rem;font-weight:700;">' + player.assists + 'A</span>' : '';
-                        slot.innerHTML = '<span class="slot-pos">' + pos + '</span><span class="slot-name">' + player.name + (isMvp ? ' <span style="color:#f1c40f;">&#9733;</span>' : '') + gLabel + aLabel + '</span>';
+                        slot.innerHTML = '<span class="slot-pos">' + pos + '</span><span class="slot-name">' + player.name + gLabel + aLabel + '</span>';
                         slot.classList.add('filled');
                         slot.style.cursor = 'pointer';
                         slot.onclick = function() { location.hash = 'player?id=' + player.id; };
