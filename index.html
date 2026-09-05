@@ -3053,6 +3053,151 @@
             }
         }
 
+        // Settings state
+        const SETTINGS_KEY = 'fel-settings';
+        function loadSettings() {
+            try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch(e) { return {}; }
+        }
+        function saveSettings(s) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
+
+        // Language
+        const LANGUAGES = ['English', 'Fran\u00e7ais'];
+        const I18N = {
+            'English': {
+                settings: 'Settings', dark_mode: 'Dark Mode:', language: 'Language:', animations: 'Animations:', please_wait: 'Please Wait.',
+                nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule',
+                nav_teams: 'Teams', nav_rankings: 'Rankings', nav_rosters: 'Rosters', nav_playerstats: 'Player Stats',
+                nav_market: 'Market', nav_freeagents: 'Free Agents', nav_standings: 'Standings', nav_changelog: 'Update Log',
+                btn_signin: 'Sign In', btn_signout: 'Sign Out',
+                stat_teams: 'Teams', stat_players: 'Players', stat_gameweeks: 'Game Weeks', next_match: 'Next Match',
+                join_discord: 'Join Our Discord', tab_highlights: 'Highlights', tab_activity: 'Activity',
+                season_highlights: 'Season Highlights', biggest_win: 'Biggest Win', top_scorer: 'Top Scorer', most_assists: 'Most Assists',
+                league_records: 'League Records', first_goal: 'First Goal', first_assist: 'First Assist', first_save: 'First Save',
+                gameweek_1: 'Game Week 1', recent_results: 'Recent Results', top3_title: 'Top 3 Teams . By Points (PTs)',
+                nf_title: 'Page not found', nf_back: 'Back to Home',
+                signin_title: 'Sign In', signin_desc: 'Connect with your Discord account to join the Freestyle Elite league.', signin_discord: 'Continue with Discord',
+                rankings_title: 'Rankings', rankings_subtitle: 'Season 1 . skill ladder by tier & position',
+                rosters_title: 'Team Rosters', rosters_desc: 'All registered players sorted by team',
+                freeagents_title: 'Free Agents', freeagents_desc: 'Unattached players available for signing',
+                schedule_title: 'Schedule', admin_title: 'Admin Panel',
+                transfer_history: 'Transfer History', recent_matches: 'Recent Matches',
+                footer_text: 'FEL website by \u00b7 A7M | .Vortex700\u003cbr\u003e\u2014 Freestyle elite league By Gadt \u2014',
+                matches: 'Matches', goals: 'Goals', assists: 'Assists', saves: 'Saves', wins: 'Wins', losses: 'Losses',
+                market_value: 'Market Value', mvp_awards: 'MVP Awards', appearances: 'Appearances', avg_rating: 'Avg Rating',
+                position: 'Position', rank: 'Rank', team: 'Team', no_transfers: 'No transfers yet.', no_match: 'No match',
+                back: 'Back', save: 'Save', cancel: 'Cancel', loading: 'Loading...', saving: 'Saving...', saved: 'Saved!',
+                overview: 'Overview', club_records: 'Club Records', transfers: 'Transfers', players: 'Players',
+                no_players: 'No players on this team yet.', no_fixture: 'No fixture scheduled.',
+                points_trajectory: 'Points Trajectory', season_records: 'Season Records', all_time_records: 'All-Time Records',
+                ties: 'Ties', goals_scored: 'Goals Scored', goals_conceded: 'Goals Conceded',
+                top_scorer_all: 'Top Scorer (All-Time)', most_goals_match: 'Most Goals in a Match',
+                longest_streak: 'Longest Win Streak', most_appearances: 'Most Appearances', top_playmaker: 'Top Playmaker (All-Time)',
+                status_finished: 'FINISHED', status_scheduled: 'SCHEDULED', status_not_scheduled: 'NOT SCHEDULED',
+                status_forfeit: 'FORFEIT', status_double_forfeit: 'DOUBLE FORFEIT',
+                event_goal: 'Goal', event_own_goal: 'Own Goal', event_yellow: 'Yellow Card', event_red: 'Red Card', event_sub: 'Substitution',
+                gameweek: 'Gameweek', match_report: 'Match Report', no_report: 'No report yet.',
+                vote_mvp: 'Vote for MVP', sign_in_vote: 'Sign in to vote.',
+                lineups: 'Lineups', match_events: 'Match Events', no_events: 'No events.',
+                match_stats: 'Match Stats', no_stats: 'No stats recorded.', no_trajectory: 'No trajectory data.',
+                report_bug: 'Report a Bug', send: 'Send', close: 'Close',
+                player: 'Player', rating: 'Rating',
+                teams_tab: 'Teams', career_tab: 'My Career', home_tab: 'Home Page', matches_tab: 'Matches History',
+                save_content: 'Save Content', save_career: 'Save Career', save_team: 'Save Team', save_match: 'Save Match',
+                select_player: 'Select Player:', select_team: 'Select Team:', select_match: 'Select Match:',
+                loading_players: 'Loading players...', loading_matches: 'Loading matches...', loading_content: 'Loading...',
+                basic: 'Basic', lineups_tab: 'Lineups', events_tab: 'Events', stats_tab: 'Stats',
+                no_freeagents: 'No free agents available.', combined_value: 'Combined Value', no_results: 'No results.',
+                change_position: 'Change Position', new_position: 'New Position', confirm: 'Confirm',
+                add_transfer: 'Add Transfer', remove_transfer: 'Remove Transfer',
+                pos_change_msg: 'You have a limited number of position changes.', pos_locked: 'Position locked! Ask an admin to change it.',
+                pos_changed: 'Position changed!', change_left: 'change left.', locked_permanent: 'Locked permanently.',
+                please_enter_title: 'Please enter a title.', please_describe: 'Please describe the bug.',
+                sending: 'Sending...', sent_thanks: 'Sent! Thank you.', error_sending: 'Error sending report.',
+                not_connected: 'Not connected.', no_bug_reports: 'No bug reports yet.', refresh: 'Refresh',
+                placeholder_1: 'Placeholder 1', placeholder_2: 'Placeholder 2', placeholder_3: 'Placeholder 3',
+                division: 'Division:', all_ranks: 'All Ranks', all_positions: 'All Positions', all_teams: 'All Teams',
+                any_value: 'Any Value', search_name: 'Search by name...', search_player: 'Search player...',
+                prev: 'Prev', next: 'Next', page: 'Page',
+                home_events: 'Home Events', away_events: 'Away Events', add: '+ Add',
+                not_configured: 'Supabase is not configured yet.', opening_discord: 'Opening Discord...'
+            },
+            'Fran\u00e7ais': {
+                settings: 'Param\u00e8tres', dark_mode: 'Mode Sombre:', language: 'Langue:', animations: 'Animations:', please_wait: 'Veuillez patienter.',
+                nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier',
+                nav_teams: '\u00c9quipes', nav_rankings: 'Classement', nav_rosters: 'Effectifs', nav_playerstats: 'Stats Joueurs',
+                nav_market: 'March\u00e9', nav_freeagents: 'Agents Libres', nav_standings: 'Classement G\u00e9n\u00e9ral', nav_changelog: 'Journal des MAJ',
+                btn_signin: 'Se Connecter', btn_signout: 'D\u00e9connexion',
+                stat_teams: '\u00c9quipes', stat_players: 'Joueurs', stat_gameweeks: 'Journ\u00e9es', next_match: 'Prochain Match',
+                join_discord: 'Rejoignez Notre Discord', tab_highlights: 'Moments Forts', tab_activity: 'Activit\u00e9',
+                season_highlights: 'Moments Forts de la Saison', biggest_win: 'Plus Large Victoire', top_scorer: 'Meilleur Buteur', most_assists: 'Plus de Passes',
+                league_records: 'Records de la Ligue', first_goal: 'Premier But', first_assist: 'Premi\u00e8re Passe', first_save: 'Premier Arr\u00eat',
+                gameweek_1: 'Journ\u00e9e 1', recent_results: 'R\u00e9sultats R\u00e9cents', top3_title: 'Top 3 \u00c9quipes . Par Points (PTS)',
+                nf_title: 'Page non trouv\u00e9e', nf_back: 'Retour \u00e0 l\'Accueil',
+                signin_title: 'Se Connecter', signin_desc: 'Connectez-vous avec votre compte Discord pour rejoindre la Freestyle Elite league.', signin_discord: 'Continuer avec Discord',
+                rankings_title: 'Classement', rankings_subtitle: 'Saison 1 . \u00e9chelle de comp\u00e9tence par niveau & poste',
+                rosters_title: 'Effectifs d\u00c9quipe', rosters_desc: 'Tous les joueurs inscrits tri\u00e9s par \u00e9quipe',
+                freeagents_title: 'Agents Libres', freeagents_desc: 'Joueurs disponibles pour signature',
+                schedule_title: 'Calendrier', admin_title: 'Panneau d\'Administration',
+                transfer_history: 'Historique des Transferts', recent_matches: 'Matchs R\u00e9cents',
+                footer_text: 'Site FEL par \u00b7 A7M | .Vortex700\u003cbr\u003e\u2014 Freestyle elite league par Gadt \u2014',
+                matches: 'Matchs', goals: 'Buts', assists: 'Passes', saves: 'Arr\u00eats', wins: 'Victoires', losses: 'D\u00e9faites',
+                market_value: 'Valeur Marchande', mvp_awards: 'Titres MVP', appearances: 'Pr\u00e9sences', avg_rating: 'Note Moy.',
+                position: 'Poste', rank: 'Rang', team: '\u00c9quipe', no_transfers: 'Aucun transfert.', no_match: 'Aucun match',
+                back: 'Retour', save: 'Enregistrer', cancel: 'Annuler', loading: 'Chargement...', saving: 'Enregistrement...', saved: 'Enregistr\u00e9 !',
+                overview: 'Aper\u00e7u', club_records: 'Records du Club', transfers: 'Transferts', players: 'Joueurs',
+                no_players: 'Aucun joueur dans cette \u00e9quipe.', no_fixture: 'Aucun match programm\u00e9.',
+                points_trajectory: 'Trajectoire des Points', season_records: 'Records de la Saison', all_time_records: 'Records de Tous les Temps',
+                ties: 'Nuls', goals_scored: 'Buts Marqu\u00e9s', goals_conceded: 'Buts Encaiss\u00e9s',
+                top_scorer_all: 'Meilleur Buteur (Tous Temps)', most_goals_match: 'Plus de Buts dans un Match',
+                longest_streak: 'Plus Longue S\u00e9rie de Victoires', most_appearances: 'Plus de Pr\u00e9sences', top_playmaker: 'Meilleur Passeur (Tous Temps)',
+                status_finished: 'TERMIN\u00c9', status_scheduled: 'PROGRAMM\u00c9', status_not_scheduled: 'NON PROGRAMM\u00c9',
+                status_forfeit: 'FORFAIT', status_double_forfeit: 'DOUBLE FORFAIT',
+                event_goal: 'But', event_own_goal: 'CSC', event_yellow: 'Carton Jaune', event_red: 'Carton Rouge', event_sub: 'Remplacement',
+                gameweek: 'Journ\u00e9e', match_report: 'Rapport de Match', no_report: 'Aucun rapport.',
+                vote_mvp: 'Voter pour le MVP', sign_in_vote: 'Connectez-vous pour voter.',
+                lineups: 'Compositions', match_events: '\u00c9v\u00e9nements du Match', no_events: 'Aucun \u00e9v\u00e9nement.',
+                match_stats: 'Statistiques du Match', no_stats: 'Aucune statistique.', no_trajectory: 'Aucune donn\u00e9e de trajectoire.',
+                report_bug: 'Signaler un Bug', send: 'Envoyer', close: 'Fermer',
+                player: 'Joueur', rating: 'Note',
+                teams_tab: '\u00c9quipes', career_tab: 'Ma Carri\u00e8re', home_tab: 'Page d\'Accueil', matches_tab: 'Historique des Matchs',
+                save_content: 'Enregistrer le Contenu', save_career: 'Enregistrer la Carri\u00e8re', save_team: 'Enregistrer l\'\u00c9quipe', save_match: 'Enregistrer le Match',
+                select_player: 'S\u00e9lectionner un Joueur:', select_team: 'S\u00e9lectionner une \u00c9quipe:', select_match: 'S\u00e9lectionner un Match:',
+                loading_players: 'Chargement des joueurs...', loading_matches: 'Chargement des matchs...', loading_content: 'Chargement...',
+                basic: 'Basique', lineups_tab: 'Compositions', events_tab: '\u00c9v\u00e9nements', stats_tab: 'Stats',
+                no_freeagents: 'Aucun agent libre disponible.', combined_value: 'Valeur Combin\u00e9e', no_results: 'Aucun r\u00e9sultat.',
+                change_position: 'Changer de Poste', new_position: 'Nouveau Poste', confirm: 'Confirmer',
+                add_transfer: 'Ajouter un Transfert', remove_transfer: 'Supprimer le Transfert',
+                pos_change_msg: 'Vous avez un nombre limit\u00e9 de changements de poste.', pos_locked: 'Poste verrouill\u00e9 ! Demandez \u00e0 un admin.',
+                pos_changed: 'Poste chang\u00e9 !', change_left: 'changement restant.', locked_permanent: 'Verrouill\u00e9 d\u00e9finitivement.',
+                please_enter_title: 'Veuillez entrer un titre.', please_describe: 'Veuillez d\u00e9crire le bug.',
+                sending: 'Envoi...', sent_thanks: 'Envoy\u00e9 ! Merci.', error_sending: 'Erreur lors de l\'envoi.',
+                not_connected: 'Non connect\u00e9.', no_bug_reports: 'Aucun rapport de bug.', refresh: 'Actualiser',
+                placeholder_1: 'Espace R\u00e9serv\u00e9 1', placeholder_2: 'Espace R\u00e9serv\u00e9 2', placeholder_3: 'Espace R\u00e9serv\u00e9 3',
+                division: 'Division :', all_ranks: 'Tous les Rangs', all_positions: 'Tous les Postes', all_teams: 'Toutes les \u00c9quipes',
+                any_value: 'Toute Valeur', search_name: 'Rechercher par nom...', search_player: 'Rechercher un joueur...',
+                prev: 'Pr\u00e9c', next: 'Suiv', page: 'Page',
+                home_events: '\u00c9v\u00e9nements Dom.', away_events: '\u00c9v\u00e9nements Ext.', add: '+ Ajouter',
+                not_configured: 'Supabase n\'est pas configur\u00e9.', opening_discord: 'Ouverture de Discord...'
+            }
+        };
+        function applyLanguage(lang) {
+            const t = I18N[lang] || I18N['English'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+            const lt = document.getElementById('loadingText');
+            if (lt) lt.textContent = t.please_wait;
+            if (typeof _loaderBaseText !== 'undefined') _loaderBaseText = t.please_wait.replace(/\.$/, '');
+        }
+        function cycleLanguage() {
+            const s = loadSettings();
+            const idx = LANGUAGES.indexOf(s.language || 'English');
+            s.language = LANGUAGES[(idx + 1) % LANGUAGES.length];
+            saveSettings(s);
+            applyLanguage(s.language);
+        }
+
         // Page loader + enter animations
         let _loaderMinDone = false;
         let _loaderPageDone = false;
@@ -3533,19 +3678,6 @@
 
         document.getElementById('rostersDivFilter').addEventListener('change', renderRosters);
 
-        // Settings sidebar
-        function toggleSettings() {
-            document.getElementById('settingsOverlay').classList.toggle('open');
-            document.getElementById('settingsSidebar').classList.toggle('open');
-        }
-
-        // Settings state
-        const SETTINGS_KEY = 'fel-settings';
-        function loadSettings() {
-            try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch(e) { return {}; }
-        }
-        function saveSettings(s) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
-
         // Dark Mode
         function toggleDarkMode() {
             const s = loadSettings();
@@ -3558,143 +3690,10 @@
             document.getElementById('darkModeLabel').textContent = on ? 'On' : 'Off';
         }
 
-        // Language
-        const LANGUAGES = ['English', 'Fran\u00e7ais'];
-        const I18N = {
-            'English': {
-                settings: 'Settings', dark_mode: 'Dark Mode:', language: 'Language:', animations: 'Animations:', please_wait: 'Please Wait.',
-                nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule',
-                nav_teams: 'Teams', nav_rankings: 'Rankings', nav_rosters: 'Rosters', nav_playerstats: 'Player Stats',
-                nav_market: 'Market', nav_freeagents: 'Free Agents', nav_standings: 'Standings', nav_changelog: 'Update Log',
-                btn_signin: 'Sign In', btn_signout: 'Sign Out',
-                stat_teams: 'Teams', stat_players: 'Players', stat_gameweeks: 'Game Weeks', next_match: 'Next Match',
-                join_discord: 'Join Our Discord', tab_highlights: 'Highlights', tab_activity: 'Activity',
-                season_highlights: 'Season Highlights', biggest_win: 'Biggest Win', top_scorer: 'Top Scorer', most_assists: 'Most Assists',
-                league_records: 'League Records', first_goal: 'First Goal', first_assist: 'First Assist', first_save: 'First Save',
-                gameweek_1: 'Game Week 1', recent_results: 'Recent Results', top3_title: 'Top 3 Teams . By Points (PTs)',
-                nf_title: 'Page not found', nf_back: 'Back to Home',
-                signin_title: 'Sign In', signin_desc: 'Connect with your Discord account to join the Freestyle Elite league.', signin_discord: 'Continue with Discord',
-                rankings_title: 'Rankings', rankings_subtitle: 'Season 1 . skill ladder by tier & position',
-                rosters_title: 'Team Rosters', rosters_desc: 'All registered players sorted by team',
-                freeagents_title: 'Free Agents', freeagents_desc: 'Unattached players available for signing',
-                schedule_title: 'Schedule', admin_title: 'Admin Panel',
-                transfer_history: 'Transfer History', recent_matches: 'Recent Matches',
-                footer_text: 'FEL website by \u00b7 A7M | .Vortex700\u003cbr\u003e\u2014 Freestyle elite league By Gadt \u2014',
-                matches: 'Matches', goals: 'Goals', assists: 'Assists', saves: 'Saves', wins: 'Wins', losses: 'Losses',
-                market_value: 'Market Value', mvp_awards: 'MVP Awards', appearances: 'Appearances', avg_rating: 'Avg Rating',
-                position: 'Position', rank: 'Rank', team: 'Team', no_transfers: 'No transfers yet.', no_match: 'No match',
-                back: 'Back', save: 'Save', cancel: 'Cancel', loading: 'Loading...', saving: 'Saving...', saved: 'Saved!',
-                overview: 'Overview', club_records: 'Club Records', transfers: 'Transfers', players: 'Players',
-                no_players: 'No players on this team yet.', no_fixture: 'No fixture scheduled.',
-                points_trajectory: 'Points Trajectory', season_records: 'Season Records', all_time_records: 'All-Time Records',
-                ties: 'Ties', goals_scored: 'Goals Scored', goals_conceded: 'Goals Conceded',
-                top_scorer_all: 'Top Scorer (All-Time)', most_goals_match: 'Most Goals in a Match',
-                longest_streak: 'Longest Win Streak', most_appearances: 'Most Appearances', top_playmaker: 'Top Playmaker (All-Time)',
-                status_finished: 'FINISHED', status_scheduled: 'SCHEDULED', status_not_scheduled: 'NOT SCHEDULED',
-                status_forfeit: 'FORFEIT', status_double_forfeit: 'DOUBLE FORFEIT',
-                event_goal: 'Goal', event_own_goal: 'Own Goal', event_yellow: 'Yellow Card', event_red: 'Red Card', event_sub: 'Substitution',
-                gameweek: 'Gameweek', match_report: 'Match Report', no_report: 'No report yet.',
-                vote_mvp: 'Vote for MVP', sign_in_vote: 'Sign in to vote.',
-                lineups: 'Lineups', match_events: 'Match Events', no_events: 'No events.',
-                match_stats: 'Match Stats', no_stats: 'No stats recorded.', no_trajectory: 'No trajectory data.',
-                report_bug: 'Report a Bug', send: 'Send', close: 'Close',
-                player: 'Player', rating: 'Rating',
-                teams_tab: 'Teams', career_tab: 'My Career', home_tab: 'Home Page', matches_tab: 'Matches History',
-                save_content: 'Save Content', save_career: 'Save Career', save_team: 'Save Team', save_match: 'Save Match',
-                select_player: 'Select Player:', select_team: 'Select Team:', select_match: 'Select Match:',
-                loading_players: 'Loading players...', loading_matches: 'Loading matches...', loading_content: 'Loading...',
-                basic: 'Basic', lineups_tab: 'Lineups', events_tab: 'Events', stats_tab: 'Stats',
-                no_freeagents: 'No free agents available.', combined_value: 'Combined Value', no_results: 'No results.',
-                change_position: 'Change Position', new_position: 'New Position', confirm: 'Confirm',
-                add_transfer: 'Add Transfer', remove_transfer: 'Remove Transfer',
-                pos_change_msg: 'You have a limited number of position changes.', pos_locked: 'Position locked! Ask an admin to change it.',
-                pos_changed: 'Position changed!', change_left: 'change left.', locked_permanent: 'Locked permanently.',
-                please_enter_title: 'Please enter a title.', please_describe: 'Please describe the bug.',
-                sending: 'Sending...', sent_thanks: 'Sent! Thank you.', error_sending: 'Error sending report.',
-                not_connected: 'Not connected.', no_bug_reports: 'No bug reports yet.', refresh: 'Refresh',
-                placeholder_1: 'Placeholder 1', placeholder_2: 'Placeholder 2', placeholder_3: 'Placeholder 3',
-                division: 'Division:', all_ranks: 'All Ranks', all_positions: 'All Positions', all_teams: 'All Teams',
-                any_value: 'Any Value', search_name: 'Search by name...', search_player: 'Search player...',
-                prev: 'Prev', next: 'Next', page: 'Page',
-                home_events: 'Home Events', away_events: 'Away Events', add: '+ Add',
-                not_configured: 'Supabase is not configured yet.', opening_discord: 'Opening Discord...'
-            },
-            'Fran\u00e7ais': {
-                settings: 'Param\u00e8tres', dark_mode: 'Mode Sombre:', language: 'Langue:', animations: 'Animations:', please_wait: 'Veuillez patienter.',
-                nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier',
-                nav_teams: '\u00c9quipes', nav_rankings: 'Classement', nav_rosters: 'Effectifs', nav_playerstats: 'Stats Joueurs',
-                nav_market: 'March\u00e9', nav_freeagents: 'Agents Libres', nav_standings: 'Classement G\u00e9n\u00e9ral', nav_changelog: 'Journal des MAJ',
-                btn_signin: 'Se Connecter', btn_signout: 'D\u00e9connexion',
-                stat_teams: '\u00c9quipes', stat_players: 'Joueurs', stat_gameweeks: 'Journ\u00e9es', next_match: 'Prochain Match',
-                join_discord: 'Rejoignez Notre Discord', tab_highlights: 'Moments Forts', tab_activity: 'Activit\u00e9',
-                season_highlights: 'Moments Forts de la Saison', biggest_win: 'Plus Large Victoire', top_scorer: 'Meilleur Buteur', most_assists: 'Plus de Passes',
-                league_records: 'Records de la Ligue', first_goal: 'Premier But', first_assist: 'Premi\u00e8re Passe', first_save: 'Premier Arr\u00eat',
-                gameweek_1: 'Journ\u00e9e 1', recent_results: 'R\u00e9sultats R\u00e9cents', top3_title: 'Top 3 \u00c9quipes . Par Points (PTS)',
-                nf_title: 'Page non trouv\u00e9e', nf_back: 'Retour \u00e0 l\'Accueil',
-                signin_title: 'Se Connecter', signin_desc: 'Connectez-vous avec votre compte Discord pour rejoindre la Freestyle Elite league.', signin_discord: 'Continuer avec Discord',
-                rankings_title: 'Classement', rankings_subtitle: 'Saison 1 . \u00e9chelle de comp\u00e9tence par niveau & poste',
-                rosters_title: 'Effectifs d\u00c9quipe', rosters_desc: 'Tous les joueurs inscrits tri\u00e9s par \u00e9quipe',
-                freeagents_title: 'Agents Libres', freeagents_desc: 'Joueurs disponibles pour signature',
-                schedule_title: 'Calendrier', admin_title: 'Panneau d\'Administration',
-                transfer_history: 'Historique des Transferts', recent_matches: 'Matchs R\u00e9cents',
-                footer_text: 'Site FEL par \u00b7 A7M | .Vortex700\u003cbr\u003e\u2014 Freestyle elite league par Gadt \u2014',
-                matches: 'Matchs', goals: 'Buts', assists: 'Passes', saves: 'Arr\u00eats', wins: 'Victoires', losses: 'D\u00e9faites',
-                market_value: 'Valeur Marchande', mvp_awards: 'Titres MVP', appearances: 'Pr\u00e9sences', avg_rating: 'Note Moy.',
-                position: 'Poste', rank: 'Rang', team: '\u00c9quipe', no_transfers: 'Aucun transfert.', no_match: 'Aucun match',
-                back: 'Retour', save: 'Enregistrer', cancel: 'Annuler', loading: 'Chargement...', saving: 'Enregistrement...', saved: 'Enregistr\u00e9 !',
-                overview: 'Aper\u00e7u', club_records: 'Records du Club', transfers: 'Transferts', players: 'Joueurs',
-                no_players: 'Aucun joueur dans cette \u00e9quipe.', no_fixture: 'Aucun match programm\u00e9.',
-                points_trajectory: 'Trajectoire des Points', season_records: 'Records de la Saison', all_time_records: 'Records de Tous les Temps',
-                ties: 'Nuls', goals_scored: 'Buts Marqu\u00e9s', goals_conceded: 'Buts Encaiss\u00e9s',
-                top_scorer_all: 'Meilleur Buteur (Tous Temps)', most_goals_match: 'Plus de Buts dans un Match',
-                longest_streak: 'Plus Longue S\u00e9rie de Victoires', most_appearances: 'Plus de Pr\u00e9sences', top_playmaker: 'Meilleur Passeur (Tous Temps)',
-                status_finished: 'TERMIN\u00c9', status_scheduled: 'PROGRAMM\u00c9', status_not_scheduled: 'NON PROGRAMM\u00c9',
-                status_forfeit: 'FORFAIT', status_double_forfeit: 'DOUBLE FORFAIT',
-                event_goal: 'But', event_own_goal: 'CSC', event_yellow: 'Carton Jaune', event_red: 'Carton Rouge', event_sub: 'Remplacement',
-                gameweek: 'Journ\u00e9e', match_report: 'Rapport de Match', no_report: 'Aucun rapport.',
-                vote_mvp: 'Voter pour le MVP', sign_in_vote: 'Connectez-vous pour voter.',
-                lineups: 'Compositions', match_events: '\u00c9v\u00e9nements du Match', no_events: 'Aucun \u00e9v\u00e9nement.',
-                match_stats: 'Statistiques du Match', no_stats: 'Aucune statistique.', no_trajectory: 'Aucune donn\u00e9e de trajectoire.',
-                report_bug: 'Signaler un Bug', send: 'Envoyer', close: 'Fermer',
-                player: 'Joueur', rating: 'Note',
-                teams_tab: '\u00c9quipes', career_tab: 'Ma Carri\u00e8re', home_tab: 'Page d\'Accueil', matches_tab: 'Historique des Matchs',
-                save_content: 'Enregistrer le Contenu', save_career: 'Enregistrer la Carri\u00e8re', save_team: 'Enregistrer l\'\u00c9quipe', save_match: 'Enregistrer le Match',
-                select_player: 'S\u00e9lectionner un Joueur:', select_team: 'S\u00e9lectionner une \u00c9quipe:', select_match: 'S\u00e9lectionner un Match:',
-                loading_players: 'Chargement des joueurs...', loading_matches: 'Chargement des matchs...', loading_content: 'Chargement...',
-                basic: 'Basique', lineups_tab: 'Compositions', events_tab: '\u00c9v\u00e9nements', stats_tab: 'Stats',
-                no_freeagents: 'Aucun agent libre disponible.', combined_value: 'Valeur Combin\u00e9e', no_results: 'Aucun r\u00e9sultat.',
-                change_position: 'Changer de Poste', new_position: 'Nouveau Poste', confirm: 'Confirmer',
-                add_transfer: 'Ajouter un Transfert', remove_transfer: 'Supprimer le Transfert',
-                pos_change_msg: 'Vous avez un nombre limit\u00e9 de changements de poste.', pos_locked: 'Poste verrouill\u00e9 ! Demandez \u00e0 un admin.',
-                pos_changed: 'Poste chang\u00e9 !', change_left: 'changement restant.', locked_permanent: 'Verrouill\u00e9 d\u00e9finitivement.',
-                please_enter_title: 'Veuillez entrer un titre.', please_describe: 'Veuillez d\u00e9crire le bug.',
-                sending: 'Envoi...', sent_thanks: 'Envoy\u00e9 ! Merci.', error_sending: 'Erreur lors de l\'envoi.',
-                not_connected: 'Non connect\u00e9.', no_bug_reports: 'Aucun rapport de bug.', refresh: 'Actualiser',
-                placeholder_1: 'Espace R\u00e9serv\u00e9 1', placeholder_2: 'Espace R\u00e9serv\u00e9 2', placeholder_3: 'Espace R\u00e9serv\u00e9 3',
-                division: 'Division :', all_ranks: 'Tous les Rangs', all_positions: 'Tous les Postes', all_teams: 'Toutes les \u00c9quipes',
-                any_value: 'Toute Valeur', search_name: 'Rechercher par nom...', search_player: 'Rechercher un joueur...',
-                prev: 'Pr\u00e9c', next: 'Suiv', page: 'Page',
-                home_events: '\u00c9v\u00e9nements Dom.', away_events: '\u00c9v\u00e9nements Ext.', add: '+ Ajouter',
-                not_configured: 'Supabase n\'est pas configur\u00e9.', opening_discord: 'Ouverture de Discord...'
-            }
-        };
-        function cycleLanguage() {
-            const s = loadSettings();
-            const idx = LANGUAGES.indexOf(s.language || 'English');
-            s.language = LANGUAGES[(idx + 1) % LANGUAGES.length];
-            saveSettings(s);
-            applyLanguage(s.language);
-        }
-        function applyLanguage(lang) {
-            document.getElementById('languageLabel').textContent = lang;
-            const t = I18N[lang] || I18N['English'];
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (t[key]) el.textContent = t[key];
-            });
-            const lt = document.getElementById('loadingText');
-            if (lt) lt.textContent = t.please_wait;
-            if (typeof _loaderBaseText !== 'undefined') _loaderBaseText = t.please_wait.replace(/\.$/, '');
+        // Settings sidebar
+        function toggleSettings() {
+            document.getElementById('settingsOverlay').classList.toggle('open');
+            document.getElementById('settingsSidebar').classList.toggle('open');
         }
 
         // Animations
