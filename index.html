@@ -743,27 +743,67 @@
                         </div>
                         <div id="matchTabBasic" class="admin-panel-content active">
                             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;">
-                                <div class="admin-field"><label>Home Team</label><select id="mEditHome" class="admin-select" style="width:100%;"></select></div>
-                                <div class="admin-field"><label>Away Team</label><select id="mEditAway" class="admin-select" style="width:100%;"></select></div>
+                                <div class="admin-field"><label>Home Team</label><select id="mEditHome" class="admin-select" style="width:100%;" onchange="onMatchTeamChange()"></select></div>
+                                <div class="admin-field"><label>Away Team</label><select id="mEditAway" class="admin-select" style="width:100%;" onchange="onMatchTeamChange()"></select></div>
                                 <div class="admin-field"><label>Status</label><select id="mEditStatus" class="admin-select" style="width:100%;"></select></div>
                                 <div class="admin-field"><label>Date & Time</label><input type="datetime-local" id="mEditDate" class="admin-input" style="width:100%;"></div>
                                 <div class="admin-field"><label>Result</label><input type="text" id="mEditResult" class="admin-input" placeholder="e.g. 3 - 2" style="width:100%;"></div>
-                                <div class="admin-field"><label>MVP Player ID</label><input type="text" id="mEditMvp" class="admin-input" placeholder="Player UUID" style="width:100%;"></div>
+                                <div class="admin-field"><label>MVP</label>
+                                    <div style="position:relative;">
+                                        <input type="text" id="mEditMvpSearch" class="admin-input" placeholder="Search player..." style="width:100%;" oninput="filterMvpDropdown()" onfocus="document.getElementById('mvpDropdown').style.display='block'" onblur="setTimeout(()=>document.getElementById('mvpDropdown').style.display='none',200)">
+                                        <div id="mvpDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;max-height:200px;overflow-y:auto;z-index:10;"></div>
+                                        <input type="hidden" id="mEditMvp" value="">
+                                    </div>
+                                </div>
                             </div>
                             <div class="admin-field"><label>Match Report</label><textarea id="mEditReport" rows="3" style="width:100%;padding:0.5rem 0.8rem;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;resize:vertical;font-family:inherit;"></textarea></div>
                         </div>
                         <div id="matchTabLineups" class="admin-panel-content" style="display:none;">
-                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">JSON array: [{"id":"uuid","name":"Player","position":"CF","goals":0,"assists":0}]</p>
-                            <div class="admin-field"><label id="mHomeLineupLabel">Home Lineup</label><textarea id="mEditHomeLineup" rows="6" style="width:100%;padding:0.5rem 0.8rem;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;outline:none;resize:vertical;font-family:monospace;"></textarea></div>
-                            <div class="admin-field" style="margin-top:0.8rem;"><label id="mAwayLineupLabel">Away Lineup</label><textarea id="mEditAwayLineup" rows="6" style="width:100%;padding:0.5rem 0.8rem;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;outline:none;resize:vertical;font-family:monospace;"></textarea></div>
+                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">Lineups auto-loaded from team rosters. Drag to reorder. Remove players with X.</p>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                                <div><h4 id="mHomeLineupLabel" style="font-size:0.85rem;margin:0 0 0.5rem;">Home Lineup</h4>
+                                    <div id="homeLineupList" style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0.5rem;min-height:100px;"></div>
+                                    <div style="display:flex;gap:0.4rem;margin-top:0.4rem;">
+                                        <select id="homeLineupAdd" class="admin-select" style="flex:1;font-size:0.78rem;"></select>
+                                        <button class="admin-save-btn" style="font-size:0.75rem;padding:0.2rem 0.6rem;" onclick="addLineupPlayer('homeLineupList')">+</button>
+                                    </div>
+                                </div>
+                                <div><h4 id="mAwayLineupLabel" style="font-size:0.85rem;margin:0 0 0.5rem;">Away Lineup</h4>
+                                    <div id="awayLineupList" style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0.5rem;min-height:100px;"></div>
+                                    <div style="display:flex;gap:0.4rem;margin-top:0.4rem;">
+                                        <select id="awayLineupAdd" class="admin-select" style="flex:1;font-size:0.78rem;"></select>
+                                        <button class="admin-save-btn" style="font-size:0.75rem;padding:0.2rem 0.6rem;" onclick="addLineupPlayer('awayLineupList')">+</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div id="matchTabEvents" class="admin-panel-content" style="display:none;">
-                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">JSON array: [{"type":"goal","player":"Name","assister":"Name","minute":"45","detail":""}] types: goal,own_goal,yellow_card,red_card,sub</p>
-                            <div class="admin-field"><label>Events (JSON)</label><textarea id="mEditEvents" rows="10" style="width:100%;padding:0.5rem 0.8rem;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;outline:none;resize:vertical;font-family:monospace;"></textarea></div>
+                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">Select a player and action to add an event. Click X to remove.</p>
+                            <div style="display:flex;gap:0.5rem;align-items:end;margin-bottom:1rem;flex-wrap:wrap;">
+                                <div class="admin-field" style="flex:1;min-width:150px;"><label>Player</label>
+                                    <select id="eventPlayerSelect" class="admin-select" style="width:100%;"></select>
+                                </div>
+                                <div class="admin-field" style="width:150px;"><label>Action</label>
+                                    <select id="eventActionSelect" class="admin-select" style="width:100%;">
+                                        <option value="goal">Goal</option>
+                                        <option value="own_goal">Own Goal</option>
+                                        <option value="assist">Assist</option>
+                                        <option value="yellow_card">Yellow Card</option>
+                                        <option value="red_card">Red Card</option>
+                                        <option value="sub">Substitution</option>
+                                    </select>
+                                </div>
+                                <div class="admin-field" style="width:80px;"><label>Minute</label><input type="text" id="eventMinute" class="admin-input" placeholder="45" style="width:100%;"></div>
+                                <div class="admin-field" style="width:120px;" id="eventSubField" style="display:none;"><label>Sub Detail</label><input type="text" id="eventSubDetail" class="admin-input" placeholder="in/out" style="width:100%;"></div>
+                                <button class="admin-save-btn" style="height:32px;" onclick="addMatchEvent()">+ Add</button>
+                            </div>
+                            <div id="eventsList" style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0.5rem;max-height:300px;overflow-y:auto;"></div>
                         </div>
                         <div id="matchTabStats" class="admin-panel-content" style="display:none;">
-                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">JSON array: [{"id":"uuid","name":"Player","position":"CF","team":"Team","goals":0,"assists":0,"oob":0,"off":0,"yc":0,"rc":0,"rating":"7.5"}]</p>
-                            <div class="admin-field"><label>Player Stats (JSON)</label><textarea id="mEditStats" rows="10" style="width:100%;padding:0.5rem 0.8rem;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;outline:none;resize:vertical;font-family:monospace;"></textarea></div>
+                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">Edit player stats for this match. Ratings contribute to player avg rating.</p>
+                            <div style="overflow-x:auto;">
+                                <table id="matchStatsTable" style="width:100%;border-collapse:collapse;min-width:650px;"></table>
+                            </div>
                         </div>
                         <div class="admin-actions" style="margin-top:1rem;">
                             <button class="admin-save-btn" onclick="saveMatchDetailEditor()">Save Match</button>
@@ -771,10 +811,10 @@
                         </div>
                     </div>
                 </div>
-                <div style="width:320px;flex-shrink:0;position:sticky;top:1rem;">
+                <div style="width:280px;flex-shrink:0;position:sticky;top:1rem;">
                     <div style="background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:1rem;">
                         <h4 style="margin:0 0 0.6rem;font-size:0.9rem;">Quick Info</h4>
-                        <p class="muted" style="font-size:0.72rem;margin:0;">Match data stored under <code>match-gw{N}-{M}-*</code> keys in SiteContent. Lineups, events, and stats are stored as JSON.</p>
+                        <p class="muted" style="font-size:0.72rem;margin:0;">Match data stored in SiteContent under <code>match-gw{N}-{M}-*</code> keys.</p>
                     </div>
                 </div>
             </div>
@@ -2533,6 +2573,12 @@
         const MATCH_STATUSES = ['FINISHED', 'SCHEDULED', 'NOT SCHEDULED', 'FORFEIT', 'DOUBLE FORFEIT'];
         const RESULT_STATUSES = ['FINISHED', 'FORFEIT', 'DOUBLE FORFEIT'];
         let _matchData = [];
+        let _matchAllPlayers = [];
+        let _matchHomePlayers = [];
+        let _matchAwayPlayers = [];
+        let _matchEvents = [];
+        let _matchHomeLineup = [];
+        let _matchAwayLineup = [];
 
         async function loadMatchEditor() {
             initSupabase();
@@ -2577,6 +2623,19 @@
             if (panel) { panel.style.display = ''; panel.classList.add('active'); }
         }
 
+        function populatePlayerSelects() {
+            const allOpts = '<option value="">Select player...</option>' + _matchAllPlayers.map(p => '<option value="' + p.id + '">' + p.display_name + ' (' + p.team + ')</option>').join('');
+            const homeOpts = '<option value="">Add player...</option>' + _matchHomePlayers.map(p => '<option value="' + p.id + '">' + p.display_name + ' (' + p.position + ')</option>').join('');
+            const awayOpts = '<option value="">Add player...</option>' + _matchAwayPlayers.map(p => '<option value="' + p.id + '">' + p.display_name + ' (' + p.position + ')</option>').join('');
+            document.getElementById('eventPlayerSelect').innerHTML = allOpts;
+            document.getElementById('homeLineupAdd').innerHTML = homeOpts;
+            document.getElementById('awayLineupAdd').innerHTML = awayOpts;
+            document.getElementById('mHomeLineupLabel').textContent = (_matchHomePlayers[0]?.team || 'Home') + ' Lineup';
+            document.getElementById('mAwayLineupLabel').textContent = (_matchAwayPlayers[0]?.team || 'Away') + ' Lineup';
+            renderLineupList('homeLineupList', _matchHomeLineup);
+            renderLineupList('awayLineupList', _matchAwayLineup);
+        }
+
         async function loadMatchDetailEditor() {
             const idx = document.getElementById('matchEditSelect').value;
             const panel = document.getElementById('matchDetailEditorPanel');
@@ -2588,31 +2647,176 @@
             initSupabase();
             if (!supabaseClient) return;
             try {
+                const { data: allP } = await supabaseClient.from('Player').select('id, display_name, team, position');
+                _matchAllPlayers = allP || [];
+                _matchHomePlayers = _matchAllPlayers.filter(p => p.team === m.home);
+                _matchAwayPlayers = _matchAllPlayers.filter(p => p.team === m.away);
+
                 const { data: rows } = await supabaseClient.from('SiteContent').select('key, value').like('key', prefix + '-%');
                 const get = (suffix) => { const r = rows?.find(x => x.key === prefix + '-' + suffix); return r ? r.value : ''; };
                 const populateSelect = (id, val) => {
                     const sel = document.getElementById(id);
                     for (const opt of sel.options) { opt.selected = opt.value === val; }
                 };
-                const teamOpts = TEAM_NAMES.map(t => '<option value="' + t + '">' + t + '</option>').join('');
-                document.getElementById('mEditHome').innerHTML = teamOpts;
-                document.getElementById('mEditAway').innerHTML = teamOpts;
+                document.getElementById('mEditHome').innerHTML = TEAM_NAMES.map(t => '<option value="' + t + '">' + t + '</option>').join('');
+                document.getElementById('mEditAway').innerHTML = TEAM_NAMES.map(t => '<option value="' + t + '">' + t + '</option>').join('');
                 document.getElementById('mEditStatus').innerHTML = MATCH_STATUSES.map(s => '<option value="' + s + '">' + s + '</option>').join('');
                 populateSelect('mEditHome', get('home') || m.home);
                 populateSelect('mEditAway', get('away') || m.away);
                 populateSelect('mEditStatus', get('status') || m.status);
                 document.getElementById('mEditDate').value = get('date') || m.date || '';
                 document.getElementById('mEditResult').value = get('result') || m.result || '';
-                document.getElementById('mEditMvp').value = get('mvp') || '';
+                const mvpId = get('mvp') || '';
+                document.getElementById('mEditMvp').value = mvpId;
+                const mvpPlayer = _matchAllPlayers.find(p => p.id === mvpId);
+                document.getElementById('mEditMvpSearch').value = mvpPlayer ? mvpPlayer.display_name : '';
                 document.getElementById('mEditReport').value = get('report') || '';
-                document.getElementById('mEditHomeLineup').value = get('home-lineup') || '[]';
-                document.getElementById('mEditAwayLineup').value = get('away-lineup') || '[]';
-                document.getElementById('mEditEvents').value = get('events') || '[]';
-                document.getElementById('mEditStats').value = get('stats') || '[]';
-                document.getElementById('mHomeLineupLabel').textContent = (get('home') || m.home) + ' Lineup';
-                document.getElementById('mAwayLineupLabel').textContent = (get('away') || m.away) + ' Lineup';
+                try { _matchHomeLineup = JSON.parse(get('home-lineup')) || []; } catch(e) { _matchHomeLineup = []; }
+                try { _matchAwayLineup = JSON.parse(get('away-lineup')) || []; } catch(e) { _matchAwayLineup = []; }
+                try { _matchEvents = JSON.parse(get('events')) || []; } catch(e) { _matchEvents = []; }
+                let statsArr = [];
+                try { statsArr = JSON.parse(get('stats')) || []; } catch(e) { statsArr = []; }
+                populatePlayerSelects();
+                renderEventsList();
+                renderMatchStatsTable(statsArr);
             } catch(e) { console.warn('[match-detail-editor] load error:', e); }
         }
+
+        function onMatchTeamChange() {
+            const home = document.getElementById('mEditHome').value;
+            const away = document.getElementById('mEditAway').value;
+            _matchHomePlayers = _matchAllPlayers.filter(p => p.team === home);
+            _matchAwayPlayers = _matchAllPlayers.filter(p => p.team === away);
+            populatePlayerSelects();
+        }
+
+        // MVP search
+        function filterMvpDropdown() {
+            const q = document.getElementById('mEditMvpSearch').value.toLowerCase();
+            const dd = document.getElementById('mvpDropdown');
+            const matches = _matchAllPlayers.filter(p => p.display_name.toLowerCase().includes(q));
+            dd.innerHTML = matches.length ? matches.map(p => '<div style="padding:0.4rem 0.8rem;cursor:pointer;font-size:0.82rem;border-bottom:1px solid var(--line);" onmousedown="selectMvp(\'' + p.id + '\',\'' + p.display_name.replace(/'/g,"\\'") + '\')">' + p.display_name + ' <span style="color:var(--muted);font-size:0.72rem;">(' + p.team + ')</span></div>').join('') : '<div style="padding:0.4rem 0.8rem;color:var(--muted);font-size:0.82rem;">No matches</div>';
+            dd.style.display = 'block';
+        }
+        function selectMvp(id, name) {
+            document.getElementById('mEditMvp').value = id;
+            document.getElementById('mEditMvpSearch').value = name;
+            document.getElementById('mvpDropdown').style.display = 'none';
+        }
+
+        // Lineups
+        function renderLineupList(containerId, lineup) {
+            const c = document.getElementById(containerId);
+            if (!lineup.length) { c.innerHTML = '<p class="muted" style="font-size:0.75rem;padding:0.5rem;">No players added. Use the + buttons below.</p>'; return; }
+            c.innerHTML = lineup.map((p, i) => {
+                const team = containerId === 'homeLineupList' ? _matchHomePlayers : _matchAwayPlayers;
+                return '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0.5rem;border-bottom:1px solid var(--line);font-size:0.8rem;">' +
+                    '<span style="color:var(--muted);font-size:0.7rem;width:16px;">' + (i + 1) + '</span>' +
+                    '<span style="flex:1;font-weight:600;">' + p.name + '</span>' +
+                    '<span style="font-size:0.7rem;color:var(--muted);">' + (p.position || '') + '</span>' +
+                    '<span style="font-size:0.7rem;color:var(--muted);">' + (p.goals || 0) + 'G ' + (p.assists || 0) + 'A</span>' +
+                    '<button onclick="removeLineupPlayer(\'' + containerId + '\',' + i + ')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:0.8rem;">&times;</button>' +
+                '</div>';
+            }).join('');
+        }
+        function addLineupPlayer(containerId) {
+            const selId = containerId === 'homeLineupList' ? 'homeLineupAdd' : 'awayLineupAdd';
+            const sel = document.getElementById(selId);
+            if (!sel || !sel.value) return;
+            const arr = containerId === 'homeLineupList' ? _matchHomeLineup : _matchAwayLineup;
+            const players = containerId === 'homeLineupList' ? _matchHomePlayers : _matchAwayPlayers;
+            const p = players.find(x => x.id === sel.value);
+            if (!p) return;
+            if (arr.find(x => x.id === p.id)) return;
+            arr.push({ id: p.id, name: p.display_name, position: p.position, goals: 0, assists: 0 });
+            renderLineupList(containerId, arr);
+            sel.value = '';
+        }
+        function removeLineupPlayer(containerId, idx) {
+            const arr = containerId === 'homeLineupList' ? _matchHomeLineup : _matchAwayLineup;
+            arr.splice(idx, 1);
+            renderLineupList(containerId, arr);
+        }
+
+        // Events
+        function renderEventsList() {
+            const c = document.getElementById('eventsList');
+            const eventColorMap = { goal: '#4caf50', own_goal: '#e74c3c', yellow_card: '#f1c40f', red_card: '#e74c3c', sub: 'var(--accent)', assist: '#888' };
+            const eventLabelMap = { goal: 'GOAL', own_goal: 'OG', yellow_card: 'YC', red_card: 'RC', sub: 'SUB', assist: 'AST' };
+            if (!_matchEvents.length) { c.innerHTML = '<p class="muted" style="font-size:0.75rem;padding:0.5rem;">No events yet.</p>'; return; }
+            c.innerHTML = _matchEvents.map((ev, i) => {
+                const ec = eventColorMap[ev.type] || 'var(--muted)';
+                return '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.6rem;border-bottom:1px solid var(--line);font-size:0.8rem;">' +
+                    '<span style="font-size:0.6rem;font-weight:700;color:' + ec + ';background:' + ec + '18;border:1px solid ' + ec + '33;border-radius:3px;padding:1px 6px;min-width:28px;text-align:center;">' + (eventLabelMap[ev.type] || ev.type) + '</span>' +
+                    '<span style="font-weight:600;flex:1;">' + (ev.player || '—') + '</span>' +
+                    (ev.assister ? '<span style="color:var(--muted);font-size:0.72rem;">(ast: ' + ev.assister + ')</span>' : '') +
+                    (ev.minute ? '<span style="color:var(--muted);font-size:0.7rem;">' + ev.minute + '"</span>' : '') +
+                    '<button onclick="removeMatchEvent(' + i + ')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:0.85rem;">&times;</button>' +
+                '</div>';
+            }).join('');
+        }
+        function addMatchEvent() {
+            const playerId = document.getElementById('eventPlayerSelect').value;
+            const action = document.getElementById('eventActionSelect').value;
+            const minute = document.getElementById('eventMinute').value;
+            const detail = document.getElementById('eventSubDetail')?.value || '';
+            if (!playerId) return;
+            const p = _matchAllPlayers.find(x => x.id === playerId);
+            const ev = { type: action, player: p ? p.display_name : 'Unknown', minute: minute || '', detail: action === 'sub' ? detail : '', assister: action === 'assist' ? (p ? p.display_name : '') : '' };
+            _matchEvents.push(ev);
+            renderEventsList();
+            document.getElementById('eventMinute').value = '';
+        }
+        function removeMatchEvent(idx) {
+            _matchEvents.splice(idx, 1);
+            renderEventsList();
+        }
+
+        // Stats table
+        function renderMatchStatsTable(statsArr) {
+            const home = document.getElementById('mEditHome').value;
+            const away = document.getElementById('mEditAway').value;
+            const homeP = _matchHomePlayers;
+            const awayP = _matchAwayPlayers;
+            const buildRows = (players, teamName, teamColor) => {
+                if (!players.length) return '';
+                let r = '<tr><td colspan="10" style="padding:0.4rem 0.6rem;font-size:0.72rem;font-weight:700;color:' + teamColor + ';text-transform:uppercase;letter-spacing:0.5px;background:var(--surface-2);border-bottom:1px solid var(--line);">' + teamName + '</td></tr>';
+                players.forEach(p => {
+                    const existing = statsArr.find(s => s.id === p.id) || {};
+                    r += '<tr data-player-id="' + p.id + '" data-team="' + teamName + '" data-team-color="' + teamColor + '">' +
+                        '<td style="padding:0.35rem 0.5rem;font-size:0.8rem;font-weight:600;border-bottom:1px solid var(--line);">' + p.display_name + '</td>' +
+                        '<td style="padding:0.35rem 0.5rem;font-size:0.72rem;color:var(--muted);border-bottom:1px solid var(--line);">' + (p.position || '') + '</td>' +
+                        '<td style="padding:0.35rem 0.3rem;border-bottom:1px solid var(--line);"><input type="number" min="0" value="' + (existing.goals || 0) + '" class="admin-input" style="width:40px;text-align:center;font-size:0.78rem;padding:0.2rem;"></td>' +
+                        '<td style="padding:0.35rem 0.3rem;border-bottom:1px solid var(--line);"><input type="number" min="0" value="' + (existing.assists || 0) + '" class="admin-input" style="width:40px;text-align:center;font-size:0.78rem;padding:0.2rem;"></td>' +
+                        '<td style="padding:0.35rem 0.3rem;border-bottom:1px solid var(--line);"><input type="number" min="0" value="' + (existing.oob || 0) + '" class="admin-input" style="width:40px;text-align:center;font-size:0.78rem;padding:0.2rem;"></td>' +
+                        '<td style="padding:0.35rem 0.3rem;border-bottom:1px solid var(--line);"><input type="number" min="0" value="' + (existing.off || 0) + '" class="admin-input" style="width:40px;text-align:center;font-size:0.78rem;padding:0.2rem;"></td>' +
+                        '<td style="padding:0.35rem 0.3rem;border-bottom:1px solid var(--line);"><input type="number" min="0" value="' + (existing.yc || 0) + '" class="admin-input" style="width:40px;text-align:center;font-size:0.78rem;padding:0.2rem;"></td>' +
+                        '<td style="padding:0.35rem 0.3rem;border-bottom:1px solid var(--line);"><input type="number" min="0" value="' + (existing.rc || 0) + '" class="admin-input" style="width:40px;text-align:center;font-size:0.78rem;padding:0.2rem;"></td>' +
+                        '<td style="padding:0.35rem 0.3rem;border-bottom:1px solid var(--line);"><input type="number" min="0" max="10" step="0.1" value="' + (existing.rating || '') + '" class="admin-input" style="width:48px;text-align:center;font-size:0.78rem;padding:0.2rem;"></td>' +
+                    '</tr>';
+                });
+                return r;
+            };
+            const hc = TEAMS_OBJ_MAP[home] || '#888';
+            const ac = TEAMS_OBJ_MAP[away] || '#888';
+            const thStyle = 'padding:0.4rem 0.5rem;font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;text-align:center;border-bottom:2px solid var(--line);';
+            let html = '<thead><tr>' +
+                '<th style="' + thStyle + 'text-align:left;">Player</th>' +
+                '<th style="' + thStyle + '">POS</th>' +
+                '<th style="' + thStyle + '">G</th>' +
+                '<th style="' + thStyle + '">A</th>' +
+                '<th style="' + thStyle + '">OOB</th>' +
+                '<th style="' + thStyle + '">OFF</th>' +
+                '<th style="' + thStyle + '">YC</th>' +
+                '<th style="' + thStyle + '">RC</th>' +
+                '<th style="' + thStyle + '">Rating</th>' +
+            '</tr></thead><tbody>';
+            html += buildRows(homeP, home, hc);
+            html += buildRows(awayP, away, ac);
+            html += '</tbody>';
+            document.getElementById('matchStatsTable').innerHTML = html;
+        }
+        const TEAMS_OBJ_MAP = { 'Manchester City': '#6CABDD', 'FC Barcelona': '#A50044', 'Bayern Munchen': '#DC052D', 'Paris Saint Germain': '#004170', 'Real Madrid': '#FEBE10' };
 
         async function saveMatchDetailEditor() {
             const idx = document.getElementById('matchEditSelect').value;
@@ -2634,10 +2838,29 @@
                 kv[prefix + '-result'] = document.getElementById('mEditResult').value;
                 kv[prefix + '-mvp'] = document.getElementById('mEditMvp').value;
                 kv[prefix + '-report'] = document.getElementById('mEditReport').value;
-                kv[prefix + '-home-lineup'] = document.getElementById('mEditHomeLineup').value;
-                kv[prefix + '-away-lineup'] = document.getElementById('mEditAwayLineup').value;
-                kv[prefix + '-events'] = document.getElementById('mEditEvents').value;
-                kv[prefix + '-stats'] = document.getElementById('mEditStats').value;
+                kv[prefix + '-home-lineup'] = JSON.stringify(_matchHomeLineup);
+                kv[prefix + '-away-lineup'] = JSON.stringify(_matchAwayLineup);
+                kv[prefix + '-events'] = JSON.stringify(_matchEvents);
+                const statRows = document.querySelectorAll('#matchStatsTable tbody tr[data-player-id]');
+                const statsArr = [];
+                statRows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    statsArr.push({
+                        id: row.dataset.playerId,
+                        name: row.querySelector('td')?.textContent || '',
+                        position: row.querySelectorAll('td')[1]?.textContent || '',
+                        team: row.dataset.team,
+                        teamColor: row.dataset.teamColor,
+                        goals: parseInt(inputs[0]?.value) || 0,
+                        assists: parseInt(inputs[1]?.value) || 0,
+                        oob: parseInt(inputs[2]?.value) || 0,
+                        off: parseInt(inputs[3]?.value) || 0,
+                        yc: parseInt(inputs[4]?.value) || 0,
+                        rc: parseInt(inputs[5]?.value) || 0,
+                        rating: inputs[6]?.value || ''
+                    });
+                });
+                kv[prefix + '-stats'] = JSON.stringify(statsArr);
                 for (const [key, value] of Object.entries(kv)) {
                     const { error } = await supabaseClient.from('SiteContent').upsert({ key, value }, { onConflict: 'key' });
                     if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
