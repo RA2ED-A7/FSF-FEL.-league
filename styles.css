@@ -1037,13 +1037,13 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 }
 .settings-overlay.open { opacity: 1; visibility: visible; }
 .settings-sidebar {
-    position: fixed; top: 0; right: -320px; width: 320px; height: 100vh;
-    background: var(--surface); border-left: 1px solid var(--line);
+    position: fixed; top: 0; left: -320px; width: 320px; height: 100vh;
+    background: var(--surface); border-right: 1px solid var(--line);
     z-index: 101; padding: 1.5rem; overflow-y: auto;
-    transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: -4px 0 20px rgba(0,0,0,0.3);
+    transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.3);
 }
-.settings-sidebar.open { right: 0; }
+.settings-sidebar.open { left: 0; }
 .settings-sidebar h2 {
     font-size: 1rem; font-weight: 700; color: var(--text);
     margin: 0 0 1.2rem; padding-bottom: 0.8rem;

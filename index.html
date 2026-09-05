@@ -3489,11 +3489,21 @@
         }
 
         // Page loader + enter animations
+        let _loaderMinTimer = null;
+        let _loaderDone = false;
         function showLoader() {
+            _loaderDone = false;
             document.getElementById('pageLoader').classList.add('active');
+            _loaderMinTimer = setTimeout(function() {
+                _loaderMinTimer = null;
+                if (_loaderDone) document.getElementById('pageLoader').classList.remove('active');
+            }, 1200);
         }
         function hideLoader() {
-            document.getElementById('pageLoader').classList.remove('active');
+            _loaderDone = true;
+            if (!_loaderMinTimer) {
+                document.getElementById('pageLoader').classList.remove('active');
+            }
         }
         function animatePage(el) {
             if (!el) return;
