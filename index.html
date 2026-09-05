@@ -885,11 +885,16 @@
     <!-- Settings Sidebar -->
     <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
     <div class="settings-sidebar" id="settingsSidebar">
-        <h2>Settings <button onclick="toggleSettings()">&times;</button></h2>
-        <div class="settings-item">Dark Mode: On</div>
-        <div class="settings-item">Notifications: Off</div>
-        <div class="settings-item">Language: English</div>
-        <div class="settings-item">Sound: On</div>
+        <h2 data-i18n="settings">Settings <button onclick="toggleSettings()">&times;</button></h2>
+        <div class="settings-item" id="settingDarkMode" onclick="toggleDarkMode()">
+            <span data-i18n="dark_mode">Dark Mode:</span> <span id="darkModeLabel">On</span>
+        </div>
+        <div class="settings-item" id="settingLanguage" onclick="cycleLanguage()">
+            <span data-i18n="language">Language:</span> <span id="languageLabel">English</span>
+        </div>
+        <div class="settings-item" id="settingAnimations" onclick="cycleAnimations()">
+            <span data-i18n="animations">Animations:</span> <span id="animationsLabel">Full</span>
+        </div>
     </div>
 
     <!-- Page Loader -->
@@ -3532,6 +3537,73 @@
             document.getElementById('settingsOverlay').classList.toggle('open');
             document.getElementById('settingsSidebar').classList.toggle('open');
         }
+
+        // Settings state
+        const SETTINGS_KEY = 'fel-settings';
+        function loadSettings() {
+            try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch(e) { return {}; }
+        }
+        function saveSettings(s) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
+
+        // Dark Mode
+        function toggleDarkMode() {
+            const s = loadSettings();
+            s.darkMode = s.darkMode === undefined ? false : !s.darkMode;
+            saveSettings(s);
+            applyDarkMode(s.darkMode);
+        }
+        function applyDarkMode(on) {
+            document.body.classList.toggle('light-mode', !on);
+            document.getElementById('darkModeLabel').textContent = on ? 'On' : 'Off';
+        }
+
+        // Language
+        const LANGUAGES = ['English', 'Fran\u00e7ais'];
+        const I18N = {
+            'English': { settings: 'Settings', dark_mode: 'Dark Mode:', language: 'Language:', animations: 'Animations:', please_wait: 'Please Wait.' },
+            'Fran\u00e7ais': { settings: 'Param\u00e8tres', dark_mode: 'Mode Sombre:', language: 'Langue:', animations: 'Animations:', please_wait: 'Veuillez patienter.' }
+        };
+        function cycleLanguage() {
+            const s = loadSettings();
+            const idx = LANGUAGES.indexOf(s.language || 'English');
+            s.language = LANGUAGES[(idx + 1) % LANGUAGES.length];
+            saveSettings(s);
+            applyLanguage(s.language);
+        }
+        function applyLanguage(lang) {
+            document.getElementById('languageLabel').textContent = lang;
+            const t = I18N[lang] || I18N['English'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) el.textContent = t[key];
+            });
+            const lt = document.getElementById('loadingText');
+            if (lt) lt.textContent = t.please_wait;
+        }
+
+        // Animations
+        const ANIM_LEVELS = ['Full', 'Reduced', 'Disabled'];
+        function cycleAnimations() {
+            const s = loadSettings();
+            const idx = ANIM_LEVELS.indexOf(s.animations || 'Full');
+            s.animations = ANIM_LEVELS[(idx + 1) % ANIM_LEVELS.length];
+            saveSettings(s);
+            applyAnimations(s.animations);
+        }
+        function applyAnimations(level) {
+            document.getElementById('animationsLabel').textContent = level;
+            document.body.classList.remove('anim-reduced', 'anim-disabled');
+            if (level === 'Reduced') document.body.classList.add('anim-reduced');
+            else if (level === 'Disabled') document.body.classList.add('anim-disabled');
+        }
+
+        // Init settings on load
+        (function() {
+            const s = loadSettings();
+            applyDarkMode(s.darkMode !== undefined ? s.darkMode : true);
+            applyLanguage(s.language || 'English');
+            applyAnimations(s.animations || 'Full');
+        })();
     </script>
 </body>
 </html>
