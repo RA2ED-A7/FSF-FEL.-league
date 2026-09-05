@@ -2771,11 +2771,10 @@
                 try { _matchHomeLineup = JSON.parse(get('home-lineup')) || []; } catch(e) { _matchHomeLineup = []; }
                 try { _matchAwayLineup = JSON.parse(get('away-lineup')) || []; } catch(e) { _matchAwayLineup = []; }
                 try { _matchEvents = JSON.parse(get('events')) || []; } catch(e) { _matchEvents = []; }
-                let statsArr = [];
-                try { statsArr = JSON.parse(get('stats')) || []; } catch(e) { statsArr = []; }
+                try { _matchStatsArr = JSON.parse(get('stats')) || []; } catch(e) { _matchStatsArr = []; }
                 populatePlayerSelects();
                 renderEventsList();
-                renderMatchStatsTable(statsArr);
+                renderMatchStatsTable(_matchStatsArr);
             } catch(e) { console.warn('[match-detail-editor] load error:', e); }
         }
 
