@@ -895,6 +895,15 @@
         <div class="settings-item" id="settingAnimations" onclick="cycleAnimations()">
             <span data-i18n="animations">Animations:</span> <span id="animationsLabel">Full</span>
         </div>
+        <div class="settings-item" id="settingGlows" onclick="toggleGlows()">
+            <span data-i18n="bg_glows">Background Glows:</span> <span id="glowsLabel">On</span>
+        </div>
+        <div class="settings-item" id="settingFontSize" onclick="cycleFontSize()">
+            <span data-i18n="font_size">Font Size:</span> <span id="fontSizeLabel">Medium</span>
+        </div>
+        <div class="settings-item" id="settingAccent" onclick="cycleAccent()">
+            <span data-i18n="accent_color">Accent Color:</span> <span id="accentLabel">Teal</span>
+        </div>
     </div>
 
     <!-- Page Loader -->
@@ -3065,6 +3074,7 @@
         const I18N = {
             'English': {
                 settings: 'Settings', dark_mode: 'Dark Mode:', language: 'Language:', animations: 'Animations:', please_wait: 'Please Wait.',
+                bg_glows: 'Background Glows:', font_size: 'Font Size:', accent_color: 'Accent Color:',
                 nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule',
                 nav_teams: 'Teams', nav_rankings: 'Rankings', nav_rosters: 'Rosters', nav_playerstats: 'Player Stats',
                 nav_market: 'Market', nav_freeagents: 'Free Agents', nav_standings: 'Standings', nav_changelog: 'Update Log',
@@ -3123,6 +3133,7 @@
             },
             'Fran\u00e7ais': {
                 settings: 'Param\u00e8tres', dark_mode: 'Mode Sombre:', language: 'Langue:', animations: 'Animations:', please_wait: 'Veuillez patienter.',
+                bg_glows: 'Lueurs de Fond:', font_size: 'Taille du Texte:', accent_color: 'Couleur d\'Accent:',
                 nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier',
                 nav_teams: '\u00c9quipes', nav_rankings: 'Classement', nav_rosters: 'Effectifs', nav_playerstats: 'Stats Joueurs',
                 nav_market: 'March\u00e9', nav_freeagents: 'Agents Libres', nav_standings: 'Classement G\u00e9n\u00e9ral', nav_changelog: 'Journal des MAJ',
@@ -3712,12 +3723,64 @@
             else if (level === 'Disabled') document.body.classList.add('anim-disabled');
         }
 
+        // Background Glows
+        function toggleGlows() {
+            const s = loadSettings();
+            s.glows = s.glows === undefined ? false : !s.glows;
+            saveSettings(s);
+            applyGlows(s.glows);
+        }
+        function applyGlows(on) {
+            document.body.classList.toggle('no-glows', !on);
+            document.getElementById('glowsLabel').textContent = on ? 'On' : 'Off';
+        }
+
+        // Font Size
+        const FONT_SIZES = ['Small', 'Medium', 'Large'];
+        function cycleFontSize() {
+            const s = loadSettings();
+            const idx = FONT_SIZES.indexOf(s.fontSize || 'Medium');
+            s.fontSize = FONT_SIZES[(idx + 1) % FONT_SIZES.length];
+            saveSettings(s);
+            applyFontSize(s.fontSize);
+        }
+        function applyFontSize(size) {
+            document.getElementById('fontSizeLabel').textContent = size;
+            document.body.classList.remove('fs-small', 'fs-medium', 'fs-large');
+            document.body.classList.add('fs-' + size.toLowerCase());
+        }
+
+        // Accent Color
+        const ACCENTS = ['Teal', 'Blue', 'Purple', 'Red', 'Gold', 'Pink', 'Team Theme'];
+        const TEAM_ACCENTS = { 'Manchester City': 'city', 'FC Barcelona': 'barca', 'Bayern Munchen': 'bayern', 'Paris Saint Germain': 'psg', 'Real Madrid': 'madrid' };
+        function cycleAccent() {
+            const s = loadSettings();
+            const idx = ACCENTS.indexOf(s.accent || 'Teal');
+            s.accent = ACCENTS[(idx + 1) % ACCENTS.length];
+            saveSettings(s);
+            applyAccent(s.accent);
+        }
+        function applyAccent(name) {
+            document.getElementById('accentLabel').textContent = name;
+            document.body.classList.remove('accent-teal', 'accent-blue', 'accent-purple', 'accent-red', 'accent-gold', 'accent-pink', 'accent-city', 'accent-barca', 'accent-bayern', 'accent-psg', 'accent-madrid');
+            if (name === 'Team Theme') {
+                const s = loadSettings();
+                const teamClass = TEAM_ACCENTS[s.teamTheme] || 'teal';
+                document.body.classList.add('accent-' + teamClass);
+            } else {
+                document.body.classList.add('accent-' + name.toLowerCase());
+            }
+        }
+
         // Init settings on load
         (function() {
             const s = loadSettings();
             applyDarkMode(s.darkMode !== undefined ? s.darkMode : true);
             applyLanguage(s.language || 'English');
             applyAnimations(s.animations || 'Full');
+            applyGlows(s.glows !== undefined ? s.glows : true);
+            applyFontSize(s.fontSize || 'Medium');
+            applyAccent(s.accent || 'Teal');
         })();
     </script>
 </body>

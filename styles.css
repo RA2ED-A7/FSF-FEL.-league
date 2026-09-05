@@ -1155,6 +1155,27 @@ body.anim-disabled *, body.anim-disabled *::before, body.anim-disabled *::after 
 }
 body.anim-disabled .bg-glow { display: none; }
 
+/* Background Glows toggle */
+body.no-glows::before { display: none !important; }
+
+/* Font Size */
+body.fs-small { font-size: 13px; }
+body.fs-medium { font-size: 15px; }
+body.fs-large { font-size: 17px; }
+
+/* Accent Colors */
+body.accent-teal { --accent: #2fd6b0; --accent-2: #56e6c4; }
+body.accent-blue { --accent: #5b8def; --accent-2: #7da8f7; }
+body.accent-purple { --accent: #a67cff; --accent-2: #c09dff; }
+body.accent-red { --accent: #ef4444; --accent-2: #f87171; }
+body.accent-gold { --accent: #f59e0b; --accent-2: #fbbf24; }
+body.accent-pink { --accent: #ec4899; --accent-2: #f472b6; }
+body.accent-city { --accent: #6CABDD; --accent-2: #8fc0e8; }
+body.accent-barca { --accent: #A50044; --accent-2: #c41060; }
+body.accent-bayern { --accent: #DC052D; --accent-2: #e8355c; }
+body.accent-psg { --accent: #004170; --accent-2: #1a5a90; }
+body.accent-madrid { --accent: #FEBE10; --accent-2: #ffd24d; }
+
 /* Settings item hover */
 .settings-item { user-select: none; }
 .settings-item span:last-child { color: var(--accent); font-weight: 600; }
