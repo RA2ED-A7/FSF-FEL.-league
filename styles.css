@@ -975,7 +975,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); box-shadow: 0 -1px 0 rgba(47,214,176,0.1); position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); z-index: 10; }
 
 .bug-report-btn {
-    position: fixed; bottom: 80px; left: 20px; z-index: 999;
+    position: absolute; bottom: 12px; left: 20px; z-index: 999;
     width: 44px; height: 44px; border-radius: 50%;
     background: var(--accent); color: #fff; font-size: 1.3rem; font-weight: 700;
     display: flex; align-items: center; justify-content: center;
