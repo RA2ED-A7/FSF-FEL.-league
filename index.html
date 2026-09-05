@@ -2060,7 +2060,6 @@
                     const avUrl = meta.avatar_url || '';
                     if (avUrl) await supabaseClient.from('SiteContent').upsert({ key: 'discord-avatar-' + data.session.user.id, value: avUrl }, { onConflict: 'key' });
                 } catch(e) {}
-                renderCareer();
                 if (location.hash.replace('#', '').toLowerCase() === 'admin') loadAdminPanel();
             } else {
                 signedIn = false;
@@ -2210,7 +2209,8 @@
         loadSiteContent();
         watchAuth();
         route();
-        refreshAuth().then(() => { route(); renderCareer(); });
+        refreshAuth().then(() => { route(); renderCareer(); setTimeout(() => renderCareer(), 1000); });
+
 
         window.admin = function() { location.hash = 'admin'; };
 
