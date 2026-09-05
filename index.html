@@ -3062,7 +3062,10 @@
             clearTimeout(_loaderTimer);
             _loaderTimer = setTimeout(function() {
                 _loaderMinDone = true;
-                if (_loaderPageDone) el.classList.remove('active');
+                if (_loaderPageDone) {
+                    clearInterval(_loadingDots);
+                    el.classList.remove('active');
+                }
             }, 2500);
             clearInterval(_loadingDots);
             var dotCount = 0;
@@ -3074,8 +3077,8 @@
         }
         function hideLoader() {
             _loaderPageDone = true;
-            clearInterval(_loadingDots);
             if (_loaderMinDone) {
+                clearInterval(_loadingDots);
                 const el = document.getElementById('pageLoader');
                 if (el) el.classList.remove('active');
             }
