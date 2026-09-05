@@ -893,7 +893,7 @@
     </div>
 
     <!-- Page Loader -->
-    <div class="page-loader" id="pageLoader"><div class="spinner"></div><span class="spinner-sub">Please Wait..</span></div>
+    <div class="page-loader" id="pageLoader"><div class="spinner"></div><span class="spinner-sub" id="loadingText">Please Wait.</span></div>
 
     <footer>
         <div class="bug-report-btn" onclick="document.getElementById('bugReportModal').style.display='block'">!</div>
@@ -3052,6 +3052,7 @@
         let _loaderMinDone = false;
         let _loaderPageDone = false;
         let _loaderTimer = null;
+        let _loadingDots = null;
         function showLoader() {
             const el = document.getElementById('pageLoader');
             if (!el) return;
@@ -3063,9 +3064,17 @@
                 _loaderMinDone = true;
                 if (_loaderPageDone) el.classList.remove('active');
             }, 2500);
+            clearInterval(_loadingDots);
+            var dotCount = 0;
+            var loadingText = document.getElementById('loadingText');
+            _loadingDots = setInterval(function() {
+                dotCount = (dotCount + 1) % 4;
+                loadingText.textContent = 'Please Wait' + '.'.repeat(dotCount || 1);
+            }, 400);
         }
         function hideLoader() {
             _loaderPageDone = true;
+            clearInterval(_loadingDots);
             if (_loaderMinDone) {
                 const el = document.getElementById('pageLoader');
                 if (el) el.classList.remove('active');
