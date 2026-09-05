@@ -995,7 +995,7 @@
                     const val = p["Market Value"] || 0;
                     const name = p.display_name || 'Player';
                     const av = avatarMap[p.id];
-                    const avHtml = av ? '<img src="' + av + '" style="width:22px;height:22px;border-radius:50%;object-fit:cover;margin-right:0.35rem;flex-shrink:0;">' : '';
+                    const avHtml = av ? '<img src="' + av + '" onload="applyAvBorderColor(this)" style="width:22px;height:22px;border-radius:50%;object-fit:cover;margin-right:0.35rem;flex-shrink:0;border:2px solid var(--accent);">' : '';
                     const html = '<div class="rp" data-tier="' + tier + '" data-pos="' + pos + '" data-team="' + team + '" data-val="' + val + '" data-name="' + name + '" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer;display:flex;align-items:center;"><div class="rp-left" style="display:flex;align-items:center;">' + avHtml + '<span class="rp-name">' + name + '</span><span class="rp-pos">' + posCat + ' · <span class="rp-sub">' + (pos || 'None') + '</span></span></div><div class="rp-right"><span class="rp-team">' + team + '</span><span class="rp-val">€' + val.toLocaleString() + '</span></div></div>';
                     const roster = document.querySelector('.rung-roster[data-tier="' + tier + '"]');
                     if (roster) roster.insertAdjacentHTML('beforeend', html);
@@ -1007,12 +1007,16 @@
         }
 
         const TEAMS = [
-            { name: 'Manchester City', division: '1.FEL' },
-            { name: 'FC Barcelona', division: '1.FEL' },
-            { name: 'Bayern Munchen', division: '1.FEL' },
-            { name: 'Paris Saint Germain', division: '1.FEL' },
-            { name: 'Real Madrid', division: '1.FEL' }
+            { name: 'Manchester City', division: '1.FEL', color: '#6CABDD' },
+            { name: 'FC Barcelona', division: '1.FEL', color: '#A50044' },
+            { name: 'Bayern Munchen', division: '1.FEL', color: '#DC052D' },
+            { name: 'Paris Saint Germain', division: '1.FEL', color: '#004170' },
+            { name: 'Real Madrid', division: '1.FEL', color: '#FEBE10' }
         ];
+        function getTeamColor(teamName) {
+            const t = TEAMS.find(t => t.name === teamName);
+            return t ? t.color : null;
+        }
 
         async function renderRosters() {
             initSupabase();
@@ -1038,7 +1042,7 @@
                     sorted.forEach((p, i) => {
                         const val = p["Market Value"] || 0;
                         const av = avatarMap[p.id];
-                        const avHtml = av ? '<img src="' + av + '" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;">' : '';
+                        const avHtml = av ? '<img src="' + av + '" onload="applyAvBorderColor(this)" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;border:2px solid var(--accent);">' : '';
                         html += '<div class="roster-player" onclick="location.hash=\'player?id=' + p.id + '\'"><span class="roster-rank">#' + (i + 1) + '</span>' + avHtml + '<span class="roster-name">' + (p.display_name || 'Player') + '</span><span class="roster-pos">' + (p.position || 'None') + '</span><span class="roster-val">€' + val.toLocaleString() + '</span></div>';
                     });
                     if (teamPlayers.length === 0) html += '<div class="roster-empty">No players yet</div>';
@@ -1082,7 +1086,7 @@
                 }
                 document.getElementById('faTable').innerHTML = filtered.map((p, i) => {
                     const av = avatarMap[p.id];
-                    const avHtml = av ? '<img src="' + av + '" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;">' : '';
+                    const avHtml = av ? '<img src="' + av + '" onload="applyAvBorderColor(this)" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;border:2px solid var(--accent);">' : '';
                     return '<div class="fa-row" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer">' +
                     '<span class="fa-rank">#' + (i + 1) + '</span>' + avHtml +
                     '<span class="fa-name">' + (p.display_name || 'Player') + '</span>' +
@@ -1144,7 +1148,7 @@
                 } else {
                     rosterDiv.innerHTML = '<div class="td-roster-list">' + sorted.map((p, i) => {
                         const av = map['discord-avatar-' + p.id];
-                        const avHtml = av ? '<img src="' + av + '" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:0.5rem;flex-shrink:0;">' : '';
+                        const avHtml = av ? '<img src="' + av + '" onload="applyAvBorderColor(this)" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:0.5rem;flex-shrink:0;border:2px solid var(--accent);">' : '';
                         return '<div class="td-roster-row" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer;display:flex;align-items:center;">' +
                         avHtml +
                         '<span class="td-roster-name">#' + (i + 1) + ' ' + (p.display_name || 'Player') + '</span>' +
@@ -1158,7 +1162,7 @@
                     const posMatch = { 'RB': ['RB', 'RWB'], 'LB': ['LB', 'LWB'] };
                     const player = sorted.find(p => p.position === pos || (posMatch[pos] && posMatch[pos].includes(p.position)));
                     const av = player ? map['discord-avatar-' + player.id] : null;
-                    const avHtml = av ? '<img src="' + av + '" style="width:20px;height:20px;border-radius:50%;object-fit:cover;margin-right:0.3rem;">' : '';
+                    const avHtml = av ? '<img src="' + av + '" onload="applyAvBorderColor(this)" style="width:20px;height:20px;border-radius:50%;object-fit:cover;margin-right:0.3rem;border:2px solid var(--accent);">' : '';
                     slot.innerHTML = '<span class="slot-pos">' + pos + '</span>' + avHtml + '<span class="slot-name">' + (player ? player.display_name : '—') + '</span>';
                     if (player) slot.classList.add('filled');
                     else slot.classList.remove('filled');
@@ -1315,7 +1319,7 @@
                     const { data: avSc } = await supabaseClient.from('SiteContent').select('value').eq('key', 'discord-avatar-' + p.id).maybeSingle();
                     if (avSc && avSc.value) {
                         pImg.src = avSc.value;
-                        pImg.onload = function() { pImg.style.display = 'block'; pFallback.style.display = 'none'; };
+                        pImg.onload = function() { pImg.style.display = 'block'; pFallback.style.display = 'none'; applyAvBorderColor(pImg); };
                         pImg.onerror = function() { pImg.style.display = 'none'; pFallback.style.display = 'flex'; };
                     }
                 } catch(e) { console.log('[avatar] profile load failed:', e); }
@@ -2211,14 +2215,33 @@
         window.admin = function() { location.hash = 'admin'; };
 
         // ===== Discord Avatar =====
+        function getDominantColor(img) {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 1; canvas.height = 1;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 1, 1);
+                const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+                return 'rgb(' + r + ',' + g + ',' + b + ')';
+            } catch(e) { return null; }
+        }
+        function applyAvBorderColor(el) {
+            const color = getDominantColor(el);
+            if (color) {
+                el.style.borderColor = color;
+                el.style.boxShadow = '0 0 6px ' + color.replace('rgb', 'rgba').replace(')', ',0.5)');
+            }
+        }
+
         function loadDiscordAvatar(user, imgEl, fallbackEl) {
-            const meta = user.user_metadata || user.user_metadata || {};
+            const meta = user.user_metadata || {};
             const avatar = meta.avatar_url || null;
             if (avatar) {
                 imgEl.src = avatar;
                 imgEl.onload = function() {
                     imgEl.style.display = 'block';
                     fallbackEl.style.display = 'none';
+                    applyAvBorderColor(imgEl);
                 };
                 imgEl.onerror = function() { imgEl.style.display = 'none'; fallbackEl.style.display = 'flex'; };
             } else {
