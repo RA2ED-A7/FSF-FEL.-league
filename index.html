@@ -567,7 +567,14 @@
                 <option value="1.FEL">1.FEL</option>
             </select>
         </div>
-        <div id="schContent" style="max-width:1200px;margin:0 auto;padding:0 1.5rem;"></div>
+        <div id="schContent" style="max-width:1400px;margin:0 auto;padding:0 1.5rem;"></div>
+    </section>
+
+    <section class="match-detail-page" id="matchDetailPage" style="display:none;">
+        <button class="back-btn" onclick="history.back()">&larr; Back</button>
+        <div style="max-width:960px;margin:0 auto;padding:2rem 1.5rem;" id="matchDetailContent">
+            <p class="muted" style="text-align:center;">Loading match...</p>
+        </div>
     </section>
 
     <section class="admin-page" id="adminPage" style="display:none;">
@@ -718,22 +725,56 @@
         </div>
 
         <div id="contentMatches" class="admin-panel-content">
-            <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit match cards for the Schedule page. Use dropdowns for teams, status, date & time. Only results are text inputs.</p>
+            <p class="muted" style="font-size:0.8rem;margin-bottom:1rem;">Edit match cards and details for the Schedule page.</p>
             <div style="display:flex;gap:2rem;align-items:flex-start;">
                 <div style="flex:1;min-width:0;">
-                    <div id="matchEditorContainer" style="max-height:70vh;overflow-y:auto;padding-right:0.5rem;">
-                        <p class="muted">Loading matches...</p>
+                    <div class="admin-player-select">
+                        <label>Select Match:</label>
+                        <select id="matchEditSelect" class="admin-select" onchange="loadMatchDetailEditor()">
+                            <option value="">Loading matches...</option>
+                        </select>
                     </div>
-                    <div class="admin-actions" style="margin-top:1rem;">
-                        <button class="admin-save-btn" onclick="saveMatchesContent()">Save Matches</button>
-                        <span class="admin-msg" id="matchesMsg"></span>
+                    <div id="matchDetailEditorPanel" style="display:none;">
+                        <div class="admin-tabs" style="margin-top:1rem;">
+                            <button class="admin-tab active" onclick="switchMatchTab('basic')">Basic</button>
+                            <button class="admin-tab" onclick="switchMatchTab('lineups')">Lineups</button>
+                            <button class="admin-tab" onclick="switchMatchTab('events')">Events</button>
+                            <button class="admin-tab" onclick="switchMatchTab('stats')">Stats</button>
+                        </div>
+                        <div id="matchTabBasic" class="admin-panel-content active">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;">
+                                <div class="admin-field"><label>Home Team</label><select id="mEditHome" class="admin-select" style="width:100%;"></select></div>
+                                <div class="admin-field"><label>Away Team</label><select id="mEditAway" class="admin-select" style="width:100%;"></select></div>
+                                <div class="admin-field"><label>Status</label><select id="mEditStatus" class="admin-select" style="width:100%;"></select></div>
+                                <div class="admin-field"><label>Date & Time</label><input type="datetime-local" id="mEditDate" class="admin-input" style="width:100%;"></div>
+                                <div class="admin-field"><label>Result</label><input type="text" id="mEditResult" class="admin-input" placeholder="e.g. 3 - 2" style="width:100%;"></div>
+                                <div class="admin-field"><label>MVP Player ID</label><input type="text" id="mEditMvp" class="admin-input" placeholder="Player UUID" style="width:100%;"></div>
+                            </div>
+                            <div class="admin-field"><label>Match Report</label><textarea id="mEditReport" rows="3" style="width:100%;padding:0.5rem 0.8rem;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.85rem;outline:none;resize:vertical;font-family:inherit;"></textarea></div>
+                        </div>
+                        <div id="matchTabLineups" class="admin-panel-content" style="display:none;">
+                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">JSON array: [{"id":"uuid","name":"Player","position":"CF","goals":0,"assists":0}]</p>
+                            <div class="admin-field"><label id="mHomeLineupLabel">Home Lineup</label><textarea id="mEditHomeLineup" rows="6" style="width:100%;padding:0.5rem 0.8rem;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;outline:none;resize:vertical;font-family:monospace;"></textarea></div>
+                            <div class="admin-field" style="margin-top:0.8rem;"><label id="mAwayLineupLabel">Away Lineup</label><textarea id="mEditAwayLineup" rows="6" style="width:100%;padding:0.5rem 0.8rem;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;outline:none;resize:vertical;font-family:monospace;"></textarea></div>
+                        </div>
+                        <div id="matchTabEvents" class="admin-panel-content" style="display:none;">
+                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">JSON array: [{"type":"goal","player":"Name","assister":"Name","minute":"45","detail":""}] types: goal,own_goal,yellow_card,red_card,sub</p>
+                            <div class="admin-field"><label>Events (JSON)</label><textarea id="mEditEvents" rows="10" style="width:100%;padding:0.5rem 0.8rem;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;outline:none;resize:vertical;font-family:monospace;"></textarea></div>
+                        </div>
+                        <div id="matchTabStats" class="admin-panel-content" style="display:none;">
+                            <p class="muted" style="font-size:0.75rem;margin-bottom:0.8rem;">JSON array: [{"id":"uuid","name":"Player","position":"CF","team":"Team","goals":0,"assists":0,"oob":0,"off":0,"yc":0,"rc":0,"rating":"7.5"}]</p>
+                            <div class="admin-field"><label>Player Stats (JSON)</label><textarea id="mEditStats" rows="10" style="width:100%;padding:0.5rem 0.8rem;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:8px;font-size:0.8rem;outline:none;resize:vertical;font-family:monospace;"></textarea></div>
+                        </div>
+                        <div class="admin-actions" style="margin-top:1rem;">
+                            <button class="admin-save-btn" onclick="saveMatchDetailEditor()">Save Match</button>
+                            <span class="admin-msg" id="matchDetailMsg"></span>
+                        </div>
                     </div>
                 </div>
                 <div style="width:320px;flex-shrink:0;position:sticky;top:1rem;">
                     <div style="background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:1rem;">
                         <h4 style="margin:0 0 0.6rem;font-size:0.9rem;">Quick Info</h4>
-                        <p class="muted" style="font-size:0.72rem;margin-bottom:0.5rem;">Changes are saved permanently to SiteContent under <code>match-gw{N}-{M}</code> keys.</p>
-                        <p class="muted" style="font-size:0.72rem;margin:0;">Each match stores: home, away, status, date, result.</p>
+                        <p class="muted" style="font-size:0.72rem;margin:0;">Match data stored under <code>match-gw{N}-{M}-*</code> keys in SiteContent. Lineups, events, and stats are stored as JSON.</p>
                     </div>
                 </div>
             </div>
@@ -1322,7 +1363,7 @@
                     const resultWeight = isResult ? '900' : '800';
                     const resultSpacing = isResult ? '4px' : '6px';
                     const dateStr = match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'TBD';
-                    html += '<div class="sch-match-card" style="background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.25s ease;position:relative;" onclick="location.hash=\'schedule-match\'" onmouseenter="this.style.borderColor=\'' + hc + '66\';this.style.boxShadow=\'0 8px 32px \' + hc + \'22\';this.style.transform=\'translateY(-2px)\'" onmouseleave="this.style.borderColor=\'var(--line)\';this.style.boxShadow=\'none\';this.style.transform=\'translateY(0)\'">' +
+                    html += '<div class="sch-match-card" style="background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.25s ease;position:relative;" onclick="location.hash=\'schedule-match?gw=' + match.gw + '&idx=' + match.idx + '\'" onmouseenter="this.style.borderColor=\'' + hc + '66\';this.style.boxShadow=\'0 8px 32px \' + hc + \'22\';this.style.transform=\'translateY(-2px)\'" onmouseleave="this.style.borderColor=\'var(--line)\';this.style.boxShadow=\'none\';this.style.transform=\'translateY(0)\'">' +
                         '<div style="background:linear-gradient(135deg,' + hc + '22,transparent 60%);border-bottom:1px solid var(--line);padding:0.7rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">' +
                             '<span style="font-size:0.6rem;font-weight:700;color:' + sColor + ';background:' + sColor + '15;border:1px solid ' + sColor + '33;border-radius:4px;padding:3px 10px;letter-spacing:1px;text-transform:uppercase;">' + status + '</span>' +
                             '<span style="font-size:0.62rem;color:var(--muted);letter-spacing:0.3px;">' + dateStr + '</span>' +
@@ -1346,6 +1387,307 @@
                 html += '</div></div>';
             }
             container.innerHTML = html;
+        }
+
+        // ===== Match Detail =====
+        const MATCH_EVENT_TYPES = [
+            { value: 'goal', label: 'Goal', color: '#4caf50', icon: '\u26AB' },
+            { value: 'own_goal', label: 'Own Goal', color: '#e74c3c', icon: '\u26AB' },
+            { value: 'yellow_card', label: 'Yellow Card', color: '#f1c40f', icon: '\u{1F7E1}' },
+            { value: 'red_card', label: 'Red Card', color: '#e74c3c', icon: '\u{1F534}' },
+            { value: 'sub', label: 'Substitution', color: 'var(--accent)', icon: '\u21C5' }
+        ];
+
+        function _getMatchParams() {
+            const hash = location.hash.replace('#', '');
+            const qs = hash.split('?')[1] || '';
+            const params = {};
+            qs.split('&').forEach(p => { const [k, v] = p.split('='); params[k] = decodeURIComponent(v || ''); });
+            return { gw: parseInt(params.gw) || 1, idx: parseInt(params.idx) || 0 };
+        }
+
+        async function renderMatchDetail() {
+            const { gw, idx } = _getMatchParams();
+            const container = document.getElementById('matchDetailContent');
+            const TEAMS_OBJ = {
+                'Manchester City': { color: '#6CABDD' },
+                'FC Barcelona': { color: '#A50044' },
+                'Bayern Munchen': { color: '#DC052D' },
+                'Paris Saint Germain': { color: '#004170' },
+                'Real Madrid': { color: '#FEBE10' }
+            };
+            const teamNames = Object.keys(TEAMS_OBJ);
+            const statusColors = { 'FINISHED': '#4caf50', 'SCHEDULED': 'var(--accent)', 'NOT SCHEDULED': 'var(--muted)', 'FORFEIT': '#e74c3c', 'DOUBLE FORFEIT': '#ff9800' };
+            const resultStatuses = ['FINISHED', 'FORFEIT', 'DOUBLE FORFEIT'];
+            const prefix = 'match-gw' + gw + '-' + idx;
+            let home = teamNames[((gw - 1) * 4 + idx * 2) % teamNames.length];
+            let away = teamNames[((gw - 1) * 4 + idx * 2 + 1) % teamNames.length];
+            let status = 'NOT SCHEDULED';
+            let date = '';
+            let result = '';
+            let report = '';
+            let mvp = '';
+            let homeLineup = [];
+            let awayLineup = [];
+            let events = [];
+            let stats = [];
+            let votes = {};
+            initSupabase();
+            if (supabaseClient) {
+                try {
+                    const { data: rows } = await supabaseClient.from('SiteContent').select('key, value').like('key', prefix + '-%');
+                    const get = (suffix) => { const r = rows?.find(x => x.key === prefix + '-' + suffix); return r ? r.value : ''; };
+                    home = get('home') || home;
+                    away = get('away') || away;
+                    status = get('status') || status;
+                    date = get('date') || '';
+                    result = get('result') || '';
+                    report = get('report') || '';
+                    mvp = get('mvp') || '';
+                    try { homeLineup = JSON.parse(get('home-lineup')) || []; } catch(e) { homeLineup = []; }
+                    try { awayLineup = JSON.parse(get('away-lineup')) || []; } catch(e) { awayLineup = []; }
+                    try { events = JSON.parse(get('events')) || []; } catch(e) { events = []; }
+                    try { stats = JSON.parse(get('stats')) || []; } catch(e) { stats = []; }
+                    try { votes = JSON.parse(get('votes')) || {}; } catch(e) { votes = {}; }
+                } catch(e) { console.warn('[match-detail] load error:', e); }
+            }
+            const hc = TEAMS_OBJ[home]?.color || '#888';
+            const ac = TEAMS_OBJ[away]?.color || '#888';
+            const sColor = statusColors[status] || 'var(--muted)';
+            const isResult = resultStatuses.includes(status);
+            const displayResult = result || (isResult ? '—  —' : 'VS');
+            const dateStr = date ? new Date(date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Date & Time TBD';
+
+            let voteCounts = {};
+            Object.values(votes).forEach(votedId => { voteCounts[votedId] = (voteCounts[votedId] || 0) + 1; });
+            let topVotes = 0;
+            Object.values(voteCounts).forEach(c => { if (c > topVotes) topVotes = c; });
+            const mvpVotes = topVotes > 0 ? Object.entries(voteCounts).filter(([,c]) => c === topVotes).map(([id]) => id) : [];
+            const mvpId = mvp || (mvpVotes.length === 1 ? mvpVotes[0] : '');
+
+            let allPlayers = [
+                ...homeLineup.map(p => ({...p, team: home, teamColor: hc})),
+                ...awayLineup.map(p => ({...p, team: away, teamColor: ac}))
+            ];
+            const mvpPlayer = allPlayers.find(p => p.id === mvpId);
+
+            let html = '';
+
+            // ===== RESULT CARD =====
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:2rem;">' +
+                '<div style="background:linear-gradient(135deg,' + hc + '22,transparent 40%,transparent 60%,' + ac + '22);padding:0.8rem 1.5rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);">' +
+                    '<span style="font-size:0.65rem;font-weight:700;color:' + sColor + ';background:' + sColor + '15;border:1px solid ' + sColor + '33;border-radius:4px;padding:3px 12px;letter-spacing:1px;text-transform:uppercase;">' + status + '</span>' +
+                    '<span style="font-size:0.7rem;color:var(--muted);">Gameweek ' + gw + '</span>' +
+                    '<span style="font-size:0.7rem;color:var(--muted);">' + dateStr + '</span>' +
+                '</div>' +
+                '<div style="padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;">' +
+                    '<div style="text-align:center;flex:1;">' +
+                        '<div style="width:72px;height:72px;border-radius:50%;background:' + hc + '18;border:3px solid ' + hc + '55;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:' + hc + ';">' + home.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                        '<div style="font-size:1.3rem;font-weight:700;color:var(--text);">' + home + '</div>' +
+                    '</div>' +
+                    '<div style="text-align:center;flex-shrink:0;">' +
+                        '<div style="font-size:3rem;font-weight:900;color:var(--text);letter-spacing:6px;line-height:1;">' + displayResult + '</div>' +
+                    '</div>' +
+                    '<div style="text-align:center;flex:1;">' +
+                        '<div style="width:72px;height:72px;border-radius:50%;background:' + ac + '18;border:3px solid ' + ac + '55;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:' + ac + ';">' + away.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                        '<div style="font-size:1.3rem;font-weight:700;color:var(--text);">' + away + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="height:4px;background:linear-gradient(90deg,' + hc + ',' + ac + ');"></div>' +
+            '</div>';
+
+            // ===== MATCH REPORT =====
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">' +
+                '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 0.8rem;">Match Report</h3>' +
+                '<p style="font-size:0.9rem;color:var(--text);line-height:1.6;margin:0;">' + (report || '<span class="muted">No report yet.</span>') + '</p>' +
+            '</div>';
+
+            // ===== MVP =====
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1.5rem;">' +
+                '<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#f1c40f,#e67e22);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">&#9733;</div>' +
+                '<div>' +
+                    '<div style="font-size:0.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Man of the Match</div>' +
+                    '<div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-top:0.2rem;">' + (mvpPlayer ? mvpPlayer.name : 'Not awarded yet') + '</div>' +
+                    (mvpPlayer ? '<div style="font-size:0.75rem;color:' + mvpPlayer.teamColor + ';margin-top:0.1rem;">' + mvpPlayer.team + '</div>' : '') +
+                '</div>' +
+            '</div>';
+
+            // ===== MVP VOTING =====
+            const currentUserId = _supabaseUser?.id || '';
+            const hasVoted = votes[currentUserId] !== undefined;
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">' +
+                '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 0.8rem;">Vote for MVP</h3>';
+            if (!currentUserId) {
+                html += '<p class="muted" style="font-size:0.8rem;margin:0;">Sign in to vote.</p>';
+            } else if (hasVoted) {
+                html += '<p style="font-size:0.8rem;color:var(--accent);margin:0;">You voted for: <strong>' + (allPlayers.find(p => p.id === votes[currentUserId])?.name || '—') + '</strong></p>';
+            } else {
+                html += '<div style="display:flex;flex-wrap:wrap;gap:0.5rem;">';
+                allPlayers.forEach(p => {
+                    html += '<button onclick="voteMVP(\'' + p.id + '\')" style="background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:0.3rem 0.8rem;font-size:0.78rem;color:var(--text);cursor:pointer;transition:all 0.15s;" onmouseenter="this.style.borderColor=\'' + p.teamColor + '\'" onmouseleave="this.style.borderColor=\'var(--line)\'">' + p.name + '</button>';
+                });
+                html += '</div>';
+            }
+            html += '</div>';
+
+            // ===== LINEUPS =====
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">' +
+                '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1rem;">Lineups</h3>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">';
+
+            const homeFormation = homeLineup.length ? _guessFormation(homeLineup) : '4-3-3';
+            html += '<div style="background:' + hc + '08;border:1px solid ' + hc + '22;border-radius:10px;padding:1.2rem;">' +
+                '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">' +
+                    '<div style="width:32px;height:32px;border-radius:50%;background:' + hc + '22;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:' + hc + ';">' + home.split(' ').map(w=>w[0]).join('').slice(0,2) + '</div>' +
+                    '<div><div style="font-weight:700;color:var(--text);font-size:0.95rem;">' + home + '</div><div style="font-size:0.7rem;color:var(--muted);">' + homeFormation + '</div></div>' +
+                '</div>';
+            if (homeLineup.length) {
+                html += '<div style="display:flex;flex-direction:column;gap:0.35rem;">';
+                homeLineup.forEach(p => {
+                    const isMvp = p.id === mvpId;
+                    const gLabel = p.goals ? ' <span style="color:#4caf50;font-size:0.65rem;font-weight:700;">' + p.goals + 'G</span>' : '';
+                    const aLabel = p.assists ? ' <span style="color:var(--accent);font-size:0.65rem;font-weight:700;">' + p.assists + 'A</span>' : '';
+                    html += '<div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;">' +
+                        '<span style="color:var(--text);font-weight:600;">' + p.name + (isMvp ? ' <span style="color:#f1c40f;">&#9733;</span>' : '') + gLabel + aLabel + '</span>' +
+                        '<span style="font-size:0.68rem;color:var(--muted);margin-left:auto;">' + (p.position || '') + '</span>' +
+                    '</div>';
+                });
+                html += '</div>';
+            } else {
+                html += '<p class="muted" style="font-size:0.78rem;margin:0;">No lineup set.</p>';
+            }
+            html += '</div>';
+
+            const awayFormation = awayLineup.length ? _guessFormation(awayLineup) : '4-3-3';
+            html += '<div style="background:' + ac + '08;border:1px solid ' + ac + '22;border-radius:10px;padding:1.2rem;">' +
+                '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">' +
+                    '<div style="width:32px;height:32px;border-radius:50%;background:' + ac + '22;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:' + ac + ';">' + away.split(' ').map(w=>w[0]).join('').slice(0,2) + '</div>' +
+                    '<div><div style="font-weight:700;color:var(--text);font-size:0.95rem;">' + away + '</div><div style="font-size:0.7rem;color:var(--muted);">' + awayFormation + '</div></div>' +
+                '</div>';
+            if (awayLineup.length) {
+                html += '<div style="display:flex;flex-direction:column;gap:0.35rem;">';
+                awayLineup.forEach(p => {
+                    const isMvp = p.id === mvpId;
+                    const gLabel = p.goals ? ' <span style="color:#4caf50;font-size:0.65rem;font-weight:700;">' + p.goals + 'G</span>' : '';
+                    const aLabel = p.assists ? ' <span style="color:var(--accent);font-size:0.65rem;font-weight:700;">' + p.assists + 'A</span>' : '';
+                    html += '<div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;">' +
+                        '<span style="color:var(--text);font-weight:600;">' + p.name + (isMvp ? ' <span style="color:#f1c40f;">&#9733;</span>' : '') + gLabel + aLabel + '</span>' +
+                        '<span style="font-size:0.68rem;color:var(--muted);margin-left:auto;">' + (p.position || '') + '</span>' +
+                    '</div>';
+                });
+                html += '</div>';
+            } else {
+                html += '<p class="muted" style="font-size:0.78rem;margin:0;">No lineup set.</p>';
+            }
+            html += '</div></div></div>';
+
+            // ===== MATCH EVENTS =====
+            const eventColorMap = { goal: '#4caf50', own_goal: '#e74c3c', yellow_card: '#f1c40f', red_card: '#e74c3c', sub: 'var(--accent)' };
+            const eventIconMap = { goal: '\u26AB', own_goal: '\u26AB', yellow_card: '\u{1F7E1}', red_card: '\u{1F534}', sub: '\u21C5' };
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">' +
+                '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1rem;">Match Events</h3>';
+            if (events.length) {
+                html += '<div style="display:flex;flex-direction:column;gap:0.5rem;">';
+                events.forEach(ev => {
+                    const eColor = eventColorMap[ev.type] || 'var(--muted)';
+                    const eIcon = eventIconMap[ev.type] || '';
+                    const typeLabel = ev.type === 'own_goal' ? 'OG' : ev.type === 'yellow_card' ? 'YC' : ev.type === 'red_card' ? 'RC' : ev.type === 'sub' ? 'SUB' : ev.type === 'goal' ? 'GOAL' : ev.type;
+                    const assText = ev.assister ? ' <span style="color:var(--muted);font-size:0.75rem;">(assist: ' + ev.assister + ')</span>' : '';
+                    const subText = ev.type === 'sub' && ev.detail ? ' <span style="color:var(--muted);font-size:0.75rem;">(' + ev.detail + ')</span>' : '';
+                    html += '<div style="display:flex;align-items:center;gap:0.7rem;padding:0.5rem 0.8rem;border-radius:6px;background:var(--surface-2);font-size:0.85rem;">' +
+                        '<span style="color:' + eColor + ';font-size:0.9rem;">' + eIcon + '</span>' +
+                        '<span style="font-size:0.6rem;font-weight:700;color:' + eColor + ';background:' + eColor + '18;border:1px solid ' + eColor + '33;border-radius:3px;padding:1px 6px;letter-spacing:0.5px;min-width:30px;text-align:center;">' + typeLabel + '</span>' +
+                        '<span style="font-weight:600;color:var(--text);">' + (ev.player || '—') + '</span>' +
+                        assText + subText +
+                        (ev.minute ? '<span style="margin-left:auto;font-size:0.7rem;color:var(--muted);">' + ev.minute + '"</span>' : '') +
+                    '</div>';
+                });
+                html += '</div>';
+            } else {
+                html += '<p class="muted" style="font-size:0.8rem;margin:0;">No events recorded.</p>';
+            }
+            html += '</div>';
+
+            // ===== MATCH STATS TABLE =====
+            const allStats = [...stats].sort((a, b) => {
+                if (a.team === away && b.team !== away) return -1;
+                if (a.team !== away && b.team === away) return 1;
+                return 0;
+            });
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;overflow-x:auto;">' +
+                '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1rem;">Match Stats</h3>';
+            if (allStats.length) {
+                const thStyle = 'padding:0.5rem 0.6rem;font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;text-align:center;white-space:nowrap;';
+                const tdStyle = 'padding:0.45rem 0.6rem;font-size:0.8rem;text-align:center;border-bottom:1px solid var(--line);';
+                html += '<table style="width:100%;border-collapse:collapse;min-width:700px;">' +
+                    '<thead><tr style="border-bottom:2px solid var(--line);">' +
+                    '<th style="' + thStyle + 'text-align:left;">Player</th>' +
+                    '<th style="' + thStyle + '">POS</th>' +
+                    '<th style="' + thStyle + '">G</th>' +
+                    '<th style="' + thStyle + '">A</th>' +
+                    '<th style="' + thStyle + '">OOB</th>' +
+                    '<th style="' + thStyle + '">OFF</th>' +
+                    '<th style="' + thStyle + '">YC</th>' +
+                    '<th style="' + thStyle + '">RC</th>' +
+                    '<th style="' + thStyle + '">Rating</th>' +
+                    '</tr></thead><tbody>';
+                let lastTeam = '';
+                allStats.forEach(s => {
+                    if (s.team !== lastTeam) {
+                        html += '<tr><td colspan="9" style="padding:0.5rem 0.6rem;font-size:0.72rem;font-weight:700;color:' + (s.teamColor || 'var(--muted)') + ';text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--line);">' + (s.team || '—') + '</td></tr>';
+                        lastTeam = s.team;
+                    }
+                    const isMvpStat = s.id === mvpId;
+                    const ratingNum = parseFloat(s.rating) || 0;
+                    const ratingColor = ratingNum >= 8 ? '#4caf50' : ratingNum >= 6 ? 'var(--accent)' : ratingNum > 0 ? '#e74c3c' : 'var(--muted)';
+                    html += '<tr>' +
+                        '<td style="' + tdStyle + 'text-align:left;display:flex;align-items:center;gap:0.5rem;"><span style="font-weight:600;">' + (s.name || '—') + '</span>' + (isMvpStat ? ' <span style="color:#f1c40f;font-size:0.7rem;">&#9733;</span>' : '') + '</td>' +
+                        '<td style="' + tdStyle + 'color:var(--muted);font-size:0.72rem;">' + (s.position || '—') + '</td>' +
+                        '<td style="' + tdStyle + '">' + (s.goals || 0) + '</td>' +
+                        '<td style="' + tdStyle + '">' + (s.assists || 0) + '</td>' +
+                        '<td style="' + tdStyle + '">' + (s.oob || 0) + '</td>' +
+                        '<td style="' + tdStyle + '">' + (s.off || 0) + '</td>' +
+                        '<td style="' + tdStyle + '">' + (s.yc || 0) + '</td>' +
+                        '<td style="' + tdStyle + '">' + (s.rc || 0) + '</td>' +
+                        '<td style="' + tdStyle + 'font-weight:700;color:' + ratingColor + ';">' + (s.rating || '—') + '</td>' +
+                    '</tr>';
+                });
+                html += '</tbody></table>';
+            } else {
+                html += '<p class="muted" style="font-size:0.8rem;margin:0;">No stats recorded.</p>';
+            }
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        function _guessFormation(lineup) {
+            if (!lineup.length) return '4-3-3';
+            const posCount = {};
+            lineup.forEach(p => { const pos = p.position || 'Unknown'; posCount[pos] = (posCount[pos] || 0) + 1; });
+            const gk = posCount['GK'] || 1;
+            const def = (posCount['CB'] || 0) + (posCount['LB'] || 0) + (posCount['RB'] || 0) + (posCount['LWB'] || 0) + (posCount['RWB'] || 0);
+            const mid = (posCount['CM'] || 0) + (posCount['CDM'] || 0) + (posCount['CAM'] || 0);
+            const fwd = (posCount['CF'] || 0) + (posCount['LW'] || 0) + (posCount['RW'] || 0);
+            return def + '-' + mid + '-' + fwd;
+        }
+
+        async function voteMVP(playerId) {
+            const { gw, idx } = _getMatchParams();
+            const prefix = 'match-gw' + gw + '-' + idx;
+            const userId = _supabaseUser?.id;
+            if (!userId) return;
+            initSupabase();
+            if (!supabaseClient) return;
+            try {
+                const { data: row } = await supabaseClient.from('SiteContent').select('value').eq('key', prefix + '-votes').single();
+                let votes = {};
+                try { votes = JSON.parse(row?.value || '{}'); } catch(e) { votes = {}; }
+                if (votes[userId]) return;
+                votes[userId] = playerId;
+                await supabaseClient.from('SiteContent').upsert({ key: prefix + '-votes', value: JSON.stringify(votes) }, { onConflict: 'key' });
+                renderMatchDetail();
+            } catch(e) { console.warn('[vote-mvp] error:', e); }
         }
 
         const RANK_COLORS = {
@@ -2185,7 +2527,7 @@
         async function loadMatchEditor() {
             initSupabase();
             if (!supabaseClient) return;
-            const container = document.getElementById('matchEditorContainer');
+            const sel = document.getElementById('matchEditSelect');
             try {
                 const { data: rows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'match-gw%');
                 _matchData = [];
@@ -2198,74 +2540,101 @@
                         };
                         _matchData.push({
                             gw, idx: m,
-                            home: getKey('home') || TEAM_NAMES[(gw * 4 + m * 2) % TEAM_NAMES.length],
-                            away: getKey('away') || TEAM_NAMES[(gw * 4 + m * 2 + 1) % TEAM_NAMES.length],
+                            home: getKey('home') || TEAM_NAMES[((gw - 1) * 4 + m * 2) % TEAM_NAMES.length],
+                            away: getKey('away') || TEAM_NAMES[((gw - 1) * 4 + m * 2 + 1) % TEAM_NAMES.length],
                             status: getKey('status') || MATCH_STATUSES[(gw + m) % MATCH_STATUSES.length],
                             date: getKey('date') || '',
                             result: getKey('result') || ''
                         });
                     }
                 }
-                renderMatchEditorUI(container);
-            } catch (e) {
-                container.innerHTML = '<p class="muted">Error loading matches.</p>';
-            }
-        }
-
-        function renderMatchEditorUI(container) {
-            const resultStatuses = RESULT_STATUSES;
-            let html = '';
-            for (let gw = 1; gw <= 7; gw++) {
-                html += '<div style="margin-bottom:2rem;">' +
-                    '<div style="font-size:0.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.8rem;">Gameweek ' + gw + '</div>';
-                const gwMatches = _matchData.filter(m => m.gw === gw);
-                gwMatches.forEach((match, localIdx) => {
-                    const gi = _matchData.indexOf(match);
-                    const isResult = resultStatuses.includes(match.status);
-                    const teamOpts = TEAM_NAMES.map(t => '<option value="' + t + '"' + (t === match.home ? ' selected' : '') + '>' + t + '</option>').join('');
-                    const teamOptsAway = TEAM_NAMES.map(t => '<option value="' + t + '"' + (t === match.away ? ' selected' : '') + '>' + t + '</option>').join('');
-                    const statusOpts = MATCH_STATUSES.map(s => '<option value="' + s + '"' + (s === match.status ? ' selected' : '') + '>' + s + '</option>').join('');
-                    html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0.8rem 1rem;margin-bottom:0.6rem;">' +
-                        '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.6rem;align-items:end;">' +
-                            '<div class="admin-field"><label style="font-size:0.7rem;">Home</label><select class="admin-select" style="width:100%;font-size:0.8rem;" onchange="_matchData[' + gi + '].home=this.value">' + teamOpts + '</select></div>' +
-                            '<div class="admin-field"><label style="font-size:0.7rem;">Status</label><select class="admin-select" style="width:100%;font-size:0.8rem;" onchange="_matchData[' + gi + '].status=this.value;renderMatchEditorUI(document.getElementById(\'matchEditorContainer\'))">' + statusOpts + '</select></div>' +
-                            '<div class="admin-field"><label style="font-size:0.7rem;">Away</label><select class="admin-select" style="width:100%;font-size:0.8rem;" onchange="_matchData[' + gi + '].away=this.value">' + teamOptsAway + '</select></div>' +
-                        '</div>' +
-                        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:0.6rem;">' +
-                            '<div class="admin-field"><label style="font-size:0.7rem;">Date & Time</label><input type="datetime-local" class="admin-input" style="width:100%;font-size:0.8rem;" value="' + (match.date || '') + '" onchange="_matchData[' + gi + '].date=this.value"></div>' +
-                            '<div class="admin-field"><label style="font-size:0.7rem;">Result</label><input type="text" class="admin-input" style="width:100%;font-size:0.8rem;" placeholder="' + (isResult ? 'e.g. 3 - 2' : 'VS') + '" value="' + (match.result || '') + '" ' + (isResult ? '' : 'disabled style="width:100%;font-size:0.8rem;opacity:0.4;cursor:not-allowed;"') + ' onchange="_matchData[' + gi + '].result=this.value"></div>' +
-                        '</div>' +
-                    '</div>';
+                sel.innerHTML = '<option value="">Select a match...</option>';
+                _matchData.forEach((m, i) => {
+                    const isResult = RESULT_STATUSES.includes(m.status);
+                    const res = m.result || (isResult ? '—  —' : 'VS');
+                    sel.innerHTML += '<option value="' + i + '">GW' + m.gw + ' - ' + m.home + ' ' + res + ' ' + m.away + '</option>';
                 });
-                html += '</div>';
-            }
-            container.innerHTML = html;
+            } catch (e) { console.warn('[match-editor] load error:', e); }
         }
 
-        async function saveMatchesContent() {
+        function switchMatchTab(tab) {
+            document.querySelectorAll('#contentMatches .admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#matchDetailEditorPanel .admin-panel-content').forEach(p => { p.style.display = 'none'; p.classList.remove('active'); });
+            const tabMap = { basic: 0, lineups: 1, events: 2, stats: 3 };
+            document.querySelectorAll('#contentMatches .admin-tab')[tabMap[tab]].classList.add('active');
+            const panelId = 'matchTab' + tab.charAt(0).toUpperCase() + tab.slice(1);
+            const panel = document.getElementById(panelId);
+            if (panel) { panel.style.display = ''; panel.classList.add('active'); }
+        }
+
+        async function loadMatchDetailEditor() {
+            const idx = document.getElementById('matchEditSelect').value;
+            const panel = document.getElementById('matchDetailEditorPanel');
+            if (idx === '') { panel.style.display = 'none'; return; }
+            const m = _matchData[parseInt(idx)];
+            if (!m) return;
+            panel.style.display = '';
+            const prefix = 'match-gw' + m.gw + '-' + m.idx;
             initSupabase();
             if (!supabaseClient) return;
-            const msg = document.getElementById('matchesMsg');
+            try {
+                const { data: rows } = await supabaseClient.from('SiteContent').select('key, value').like('key', prefix + '-%');
+                const get = (suffix) => { const r = rows?.find(x => x.key === prefix + '-' + suffix); return r ? r.value : ''; };
+                const populateSelect = (id, val) => {
+                    const sel = document.getElementById(id);
+                    for (const opt of sel.options) { opt.selected = opt.value === val; }
+                };
+                const teamOpts = TEAM_NAMES.map(t => '<option value="' + t + '">' + t + '</option>').join('');
+                document.getElementById('mEditHome').innerHTML = teamOpts;
+                document.getElementById('mEditAway').innerHTML = teamOpts;
+                document.getElementById('mEditStatus').innerHTML = MATCH_STATUSES.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+                populateSelect('mEditHome', get('home') || m.home);
+                populateSelect('mEditAway', get('away') || m.away);
+                populateSelect('mEditStatus', get('status') || m.status);
+                document.getElementById('mEditDate').value = get('date') || m.date || '';
+                document.getElementById('mEditResult').value = get('result') || m.result || '';
+                document.getElementById('mEditMvp').value = get('mvp') || '';
+                document.getElementById('mEditReport').value = get('report') || '';
+                document.getElementById('mEditHomeLineup').value = get('home-lineup') || '[]';
+                document.getElementById('mEditAwayLineup').value = get('away-lineup') || '[]';
+                document.getElementById('mEditEvents').value = get('events') || '[]';
+                document.getElementById('mEditStats').value = get('stats') || '[]';
+                document.getElementById('mHomeLineupLabel').textContent = (get('home') || m.home) + ' Lineup';
+                document.getElementById('mAwayLineupLabel').textContent = (get('away') || m.away) + ' Lineup';
+            } catch(e) { console.warn('[match-detail-editor] load error:', e); }
+        }
+
+        async function saveMatchDetailEditor() {
+            const idx = document.getElementById('matchEditSelect').value;
+            if (idx === '') return;
+            const m = _matchData[parseInt(idx)];
+            if (!m) return;
+            const prefix = 'match-gw' + m.gw + '-' + m.idx;
+            const msg = document.getElementById('matchDetailMsg');
             msg.textContent = 'Saving...';
             msg.className = 'admin-msg';
+            initSupabase();
+            if (!supabaseClient) return;
             try {
-                for (const match of _matchData) {
-                    const prefix = 'match-gw' + match.gw + '-' + match.idx;
-                    const kv = {
-                        [prefix + '-home']: match.home,
-                        [prefix + '-away']: match.away,
-                        [prefix + '-status']: match.status,
-                        [prefix + '-date']: match.date,
-                        [prefix + '-result']: match.result
-                    };
-                    for (const [key, value] of Object.entries(kv)) {
-                        const { error } = await supabaseClient.from('SiteContent').upsert({ key, value }, { onConflict: 'key' });
-                        if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
-                    }
+                const kv = {};
+                kv[prefix + '-home'] = document.getElementById('mEditHome').value;
+                kv[prefix + '-away'] = document.getElementById('mEditAway').value;
+                kv[prefix + '-status'] = document.getElementById('mEditStatus').value;
+                kv[prefix + '-date'] = document.getElementById('mEditDate').value;
+                kv[prefix + '-result'] = document.getElementById('mEditResult').value;
+                kv[prefix + '-mvp'] = document.getElementById('mEditMvp').value;
+                kv[prefix + '-report'] = document.getElementById('mEditReport').value;
+                kv[prefix + '-home-lineup'] = document.getElementById('mEditHomeLineup').value;
+                kv[prefix + '-away-lineup'] = document.getElementById('mEditAwayLineup').value;
+                kv[prefix + '-events'] = document.getElementById('mEditEvents').value;
+                kv[prefix + '-stats'] = document.getElementById('mEditStats').value;
+                for (const [key, value] of Object.entries(kv)) {
+                    const { error } = await supabaseClient.from('SiteContent').upsert({ key, value }, { onConflict: 'key' });
+                    if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
                 }
                 msg.textContent = 'Saved!';
                 msg.className = 'admin-msg ok';
-            } catch (e) {
+            } catch(e) {
                 msg.textContent = 'Error: ' + e.message;
                 msg.className = 'admin-msg err';
             }
@@ -2317,10 +2686,11 @@
                 freeagents: 'freeAgentsPage',
                 playerstats: 'playerStatsPage',
                 schedule: 'schedulePage',
+                'schedule-match': 'matchDetailPage',
                 player: 'playerProfilePage',
                 team: 'teamDetailPage'
             };
-            const isKnown = Object.prototype.hasOwnProperty.call(pages, page) && page !== '' || page.startsWith('player?') || page.startsWith('team?');
+            const isKnown = Object.prototype.hasOwnProperty.call(pages, page) && page !== '' || page.startsWith('player?') || page.startsWith('team?') || page.startsWith('schedule-match?');
             const homeEl = document.getElementById('home');
             const nfEl = document.querySelector('.nf-page');
             const clEl = document.querySelector('.change-page');
@@ -2343,6 +2713,7 @@
             document.getElementById('freeAgentsPage').style.display = 'none';
             document.getElementById('playerStatsPage').style.display = 'none';
             document.getElementById('schedulePage').style.display = 'none';
+            document.getElementById('matchDetailPage').style.display = 'none';
             prEl.style.display = 'none';
             tdEl.style.display = 'none';
 
@@ -2366,6 +2737,9 @@
             } else if (page === 'schedule') {
                 document.getElementById('schedulePage').style.display = '';
                 renderSchedule();
+            } else if (page.startsWith('schedule-match')) {
+                document.getElementById('matchDetailPage').style.display = '';
+                renderMatchDetail();
             } else if (page.startsWith('player')) {
                 prEl.style.display = '';
                 loadPlayerProfile();
