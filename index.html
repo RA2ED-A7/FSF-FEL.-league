@@ -116,7 +116,7 @@
                 <div class="records-grid">
                     <div class="hl-card"><div class="k" data-i18n="first_goal">First Goal</div><div class="v" id="recFirstGoal">--</div><div class="d" id="recFirstGoalDesc">TBD</div></div>
                     <div class="hl-card"><div class="k" data-i18n="first_assist">First Assist</div><div class="v" id="recFirstAssist">--</div><div class="d" id="recFirstAssistDesc">TBD</div></div>
-                    <div class="hl-card"><div class="k">First Save</div><div class="v" id="recFirstSave">--</div><div class="d" id="recFirstSaveDesc">TBD</div></div>
+                    <div class="hl-card"><div class="k" data-i18n="first_save">First Save</div><div class="v" id="recFirstSave">--</div><div class="d" id="recFirstSaveDesc">TBD</div></div>
                 </div>
             </div>
         </div>
@@ -127,21 +127,21 @@
         </div>
 
         <div class="gw">
-            <div class="section-title">Game Week 1</div>
+            <div class="section-title" data-i18n="gameweek_1">Game Week 1</div>
             <div class="gw-card"><span class="felm">1. FEL</span><span class="teams" id="gw1Teams">Team Name VS Team Name</span><span class="res tbd" id="gw1Result">TBD</span></div>
             <div class="gw-card"><span class="felm">2. FEL</span><span class="teams" id="gw2Teams">Team Name VS Team Name</span><span class="res tbd" id="gw2Result">TBD</span></div>
             <div class="gw-card"><span class="felm">3. FEL</span><span class="teams" id="gw3Teams">Team Name VS Team Name</span><span class="res tbd" id="gw3Result">TBD</span></div>
         </div>
 
         <div class="gw">
-            <div class="section-title">Recent Results</div>
+            <div class="section-title" data-i18n="recent_results">Recent Results</div>
             <div class="gw-card"><span class="felm">1. FEL</span><span class="teams"><span id="rr1TeamA">Team Name</span> <span style="color:var(--text)" id="rr1Score">2 - 1</span> <span id="rr1TeamB">Team Name</span></span><span class="res tbd" id="rr1Date">Date</span></div>
             <div class="gw-card"><span class="felm">2. FEL</span><span class="teams"><span id="rr2TeamA">Team Name</span> <span style="color:var(--text)" id="rr2Score">0 - 0</span> <span id="rr2TeamB">Team Name</span></span><span class="res tbd" id="rr2Date">Date</span></div>
             <div class="gw-card"><span class="felm">3. FEL</span><span class="teams"><span id="rr3TeamA">Team Name</span> <span style="color:var(--text)" id="rr3Score">3 - 2</span> <span id="rr3TeamB">Team Name</span></span><span class="res tbd" id="rr3Date">Date</span></div>
         </div>
 
         <div class="standings">
-            <div class="section-title">Top 3 Teams · By Points (PTs)</div>
+            <div class="section-title" data-i18n="top3_title">Top 3 Teams · By Points (PTs)</div>
             <div class="podium">
                 <div class="p-card p-1"><span class="rank">1st</span><span class="t-name" id="pod1Team">Team Name</span><span class="pts" id="pod1Pts">--</span></div>
                 <div class="p-card p-2"><span class="rank">2nd</span><span class="t-name" id="pod2Team">Team Name</span><span class="pts" id="pod2Pts">--</span></div>
@@ -159,9 +159,9 @@
     <section class="nf-page">
         <div class="nf">
             <div class="code">404</div>
-            <h2>Page not found</h2>
+            <h2 data-i18n="nf_title">Page not found</h2>
             <p>This page is still under construction, or it doesn't exist. Head back home to keep exploring the Freestyle Elite league.</p>
-            <button class="back" onclick="location.hash='home'">Back to Home</button>
+            <button class="back" onclick="location.hash='home'" data-i18n="nf_back">Back to Home</button>
         </div>
     </section>
 
@@ -202,11 +202,11 @@
 
     <section class="sign-page">
         <div class="sign-card">
-            <div class="section-title">Sign In</div>
+            <div class="section-title" data-i18n="signin_title">Sign In</div>
             <p class="sign-sub">Connect with your Discord account to join the Freestyle Elite league.</p>
             <button class="discord-auth" id="discordAuthBtn">
                 <svg class="d-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.36-.44.83-.61 1.19a18.3 18.3 0 0 0-5.48 0c-.17-.36-.4-.83-.61-1.19a.07.07 0 0 0-.08-.04 19.74 19.74 0 0 0-4.89 1.52.07.07 0 0 0-.03.03C.53 9.05-.32 13.58.1 18.06a.07.07 0 0 0 .03.05 19.9 19.9 0 0 0 6 3.03.07.07 0 0 0 .08-.03c.46-.63.88-1.3 1.23-2a.07.07 0 0 0-.04-.1 13.1 13.1 0 0 1-1.88-.9.07.07 0 0 1-.01-.11c.13-.1.26-.2.38-.3a.06.06 0 0 1 .07-.01c3.95 1.8 8.2 1.8 12.11 0a.06.06 0 0 1 .07.01c.12.1.26.21.38.3a.07.07 0 0 1-.01.11c-.6.35-1.23.65-1.88.9a.07.07 0 0 0-.04.1c.36.7.78 1.37 1.23 2a.07.07 0 0 0 .08.03 19.84 19.84 0 0 0 6-3.03.07.07 0 0 0 .03-.05c.5-5.19-.84-9.69-3.55-13.66a.06.06 0 0 0-.03-.03ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.15-1.08-2.15-2.42 0-1.33.95-2.42 2.15-2.42 1.22 0 2.18 1.1 2.16 2.42 0 1.34-.94 2.42-2.16 2.42Z"/></svg>
-                Continue with Discord
+                <span data-i18n="signin_discord">Continue with Discord</span>
             </button>
             <div class="sign-msg" id="signMsg"></div>
         </div>
@@ -214,8 +214,8 @@
 
     <section class="rank-page">
         <div class="page-head">
-            <div class="rank-title" id="rankingsTitle">★ Rankings ★</div>
-            <p id="rankingsSubtitle">Season 1 · skill ladder by tier &amp; position</p>
+            <div class="rank-title" id="rankingsTitle" data-i18n="rankings_title">★ Rankings ★</div>
+            <p id="rankingsSubtitle" data-i18n="rankings_subtitle">Season 1 · skill ladder by tier &amp; position</p>
         </div>
 
         <div class="lb-toolbar">
@@ -325,8 +325,8 @@
 
     <section class="rosters-page" id="rostersPage" style="display:none;">
         <div class="page-head">
-            <h2>Team Rosters</h2>
-            <p class="muted">All registered players sorted by team</p>
+            <h2 data-i18n="rosters_title">Team Rosters</h2>
+            <p class="muted" data-i18n="rosters_desc">All registered players sorted by team</p>
         </div>
         <div class="rosters-filter">
             <label>Division:</label>
@@ -341,8 +341,8 @@
 
     <section class="rosters-page" id="freeAgentsPage" style="display:none;">
         <div class="page-head">
-            <h2>Free Agents</h2>
-            <p class="muted">Unattached players available for signing</p>
+            <h2 data-i18n="freeagents_title">Free Agents</h2>
+            <p class="muted" data-i18n="freeagents_desc">Unattached players available for signing</p>
         </div>
         <div class="fa-stats" id="faStats"></div>
         <div class="rosters-filter">
@@ -544,13 +544,13 @@
             </div>
             <div class="career-boxes">
                 <div class="career-section career-box-large">
-                    <h3>Transfer History</h3>
+                    <h3 data-i18n="transfer_history">Transfer History</h3>
                     <div id="transferList">
                         <div class="career-placeholder">No transfers yet.</div>
                     </div>
                 </div>
                 <div class="career-section career-box-large">
-                    <h3>Recent Matches</h3>
+                    <h3 data-i18n="recent_matches">Recent Matches</h3>
                     <div id="matchesList">
                         <div class="career-match-row"><span class="cm-date">—</span><span class="cm-teams">No match</span><span class="cm-result">—</span></div>
                         <div class="career-match-row"><span class="cm-date">—</span><span class="cm-teams">No match</span><span class="cm-result">—</span></div>
@@ -562,7 +562,7 @@
     </section>
 
     <section class="schedule-page" id="schedulePage" style="display:none;">
-        <h2 class="section-title" style="text-align:center;">Schedule</h2>
+        <h2 class="section-title" style="text-align:center;" data-i18n="schedule_title">Schedule</h2>
         <div style="display:flex;gap:0.8rem;justify-content:center;margin:1.5rem 0;">
             <select id="schDivFilter" style="padding:0.4rem 0.8rem;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:0.85rem;" onchange="renderSchedule()">
                 <option value="1.FEL">1.FEL</option>
@@ -579,7 +579,7 @@
     </section>
 
     <section class="admin-page" id="adminPage" style="display:none;">
-        <h2 class="admin-title">Admin Panel</h2>
+        <h2 class="admin-title" data-i18n="admin_title">Admin Panel</h2>
         <p class="muted" style="margin-bottom:1.5rem;">Edit player stats. Only visible to Team Managers.</p>
         <p class="muted" style="font-size:0.75rem;margin-bottom:1.5rem;">Admin Panel Version 3.0</p>
         <div style="display:flex;gap:2rem;align-items:flex-start;">
@@ -902,7 +902,7 @@
 
     <footer>
         <div class="bug-report-btn" onclick="document.getElementById('bugReportModal').style.display='block'">!</div>
-        <p id="footerText">FEL website by &middot; A7M | .Vortex700<br>&mdash; Freestyle elite league By Gadt &mdash;</p>
+        <p id="footerText" data-i18n="footer_text">FEL website by &middot; A7M | .Vortex700<br>&mdash; Freestyle elite league By Gadt &mdash;</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -3560,8 +3560,122 @@
         // Language
         const LANGUAGES = ['English', 'Fran\u00e7ais'];
         const I18N = {
-            'English': { settings: 'Settings', dark_mode: 'Dark Mode:', language: 'Language:', animations: 'Animations:', please_wait: 'Please Wait.' },
-            'Fran\u00e7ais': { settings: 'Param\u00e8tres', dark_mode: 'Mode Sombre:', language: 'Langue:', animations: 'Animations:', please_wait: 'Veuillez patienter.' }
+            'English': {
+                settings: 'Settings', dark_mode: 'Dark Mode:', language: 'Language:', animations: 'Animations:', please_wait: 'Please Wait.',
+                nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule',
+                nav_teams: 'Teams', nav_rankings: 'Rankings', nav_rosters: 'Rosters', nav_playerstats: 'Player Stats',
+                nav_market: 'Market', nav_freeagents: 'Free Agents', nav_standings: 'Standings', nav_changelog: 'Update Log',
+                btn_signin: 'Sign In', btn_signout: 'Sign Out',
+                stat_teams: 'Teams', stat_players: 'Players', stat_gameweeks: 'Game Weeks', next_match: 'Next Match',
+                join_discord: 'Join Our Discord', tab_highlights: 'Highlights', tab_activity: 'Activity',
+                season_highlights: 'Season Highlights', biggest_win: 'Biggest Win', top_scorer: 'Top Scorer', most_assists: 'Most Assists',
+                league_records: 'League Records', first_goal: 'First Goal', first_assist: 'First Assist', first_save: 'First Save',
+                gameweek_1: 'Game Week 1', recent_results: 'Recent Results', top3_title: 'Top 3 Teams . By Points (PTs)',
+                nf_title: 'Page not found', nf_back: 'Back to Home',
+                signin_title: 'Sign In', signin_desc: 'Connect with your Discord account to join the Freestyle Elite league.', signin_discord: 'Continue with Discord',
+                rankings_title: 'Rankings', rankings_subtitle: 'Season 1 . skill ladder by tier & position',
+                rosters_title: 'Team Rosters', rosters_desc: 'All registered players sorted by team',
+                freeagents_title: 'Free Agents', freeagents_desc: 'Unattached players available for signing',
+                schedule_title: 'Schedule', admin_title: 'Admin Panel',
+                transfer_history: 'Transfer History', recent_matches: 'Recent Matches',
+                footer_text: 'FEL website by Freestyle elite league By Gadt',
+                matches: 'Matches', goals: 'Goals', assists: 'Assists', saves: 'Saves', wins: 'Wins', losses: 'Losses',
+                market_value: 'Market Value', mvp_awards: 'MVP Awards', appearances: 'Appearances', avg_rating: 'Avg Rating',
+                position: 'Position', rank: 'Rank', team: 'Team', no_transfers: 'No transfers yet.', no_match: 'No match',
+                back: 'Back', save: 'Save', cancel: 'Cancel', loading: 'Loading...', saving: 'Saving...', saved: 'Saved!',
+                overview: 'Overview', club_records: 'Club Records', transfers: 'Transfers', players: 'Players',
+                no_players: 'No players on this team yet.', no_fixture: 'No fixture scheduled.',
+                points_trajectory: 'Points Trajectory', season_records: 'Season Records', all_time_records: 'All-Time Records',
+                ties: 'Ties', goals_scored: 'Goals Scored', goals_conceded: 'Goals Conceded',
+                top_scorer_all: 'Top Scorer (All-Time)', most_goals_match: 'Most Goals in a Match',
+                longest_streak: 'Longest Win Streak', most_appearances: 'Most Appearances', top_playmaker: 'Top Playmaker (All-Time)',
+                status_finished: 'FINISHED', status_scheduled: 'SCHEDULED', status_not_scheduled: 'NOT SCHEDULED',
+                status_forfeit: 'FORFEIT', status_double_forfeit: 'DOUBLE FORFEIT',
+                event_goal: 'Goal', event_own_goal: 'Own Goal', event_yellow: 'Yellow Card', event_red: 'Red Card', event_sub: 'Substitution',
+                gameweek: 'Gameweek', match_report: 'Match Report', no_report: 'No report yet.',
+                vote_mvp: 'Vote for MVP', sign_in_vote: 'Sign in to vote.',
+                lineups: 'Lineups', match_events: 'Match Events', no_events: 'No events.',
+                match_stats: 'Match Stats', no_stats: 'No stats recorded.', no_trajectory: 'No trajectory data.',
+                report_bug: 'Report a Bug', send: 'Send', close: 'Close',
+                player: 'Player', rating: 'Rating',
+                teams_tab: 'Teams', career_tab: 'My Career', home_tab: 'Home Page', matches_tab: 'Matches History',
+                save_content: 'Save Content', save_career: 'Save Career', save_team: 'Save Team', save_match: 'Save Match',
+                select_player: 'Select Player:', select_team: 'Select Team:', select_match: 'Select Match:',
+                loading_players: 'Loading players...', loading_matches: 'Loading matches...', loading_content: 'Loading...',
+                basic: 'Basic', lineups_tab: 'Lineups', events_tab: 'Events', stats_tab: 'Stats',
+                no_freeagents: 'No free agents available.', combined_value: 'Combined Value', no_results: 'No results.',
+                change_position: 'Change Position', new_position: 'New Position', confirm: 'Confirm',
+                add_transfer: 'Add Transfer', remove_transfer: 'Remove Transfer',
+                pos_change_msg: 'You have a limited number of position changes.', pos_locked: 'Position locked! Ask an admin to change it.',
+                pos_changed: 'Position changed!', change_left: 'change left.', locked_permanent: 'Locked permanently.',
+                please_enter_title: 'Please enter a title.', please_describe: 'Please describe the bug.',
+                sending: 'Sending...', sent_thanks: 'Sent! Thank you.', error_sending: 'Error sending report.',
+                not_connected: 'Not connected.', no_bug_reports: 'No bug reports yet.', refresh: 'Refresh',
+                placeholder_1: 'Placeholder 1', placeholder_2: 'Placeholder 2', placeholder_3: 'Placeholder 3',
+                division: 'Division:', all_ranks: 'All Ranks', all_positions: 'All Positions', all_teams: 'All Teams',
+                any_value: 'Any Value', search_name: 'Search by name...', search_player: 'Search player...',
+                prev: 'Prev', next: 'Next', page: 'Page',
+                home_events: 'Home Events', away_events: 'Away Events', add: '+ Add',
+                not_configured: 'Supabase is not configured yet.', opening_discord: 'Opening Discord...'
+            },
+            'Fran\u00e7ais': {
+                settings: 'Param\u00e8tres', dark_mode: 'Mode Sombre:', language: 'Langue:', animations: 'Animations:', please_wait: 'Veuillez patienter.',
+                nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier',
+                nav_teams: '\u00c9quipes', nav_rankings: 'Classement', nav_rosters: 'Effectifs', nav_playerstats: 'Stats Joueurs',
+                nav_market: 'March\u00e9', nav_freeagents: 'Agents Libres', nav_standings: 'Classement G\u00e9n\u00e9ral', nav_changelog: 'Journal des MAJ',
+                btn_signin: 'Se Connecter', btn_signout: 'D\u00e9connexion',
+                stat_teams: '\u00c9quipes', stat_players: 'Joueurs', stat_gameweeks: 'Journ\u00e9es', next_match: 'Prochain Match',
+                join_discord: 'Rejoignez Notre Discord', tab_highlights: 'Moments Forts', tab_activity: 'Activit\u00e9',
+                season_highlights: 'Moments Forts de la Saison', biggest_win: 'Plus Large Victoire', top_scorer: 'Meilleur Buteur', most_assists: 'Plus de Passes',
+                league_records: 'Records de la Ligue', first_goal: 'Premier But', first_assist: 'Premi\u00e8re Passe', first_save: 'Premier Arr\u00eat',
+                gameweek_1: 'Journ\u00e9e 1', recent_results: 'R\u00e9sultats R\u00e9cents', top3_title: 'Top 3 \u00c9quipes . Par Points (PTS)',
+                nf_title: 'Page non trouv\u00e9e', nf_back: 'Retour \u00e0 l\'Accueil',
+                signin_title: 'Se Connecter', signin_desc: 'Connectez-vous avec votre compte Discord pour rejoindre la Freestyle Elite league.', signin_discord: 'Continuer avec Discord',
+                rankings_title: 'Classement', rankings_subtitle: 'Saison 1 . \u00e9chelle de comp\u00e9tence par niveau & poste',
+                rosters_title: 'Effectifs d\u00c9quipe', rosters_desc: 'Tous les joueurs inscrits tri\u00e9s par \u00e9quipe',
+                freeagents_title: 'Agents Libres', freeagents_desc: 'Joueurs disponibles pour signature',
+                schedule_title: 'Calendrier', admin_title: 'Panneau d\'Administration',
+                transfer_history: 'Historique des Transferts', recent_matches: 'Matchs R\u00e9cents',
+                footer_text: 'Site FEL par Freestyle elite league par Gadt',
+                matches: 'Matchs', goals: 'Buts', assists: 'Passes', saves: 'Arr\u00eats', wins: 'Victoires', losses: 'D\u00e9faites',
+                market_value: 'Valeur Marchande', mvp_awards: 'Titres MVP', appearances: 'Pr\u00e9sences', avg_rating: 'Note Moy.',
+                position: 'Poste', rank: 'Rang', team: '\u00c9quipe', no_transfers: 'Aucun transfert.', no_match: 'Aucun match',
+                back: 'Retour', save: 'Enregistrer', cancel: 'Annuler', loading: 'Chargement...', saving: 'Enregistrement...', saved: 'Enregistr\u00e9 !',
+                overview: 'Aper\u00e7u', club_records: 'Records du Club', transfers: 'Transferts', players: 'Joueurs',
+                no_players: 'Aucun joueur dans cette \u00e9quipe.', no_fixture: 'Aucun match programm\u00e9.',
+                points_trajectory: 'Trajectoire des Points', season_records: 'Records de la Saison', all_time_records: 'Records de Tous les Temps',
+                ties: 'Nuls', goals_scored: 'Buts Marqu\u00e9s', goals_conceded: 'Buts Encaiss\u00e9s',
+                top_scorer_all: 'Meilleur Buteur (Tous Temps)', most_goals_match: 'Plus de Buts dans un Match',
+                longest_streak: 'Plus Longue S\u00e9rie de Victoires', most_appearances: 'Plus de Pr\u00e9sences', top_playmaker: 'Meilleur Passeur (Tous Temps)',
+                status_finished: 'TERMIN\u00c9', status_scheduled: 'PROGRAMM\u00c9', status_not_scheduled: 'NON PROGRAMM\u00c9',
+                status_forfeit: 'FORFAIT', status_double_forfeit: 'DOUBLE FORFAIT',
+                event_goal: 'But', event_own_goal: 'CSC', event_yellow: 'Carton Jaune', event_red: 'Carton Rouge', event_sub: 'Remplacement',
+                gameweek: 'Journ\u00e9e', match_report: 'Rapport de Match', no_report: 'Aucun rapport.',
+                vote_mvp: 'Voter pour le MVP', sign_in_vote: 'Connectez-vous pour voter.',
+                lineups: 'Compositions', match_events: '\u00c9v\u00e9nements du Match', no_events: 'Aucun \u00e9v\u00e9nement.',
+                match_stats: 'Statistiques du Match', no_stats: 'Aucune statistique.', no_trajectory: 'Aucune donn\u00e9e de trajectoire.',
+                report_bug: 'Signaler un Bug', send: 'Envoyer', close: 'Fermer',
+                player: 'Joueur', rating: 'Note',
+                teams_tab: '\u00c9quipes', career_tab: 'Ma Carri\u00e8re', home_tab: 'Page d\'Accueil', matches_tab: 'Historique des Matchs',
+                save_content: 'Enregistrer le Contenu', save_career: 'Enregistrer la Carri\u00e8re', save_team: 'Enregistrer l\'\u00c9quipe', save_match: 'Enregistrer le Match',
+                select_player: 'S\u00e9lectionner un Joueur:', select_team: 'S\u00e9lectionner une \u00c9quipe:', select_match: 'S\u00e9lectionner un Match:',
+                loading_players: 'Chargement des joueurs...', loading_matches: 'Chargement des matchs...', loading_content: 'Chargement...',
+                basic: 'Basique', lineups_tab: 'Compositions', events_tab: '\u00c9v\u00e9nements', stats_tab: 'Stats',
+                no_freeagents: 'Aucun agent libre disponible.', combined_value: 'Valeur Combin\u00e9e', no_results: 'Aucun r\u00e9sultat.',
+                change_position: 'Changer de Poste', new_position: 'Nouveau Poste', confirm: 'Confirmer',
+                add_transfer: 'Ajouter un Transfert', remove_transfer: 'Supprimer le Transfert',
+                pos_change_msg: 'Vous avez un nombre limit\u00e9 de changements de poste.', pos_locked: 'Poste verrouill\u00e9 ! Demandez \u00e0 un admin.',
+                pos_changed: 'Poste chang\u00e9 !', change_left: 'changement restant.', locked_permanent: 'Verrouill\u00e9 d\u00e9finitivement.',
+                please_enter_title: 'Veuillez entrer un titre.', please_describe: 'Veuillez d\u00e9crire le bug.',
+                sending: 'Envoi...', sent_thanks: 'Envoy\u00e9 ! Merci.', error_sending: 'Erreur lors de l\'envoi.',
+                not_connected: 'Non connect\u00e9.', no_bug_reports: 'Aucun rapport de bug.', refresh: 'Actualiser',
+                placeholder_1: 'Espace R\u00e9serv\u00e9 1', placeholder_2: 'Espace R\u00e9serv\u00e9 2', placeholder_3: 'Espace R\u00e9serv\u00e9 3',
+                division: 'Division :', all_ranks: 'Tous les Rangs', all_positions: 'Tous les Postes', all_teams: 'Toutes les \u00c9quipes',
+                any_value: 'Toute Valeur', search_name: 'Rechercher par nom...', search_player: 'Rechercher un joueur...',
+                prev: 'Pr\u00e9c', next: 'Suiv', page: 'Page',
+                home_events: '\u00c9v\u00e9nements Dom.', away_events: '\u00c9v\u00e9nements Ext.', add: '+ Ajouter',
+                not_configured: 'Supabase n\'est pas configur\u00e9.', opening_discord: 'Ouverture de Discord...'
+            }
         };
         function cycleLanguage() {
             const s = loadSettings();
