@@ -1055,19 +1055,10 @@
                 const wWins = data.Wins || 0;
                 const wRate = data.win_rate != null ? data.win_rate : (wMatches > 0 ? Math.round(wWins / wMatches * 100) : 0);
                 document.getElementById('statWinRate').textContent = wRate + '%';
-                // Avg Rating from SiteContent
+                // Avg Rating from match stats
                 try {
-                    const { data: sc2 } = await supabaseClient.from('SiteContent').select('*');
-                    if (sc2) {
-                        const scm2 = {};
-                        sc2.forEach(r => { scm2[r.key] = r.value; });
-                        const ratingsRaw = scm2['career-' + u.id + '-ratings'] || '';
-                        const ratings = ratingsRaw.split(',').map(Number).filter(n => !isNaN(n) && n > 0);
-                        if (ratings.length > 0) {
-                            const avg = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
-                            document.getElementById('statAvgRating').textContent = avg;
-                        }
-                    }
+                    const avg = await getPlayerAvgRating(u.id);
+                    if (avg > 0) document.getElementById('statAvgRating').textContent = avg;
                 } catch (e) {}
 
                 // Load career content (transfers + matches)
@@ -1283,12 +1274,25 @@
                 } catch(e) {}
                 let ratingMap = {};
                 try {
-                    const { data: rRows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'career-%-ratings');
-                    if (rRows) rRows.forEach(r => {
-                        const pid = r.key.replace('career-', '').replace('-ratings', '');
-                        const ratings = r.value.split(',').map(Number).filter(n => !isNaN(n) && n > 0);
-                        if (ratings.length > 0) ratingMap[pid] = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
-                    });
+                    const { data: statRows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'match-gw%-stats');
+                    if (statRows) {
+                        const playerRatings = {};
+                        statRows.forEach(r => {
+                            try {
+                                const arr = JSON.parse(r.value);
+                                arr.forEach(s => {
+                                    if (s.id && s.rating) {
+                                        if (!playerRatings[s.id]) playerRatings[s.id] = [];
+                                        playerRatings[s.id].push(parseFloat(s.rating));
+                                    }
+                                });
+                            } catch(e) {}
+                        });
+                        Object.keys(playerRatings).forEach(pid => {
+                            const ratings = playerRatings[pid].filter(n => !isNaN(n) && n > 0);
+                            if (ratings.length > 0) ratingMap[pid] = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
+                        });
+                    }
                 } catch(e) {}
                 const scored = filtered.map(p => {
                     const goals = p.goals || 0;
@@ -1588,15 +1592,14 @@
             html += '</div>';
 
             // ===== LINEUPS (Football Field) =====
-            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">' +
-                '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1rem;">Lineups</h3>' +
-                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">';
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:2rem;margin-bottom:1.5rem;">' +
+                '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1.2rem;">Lineups</h3>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;">';
 
-            const homeFormation = homeLineup.length ? _guessFormation(homeLineup) : '4-3-3';
             html += '<div>' +
-                '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.8rem;">' +
-                    '<div style="width:32px;height:32px;border-radius:50%;background:' + hc + '22;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:' + hc + ';">' + home.split(' ').map(w=>w[0]).join('').slice(0,2) + '</div>' +
-                    '<div><div style="font-weight:700;color:var(--text);font-size:0.95rem;">' + home + '</div><div style="font-size:0.7rem;color:var(--muted);">' + homeFormation + '</div></div>' +
+                '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">' +
+                    '<div style="width:36px;height:36px;border-radius:50%;background:' + hc + '22;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:' + hc + ';">' + home.split(' ').map(w=>w[0]).join('').slice(0,2) + '</div>' +
+                    '<div><div style="font-weight:700;color:var(--text);font-size:1.05rem;">' + home + '</div><div style="font-size:0.72rem;color:var(--muted);">4-3-3</div></div>' +
                 '</div>';
             html += '<div class="td-field" style="max-width:100%;margin:0 auto;" id="matchHomeField">';
             html += '<div class="td-field-row td-field-att"><div class="td-field-slot" data-pos="LW"></div><div class="td-field-slot" data-pos="CF"></div><div class="td-field-slot" data-pos="RW"></div></div>';
@@ -1605,11 +1608,10 @@
             html += '<div class="td-field-row td-field-gk"><div class="td-field-slot" data-pos="GK"></div></div>';
             html += '</div></div>';
 
-            const awayFormation = awayLineup.length ? _guessFormation(awayLineup) : '4-3-3';
             html += '<div>' +
-                '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.8rem;">' +
-                    '<div style="width:32px;height:32px;border-radius:50%;background:' + ac + '22;display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:800;color:' + ac + ';">' + away.split(' ').map(w=>w[0]).join('').slice(0,2) + '</div>' +
-                    '<div><div style="font-weight:700;color:var(--text);font-size:0.95rem;">' + away + '</div><div style="font-size:0.7rem;color:var(--muted);">' + awayFormation + '</div></div>' +
+                '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">' +
+                    '<div style="width:36px;height:36px;border-radius:50%;background:' + ac + '22;display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:' + ac + ';">' + away.split(' ').map(w=>w[0]).join('').slice(0,2) + '</div>' +
+                    '<div><div style="font-weight:700;color:var(--text);font-size:1.05rem;">' + away + '</div><div style="font-size:0.72rem;color:var(--muted);">4-3-3</div></div>' +
                 '</div>';
             html += '<div class="td-field" style="max-width:100%;margin:0 auto;" id="matchAwayField">';
             html += '<div class="td-field-row td-field-att"><div class="td-field-slot" data-pos="LW"></div><div class="td-field-slot" data-pos="CF"></div><div class="td-field-slot" data-pos="RW"></div></div>';
@@ -1750,6 +1752,29 @@
             const mid = (posCount['CM'] || 0) + (posCount['CDM'] || 0) + (posCount['CAM'] || 0);
             const fwd = (posCount['CF'] || 0) + (posCount['LW'] || 0) + (posCount['RW'] || 0);
             return def + '-' + mid + '-' + fwd;
+        }
+
+        async function getPlayerAvgRating(playerId) {
+            initSupabase();
+            if (!supabaseClient) return 0;
+            try {
+                const { data: rows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'match-gw%-stats');
+                if (!rows) return 0;
+                let total = 0, count = 0;
+                rows.forEach(r => {
+                    try {
+                        const stats = JSON.parse(r.value);
+                        stats.forEach(s => {
+                            if (s.id === playerId && s.rating) {
+                                total += parseFloat(s.rating);
+                                count++;
+                            }
+                        });
+                    } catch(e) {}
+                });
+                if (count > 0) return (total / count).toFixed(1);
+            } catch(e) {}
+            return 0;
         }
 
         async function voteMVP(playerId) {
@@ -2020,19 +2045,10 @@
                 document.getElementById('pStatSaves').textContent = s(p.saves, 0);
                 document.getElementById('pStatMVP').textContent = s(p.MVP_Awards, 0);
                 document.getElementById('pStatApps').textContent = s(p.appearances, 0);
-                // Avg Rating
+                // Avg Rating from match stats
                 try {
-                    const { data: sc2 } = await supabaseClient.from('SiteContent').select('*');
-                    if (sc2) {
-                        const scm2 = {};
-                        sc2.forEach(r => { scm2[r.key] = r.value; });
-                        const ratingsRaw = scm2['career-' + id + '-ratings'] || '';
-                        const ratings = ratingsRaw.split(',').map(Number).filter(n => !isNaN(n) && n > 0);
-                        if (ratings.length > 0) {
-                            const avg = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
-                            document.getElementById('pStatAvgRating').textContent = avg;
-                        }
-                    }
+                    const avg = await getPlayerAvgRating(id);
+                    if (avg > 0) document.getElementById('pStatAvgRating').textContent = avg;
                 } catch (e) {}
 
                 try {
