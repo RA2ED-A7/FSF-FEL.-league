@@ -1825,7 +1825,6 @@
                 console.log('[voteMVP] existing votes:', row, rowErr);
                 let votes = {};
                 try { votes = JSON.parse(row?.value || '{}'); } catch(e) { votes = {}; }
-                if (votes[userId]) { console.log('[voteMVP] already voted'); return; }
                 votes[userId] = playerId;
                 console.log('[voteMVP] saving votes:', votes);
                 const { error: upErr } = await supabaseClient.from('SiteContent').upsert({ key: prefix + '-votes', value: JSON.stringify(votes) }, { onConflict: 'key' });
