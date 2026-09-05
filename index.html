@@ -1182,7 +1182,7 @@
                     if (psSortKey !== key) return '';
                     return psSortAsc ? ' &#9650;' : ' &#9660;';
                 };
-                const hdrStyle = 'padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;user-select:none;white-space:nowrap;';
+                const hdrStyle = 'padding:0.7rem 1rem;font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;user-select:none;white-space:nowrap;';
                 const table = document.getElementById('psTable');
                 let html = '<thead><tr style="border-bottom:2px solid var(--line);text-align:left;">' +
                     '<th style="' + hdrStyle + 'cursor:default;">#</th>' +
@@ -1195,18 +1195,19 @@
                 html += '</tr></thead><tbody>';
                 top.forEach((p, i) => {
                     const av = avatarMap[p.id];
-                    const avHtml = av ? '<img src="' + av + '" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.5rem;flex-shrink:0;">' : '';
+                    const avHtml = av ? '<img src="' + av + '" style="width:26px;height:26px;border-radius:50%;object-fit:cover;margin-right:0.6rem;flex-shrink:0;">' : '';
                     const ratingColor = p.avgRating >= 8 ? '#4caf50' : p.avgRating >= 6 ? 'var(--accent)' : p.avgRating > 0 ? '#e74c3c' : 'var(--muted)';
+                    const mutedStyle = 'color:var(--muted);';
                     html += '<tr style="border-bottom:1px solid var(--line);cursor:pointer;" onclick="location.hash=\'player?id=' + p.id + '\'">' +
-                        '<td style="padding:0.5rem 0.8rem;font-weight:700;color:var(--muted);font-size:0.8rem;">' + (i + 1) + '</td>' +
-                        '<td style="padding:0.5rem 0.8rem;display:flex;align-items:center;">' + avHtml + '<span style="font-weight:600;">' + (p.display_name || 'Player') + '</span></td>' +
-                        '<td style="padding:0.5rem 0.8rem;font-size:0.85rem;">' + (p.team || '—') + '</td>' +
-                        '<td style="padding:0.5rem 0.8rem;font-size:0.85rem;">' + (p.position || '—') + '</td>' +
-                        '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:600;">' + p.goals + '</td>' +
-                        '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:600;">' + p.assists + '</td>' +
-                        '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:600;">' + p.saves + '</td>' +
-                        '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:600;">' + p.apps + '</td>' +
-                        '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:700;color:' + ratingColor + ';">' + (p.avgRating > 0 ? p.avgRating : '—') + '</td>' +
+                        '<td style="font-weight:600;font-size:0.82rem;' + mutedStyle + '">' + (i + 1) + '</td>' +
+                        '<td style="display:flex;align-items:center;">' + avHtml + '<span style="font-weight:600;color:var(--text);">' + (p.display_name || 'Player') + '</span></td>' +
+                        '<td style="font-size:0.88rem;' + mutedStyle + '">' + (p.team || '—') + '</td>' +
+                        '<td style="font-size:0.88rem;' + mutedStyle + '">' + (p.position || '—') + '</td>' +
+                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;' + mutedStyle + '">' + p.goals + '</td>' +
+                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;' + mutedStyle + '">' + p.assists + '</td>' +
+                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;' + mutedStyle + '">' + p.saves + '</td>' +
+                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;' + mutedStyle + '">' + p.apps + '</td>' +
+                        '<td style="text-align:center;font-weight:700;font-size:0.9rem;color:' + ratingColor + ';">' + (p.avgRating > 0 ? p.avgRating : '—') + '</td>' +
                         '</tr>';
                 });
                 html += '</tbody>';
