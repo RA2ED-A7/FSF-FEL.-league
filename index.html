@@ -1593,7 +1593,7 @@
                 const votedFor = votes[currentUserId] === p.id;
                 const rowBorder = isMotm ? '2px solid #f1c40f' : votedFor ? '2px solid var(--accent)' : '1px solid var(--line)';
                 const rowBg = isMotm ? '#f1c40f12' : votedFor ? 'var(--accent)12' : 'transparent';
-                html += '<button type="button" data-player-id="' + p.id + '" class="mvp-vote-btn" style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.8rem;border-radius:8px;border:' + rowBorder + ';background:' + rowBg + ';position:relative;overflow:hidden;cursor:pointer;transition:all 0.15s;width:100%;text-align:left;font-family:inherit;color:var(--text);" onmouseenter="this.style.opacity=\'0.85\'" onmouseleave="this.style.opacity=\'1\'">' +
+                html += '<button type="button" data-player-id="' + p.id + '" class="mvp-vote-btn" onclick="voteMVP(this.getAttribute(\'data-player-id\'))" style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.8rem;border-radius:8px;border:' + rowBorder + ';background:' + rowBg + ';position:relative;overflow:hidden;cursor:pointer;transition:all 0.15s;width:100%;text-align:left;font-family:inherit;color:var(--text);" onmouseenter="this.style.opacity=\'0.85\'" onmouseleave="this.style.opacity=\'1\'">' +
                     '<div style="position:absolute;top:0;left:0;height:100%;width:' + pct + '%;background:' + (isMotm ? '#f1c40f18' : 'var(--accent)15') + ';border-radius:8px;transition:width 0.4s ease;pointer-events:none;z-index:0;"></div>' +
                     '<span style="position:relative;z-index:1;font-size:0.85rem;">' + (isMotm ? '\u2B50' : votedFor ? '\u2713' : '\u25CB') + '</span>' +
                     '<span style="position:relative;z-index:1;font-weight:600;font-size:0.82rem;color:var(--text);flex:1;">' + p.name + '</span>' +
@@ -1732,16 +1732,6 @@
 
             container.innerHTML = html;
 
-            // Attach MVP vote button listeners
-            if (currentUserId) {
-                container.querySelectorAll('.mvp-vote-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const pid = this.getAttribute('data-player-id');
-                        if (pid) voteMVP(pid);
-                    });
-                });
-            }
-
             // Fill field slots for both lineups
             const fillFieldSlots = (fieldId, lineup, teamColor) => {
                 const field = document.getElementById(fieldId);
@@ -1810,20 +1800,26 @@
         }
 
         async function voteMVP(playerId) {
+            console.log('[voteMVP] called with', playerId);
             const { gw, idx } = _getMatchParams();
             const prefix = 'match-gw' + gw + '-' + idx;
+            console.log('[voteMVP] prefix:', prefix);
             initSupabase();
-            if (!supabaseClient) return;
-            const { data: sessData } = await supabaseClient.auth.getSession();
+            if (!supabaseClient) { console.log('[voteMVP] no supabaseClient'); return; }
+            const { data: sessData, error: sessErr } = await supabaseClient.auth.getSession();
+            console.log('[voteMVP] session:', sessData?.session?.user?.id, sessErr);
             const userId = sessData?.session?.user?.id;
-            if (!userId) return;
+            if (!userId) { console.log('[voteMVP] no userId'); return; }
             try {
-                const { data: row } = await supabaseClient.from('SiteContent').select('value').eq('key', prefix + '-votes').maybeSingle();
+                const { data: row, error: rowErr } = await supabaseClient.from('SiteContent').select('value').eq('key', prefix + '-votes').maybeSingle();
+                console.log('[voteMVP] existing votes:', row, rowErr);
                 let votes = {};
                 try { votes = JSON.parse(row?.value || '{}'); } catch(e) { votes = {}; }
-                if (votes[userId]) return;
+                if (votes[userId]) { console.log('[voteMVP] already voted'); return; }
                 votes[userId] = playerId;
-                await supabaseClient.from('SiteContent').upsert({ key: prefix + '-votes', value: JSON.stringify(votes) }, { onConflict: 'key' });
+                console.log('[voteMVP] saving votes:', votes);
+                const { error: upErr } = await supabaseClient.from('SiteContent').upsert({ key: prefix + '-votes', value: JSON.stringify(votes) }, { onConflict: 'key' });
+                console.log('[voteMVP] upsert error:', upErr);
                 // Auto-select MOTM from highest votes
                 const vc = {};
                 Object.values(votes).forEach(vId => { vc[vId] = (vc[vId] || 0) + 1; });
@@ -1834,6 +1830,7 @@
                 if (best > 0 && bestId !== currentMvp) {
                     await supabaseClient.from('SiteContent').upsert({ key: prefix + '-mvp', value: bestId }, { onConflict: 'key' });
                 }
+                console.log('[voteMVP] re-rendering');
                 await renderMatchDetail();
             } catch(e) { console.warn('[vote-mvp] error:', e); }
         }
