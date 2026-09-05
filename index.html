@@ -1197,16 +1197,15 @@
                     const av = avatarMap[p.id];
                     const avHtml = av ? '<img src="' + av + '" style="width:26px;height:26px;border-radius:50%;object-fit:cover;margin-right:0.6rem;flex-shrink:0;">' : '';
                     const ratingColor = p.avgRating >= 8 ? '#4caf50' : p.avgRating >= 6 ? 'var(--accent)' : p.avgRating > 0 ? '#e74c3c' : 'var(--muted)';
-                    const mutedStyle = 'color:var(--muted);';
                     html += '<tr style="border-bottom:1px solid var(--line);cursor:pointer;" onclick="location.hash=\'player?id=' + p.id + '\'">' +
-                        '<td style="font-weight:600;font-size:0.82rem;' + mutedStyle + '">' + (i + 1) + '</td>' +
+                        '<td style="font-weight:600;font-size:0.82rem;color:var(--muted);">' + (i + 1) + '</td>' +
                         '<td style="display:flex;align-items:center;">' + avHtml + '<span style="font-weight:600;color:var(--text);">' + (p.display_name || 'Player') + '</span></td>' +
-                        '<td style="font-size:0.88rem;' + mutedStyle + '">' + (p.team || '—') + '</td>' +
-                        '<td style="font-size:0.88rem;' + mutedStyle + '">' + (p.position || '—') + '</td>' +
-                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;' + mutedStyle + '">' + p.goals + '</td>' +
-                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;' + mutedStyle + '">' + p.assists + '</td>' +
-                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;' + mutedStyle + '">' + p.saves + '</td>' +
-                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;' + mutedStyle + '">' + p.apps + '</td>' +
+                        '<td style="font-size:0.88rem;color:var(--muted);">' + (p.team || '—') + '</td>' +
+                        '<td style="font-size:0.88rem;color:var(--muted);">' + (p.position || '—') + '</td>' +
+                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;color:var(--text);">' + p.goals + '</td>' +
+                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;color:var(--text);">' + p.assists + '</td>' +
+                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;color:var(--text);">' + p.saves + '</td>' +
+                        '<td style="text-align:center;font-weight:600;font-size:0.9rem;color:var(--text);">' + p.apps + '</td>' +
                         '<td style="text-align:center;font-weight:700;font-size:0.9rem;color:' + ratingColor + ';">' + (p.avgRating > 0 ? p.avgRating : '—') + '</td>' +
                         '</tr>';
                 });
