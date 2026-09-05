@@ -50,6 +50,8 @@
         </div>
     </header>
 
+    <nav class="breadcrumbs" id="breadcrumbs"></nav>
+
     <main id="home">
         <div class="home-brand">
             <div class="logo">F</div>
@@ -955,7 +957,11 @@
     </div>
 
     <!-- Page Loader -->
-    <div class="page-loader" id="pageLoader"><div class="spinner"></div><span class="spinner-sub" id="loadingText" data-i18n="please_wait">Please Wait.</span></div>
+    <div class="page-loader" id="pageLoader">
+        <div class="spinner"></div>
+        <span class="spinner-sub" id="loadingText" data-i18n="please_wait">Please Wait.</span>
+        <div class="loader-quote" id="loaderQuote"></div>
+    </div>
 
     <footer>
         <div class="bug-report-btn" onclick="document.getElementById('bugReportModal').style.display='block'">!</div>
@@ -3304,6 +3310,27 @@
                 dotCount = (dotCount + 1) % 4;
                 loadingText.textContent = _loaderBaseText + '.'.repeat(dotCount || 1);
             }, 400);
+            // Random quote
+            var quoteEl = document.getElementById('loaderQuote');
+            if (quoteEl) {
+                var quotes = [
+                    '"The more difficult the victory, the greater the happiness in winning." — Pelé',
+                    '"I don\'t believe in superstitions. I just believe in me." — Ronaldo',
+                    '"Football is simple, but it is difficult to play simple." — Cruyff',
+                    '"Talent without working hard is nothing." — Cristiano Ronaldo',
+                    '"You have to fight to reach your dream." — Messi',
+                    '"I trained for 10 years to score in 90 minutes." — Lampard',
+                    '"The ball is round, the game is long." — German proverb',
+                    '"Winning isn\'t everything, it\'s the only thing." — Wooden',
+                    '"I missed more than 9,000 shots. I failed over and over." — Jordan',
+                    '"Hard work beats talent when talent doesn\'t work hard." — Keane',
+                    '"Some people think football is a matter of life and death. I assure you, it\'s much more serious than that." — Shankly',
+                    '"I am not a perfectionist, but I like to feel that things are done well." — Zidane',
+                    '"En la vida, como en el futbol, se va a fallar." — Iniesta',
+                    '"Le football, c\'est un sport de gentlehommes." — Platini'
+                ];
+                quoteEl.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+            }
         }
         function hideLoader() {
             _loaderPageDone = true;
@@ -3410,8 +3437,44 @@
             }
             window.scrollTo(0, 0);
             hideLoader();
+            updateBreadcrumbs(page);
             const visible = document.querySelector('section:not([style*="display: none"]), main:not([style*="display: none"]), .change-page:not([style*="display: none"]), .sign-page:not([style*="display: none"]), .rank-page:not([style*="display: none"]), .nf-page:not([style*="display: none"])');
             if (visible) animatePage(visible);
+        }
+
+        // Breadcrumbs
+        const BREADCRUMB_MAP = {
+            home: [{ label: 'Home', hash: '' }],
+            career: [{ label: 'Home', hash: '' }, { label: 'My Career' }],
+            rankings: [{ label: 'Home', hash: '' }, { label: 'Rankings' }],
+            rosters: [{ label: 'Home', hash: '' }, { label: 'Rosters' }],
+            freeagents: [{ label: 'Home', hash: '' }, { label: 'Free Agents' }],
+            playerstats: [{ label: 'Home', hash: '' }, { label: 'Player Stats' }],
+            schedule: [{ label: 'Home', hash: '' }, { label: 'Schedule' }],
+            admin: [{ label: 'Home', hash: '' }, { label: 'Admin' }],
+            signin: [{ label: 'Home', hash: '' }, { label: 'Sign In' }],
+            changelog: [{ label: 'Home', hash: '' }, { label: 'Update Log' }],
+            'schedule-match': [{ label: 'Home', hash: '' }, { label: 'Schedule', hash: 'schedule' }, { label: 'Match' }],
+            player: [{ label: 'Home', hash: '' }, { label: 'Rankings', hash: 'rankings' }, { label: 'Player' }],
+            team: [{ label: 'Home', hash: '' }, { label: 'Rosters', hash: 'rosters' }, { label: 'Team' }]
+        };
+        function updateBreadcrumbs(page) {
+            const bc = document.getElementById('breadcrumbs');
+            if (!bc) return;
+            let base = page.split('?')[0];
+            const crumbs = BREADCRUMB_MAP[base];
+            if (!crumbs || base === 'home') { bc.classList.remove('visible'); bc.innerHTML = ''; return; }
+            let html = '';
+            crumbs.forEach((c, i) => {
+                if (i > 0) html += '<span class="sep">›</span>';
+                if (i === crumbs.length - 1 || !c.hash) {
+                    html += '<span class="current">' + c.label + '</span>';
+                } else {
+                    html += '<a href="#' + c.hash + '">' + c.label + '</a>';
+                }
+            });
+            bc.innerHTML = html;
+            bc.classList.add('visible');
         }
 
         // ===== Sign in flow =====
