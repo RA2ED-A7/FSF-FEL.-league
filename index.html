@@ -1592,13 +1592,13 @@
                 const isMotm = mvpId === p.id;
                 const votedFor = votes[currentUserId] === p.id;
                 const rowBorder = isMotm ? '2px solid #f1c40f' : votedFor ? '2px solid var(--accent)' : '1px solid var(--line)';
-                const rowBg = isMotm ? '#f1c40f12' : votedFor ? 'var(--accent)' + '12' : 'transparent';
-                html += '<div onclick="' + (!currentUserId ? 'void(0)' : 'voteMVP(\'' + p.id + '\')') + '" style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.8rem;border-radius:8px;border:' + rowBorder + ';background:' + rowBg + ';position:relative;overflow:hidden;' + (currentUserId ? 'cursor:pointer;' : '') + 'transition:all 0.15s;" onmouseenter="this.style.opacity=\'0.85\'" onmouseleave="this.style.opacity=\'1\'">' +
+                const rowBg = isMotm ? '#f1c40f12' : votedFor ? 'var(--accent)12' : 'transparent';
+                html += '<button type="button" data-player-id="' + p.id + '" class="mvp-vote-btn" style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.8rem;border-radius:8px;border:' + rowBorder + ';background:' + rowBg + ';position:relative;overflow:hidden;cursor:pointer;transition:all 0.15s;width:100%;text-align:left;font-family:inherit;color:var(--text);" onmouseenter="this.style.opacity=\'0.85\'" onmouseleave="this.style.opacity=\'1\'">' +
                     '<div style="position:absolute;top:0;left:0;height:100%;width:' + pct + '%;background:' + (isMotm ? '#f1c40f18' : 'var(--accent)15') + ';border-radius:8px;transition:width 0.4s ease;pointer-events:none;z-index:0;"></div>' +
                     '<span style="position:relative;z-index:1;font-size:0.85rem;">' + (isMotm ? '\u2B50' : votedFor ? '\u2713' : '\u25CB') + '</span>' +
                     '<span style="position:relative;z-index:1;font-weight:600;font-size:0.82rem;color:var(--text);flex:1;">' + p.name + '</span>' +
                     '<span style="position:relative;z-index:1;font-size:0.72rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:1px 6px;min-width:20px;text-align:center;font-weight:600;">' + vc + '</span>' +
-                '</div>';
+                '</button>';
             });
             html += '</div>';
             html += '</div>';
@@ -1687,7 +1687,7 @@
             if (allStats.length) {
                 const thStyle = 'padding:0.5rem 0.6rem;font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;text-align:center;white-space:nowrap;';
                 const tdStyle = 'padding:0.5rem 0.6rem;font-size:0.8rem;text-align:center;border-bottom:1px solid var(--line);';
-                const rowBg = 'rgba(255,255,255,0.035)';
+                const rowBg = 'rgba(255,255,255,0.06)';
                 html += '<table style="width:100%;border-collapse:collapse;min-width:700px;">' +
                     '<thead><tr style="border-bottom:2px solid var(--line);">' +
                     '<th style="' + thStyle + 'text-align:left;">Player</th>' +
@@ -1701,12 +1701,14 @@
                     '<th style="' + thStyle + '">Rating</th>' +
                     '</tr></thead><tbody>';
                 let lastTeam = '';
-                allStats.forEach((s, si) => {
+                let rowIdx = 0;
+                allStats.forEach((s) => {
                     if (s.team !== lastTeam) {
                         html += '<tr><td colspan="9" style="padding:0.5rem 0.6rem;font-size:0.72rem;font-weight:700;color:' + (s.teamColor || 'var(--muted)') + ';text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--line);">' + (s.team || '—') + '</td></tr>';
                         lastTeam = s.team;
                     }
-                    const rowBgColor = si % 2 === 0 ? rowBg : 'transparent';
+                    const rowBgColor = rowIdx % 2 === 0 ? rowBg : 'transparent';
+                    rowIdx++;
                     const isMvpStat = s.id === mvpId;
                     const ratingNum = parseFloat(s.rating) || 0;
                     const ratingColor = ratingNum >= 8 ? '#4caf50' : ratingNum >= 6 ? 'var(--accent)' : ratingNum > 0 ? '#e74c3c' : 'var(--muted)';
