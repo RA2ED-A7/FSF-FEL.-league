@@ -1687,7 +1687,7 @@
             if (allStats.length) {
                 const thStyle = 'padding:0.5rem 0.6rem;font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;text-align:center;white-space:nowrap;';
                 const tdStyle = 'padding:0.5rem 0.6rem;font-size:0.8rem;text-align:center;border-bottom:1px solid var(--line);';
-                const rowBg = 'rgba(255,255,255,0.06)';
+                const rowBg = 'rgba(255,255,255,0.12)';
                 html += '<table style="width:100%;border-collapse:collapse;min-width:700px;">' +
                     '<thead><tr style="border-bottom:2px solid var(--line);">' +
                     '<th style="' + thStyle + 'text-align:left;">Player</th>' +
@@ -1701,18 +1701,15 @@
                     '<th style="' + thStyle + '">Rating</th>' +
                     '</tr></thead><tbody>';
                 let lastTeam = '';
-                let rowIdx = 0;
                 allStats.forEach((s) => {
                     if (s.team !== lastTeam) {
                         html += '<tr><td colspan="9" style="padding:0.5rem 0.6rem;font-size:0.72rem;font-weight:700;color:' + (s.teamColor || 'var(--muted)') + ';text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--line);">' + (s.team || '—') + '</td></tr>';
                         lastTeam = s.team;
                     }
-                    const rowBgColor = rowIdx % 2 === 0 ? rowBg : 'transparent';
-                    rowIdx++;
                     const isMvpStat = s.id === mvpId;
                     const ratingNum = parseFloat(s.rating) || 0;
                     const ratingColor = ratingNum >= 8 ? '#4caf50' : ratingNum >= 6 ? 'var(--accent)' : ratingNum > 0 ? '#e74c3c' : 'var(--muted)';
-                    html += '<tr style="background:' + rowBgColor + ';">' +
+                    html += '<tr style="background:' + rowBg + ';">' +
                         '<td style="' + tdStyle + 'text-align:left;display:flex;align-items:center;gap:0.5rem;"><span style="font-weight:600;">' + (s.name || '—') + '</span>' + (isMvpStat ? ' <span style="color:#f1c40f;font-size:0.7rem;">&#9733;</span>' : '') + '</td>' +
                         '<td style="' + tdStyle + 'color:var(--muted);font-size:0.72rem;">' + (s.position || '—') + '</td>' +
                         '<td style="' + tdStyle + '">' + (s.goals || 0) + '</td>' +
