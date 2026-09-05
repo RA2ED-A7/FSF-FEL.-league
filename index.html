@@ -572,7 +572,7 @@
 
     <section class="match-detail-page" id="matchDetailPage" style="display:none;">
         <button class="back-btn" onclick="history.back()">&larr; Back</button>
-        <div style="max-width:960px;margin:0 auto;padding:2rem 1.5rem;" id="matchDetailContent">
+        <div style="max-width:1100px;margin:0 auto;padding:2rem 1.5rem;" id="matchDetailContent">
             <p class="muted" style="text-align:center;">Loading match...</p>
         </div>
     </section>
@@ -1586,10 +1586,9 @@
             html += '</div>';
 
             // ===== LINEUPS (Football Field) =====
-            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:2rem;position:relative;left:50%;width:100vw;margin-left:calc(-50vw + 50%);margin-bottom:1.5rem;box-sizing:border-box;">' +
-                '<div style="max-width:960px;margin:0 auto;">' +
+            html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:2rem;margin-bottom:1.5rem;">' +
                 '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 1.2rem;">Lineups</h3>' +
-                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;">';
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">';
 
             html += '<div>' +
                 '<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;">' +
@@ -1615,7 +1614,7 @@
             html += '<div class="td-field-row td-field-gk"><div class="td-field-slot" data-pos="GK"></div></div>';
             html += '</div></div>';
 
-            html += '</div></div></div>';
+            html += '</div></div>';
 
             // ===== MATCH EVENTS (Two Columns) =====
             const eventColorMap = { goal: '#4caf50', own_goal: '#e74c3c', yellow_card: '#f1c40f', red_card: '#e74c3c', sub: 'var(--accent)' };
