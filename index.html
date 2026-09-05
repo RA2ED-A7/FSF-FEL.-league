@@ -2047,7 +2047,7 @@
                 document.getElementById('pStatApps').textContent = s(p.appearances, 0);
                 // Avg Rating from match stats
                 try {
-                    const avg = await getPlayerAvgRating(id);
+                    const avg = await getPlayerAvgRating(playerId);
                     if (avg > 0) document.getElementById('pStatAvgRating').textContent = avg;
                 } catch (e) {}
 
