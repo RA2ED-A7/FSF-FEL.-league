@@ -8,7 +8,7 @@
 </head>
 <body>
     <header style="position:relative;">
-        <button style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:0.3rem 0.5rem;cursor:pointer;color:var(--text);font-size:0.9rem;line-height:1;transition:border-color 0.15s;" onmouseenter="this.style.borderColor='var(--accent)'" onmouseleave="this.style.borderColor='var(--line)'" title="Settings">&#9881;&#65039;</button>
+        <button onclick="toggleSettings()" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:0.3rem 0.5rem;cursor:pointer;color:var(--text);font-size:0.9rem;line-height:1;transition:border-color 0.15s;" onmouseenter="this.style.borderColor='var(--accent)'" onmouseleave="this.style.borderColor='var(--line)'" title="Settings">&#9881;&#65039;</button>
         <div class="brand" style="margin-left:2rem;"><span id="site-title">Freestyle Elite league</span> <span class="season" id="site-subtitle">| Season 1</span></div>
         <a href="#admin" class="admin-line" id="adminLine" style="display:none;"></a>
         <nav class="menu">
@@ -881,6 +881,19 @@
         </div>
         <p id="bugReportMsg" style="font-size:0.75rem; margin-top:0.4rem;"></p>
     </div>
+
+    <!-- Settings Sidebar -->
+    <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
+    <div class="settings-sidebar" id="settingsSidebar">
+        <h2>Settings <button onclick="toggleSettings()">&times;</button></h2>
+        <div class="settings-item">Dark Mode: On</div>
+        <div class="settings-item">Notifications: Off</div>
+        <div class="settings-item">Language: English</div>
+        <div class="settings-item">Sound: On</div>
+    </div>
+
+    <!-- Page Loader -->
+    <div class="page-loader" id="pageLoader"><div class="spinner"></div></div>
 
     <footer>
         <div class="bug-report-btn" onclick="document.getElementById('bugReportModal').style.display='block'">!</div>
@@ -3038,6 +3051,8 @@
         // ===== Hash router =====
         function route() {
             const page = (location.hash.replace('#', '') || '').toLowerCase();
+            showLoader();
+            setTimeout(function() {
             const pages = {
                 home: 'home',
                 changelog: 'change-page',
@@ -3118,6 +3133,10 @@
                 nfEl.style.display = '';
             }
             window.scrollTo(0, 0);
+            hideLoader();
+            const visible = document.querySelector('section:not([style*="display: none"]), main:not([style*="display: none"]), .change-page:not([style*="display: none"]), .sign-page:not([style*="display: none"]), .rank-page:not([style*="display: none"]), .nf-page:not([style*="display: none"])');
+            if (visible) animatePage(visible);
+            }, 150);
         }
 
         // ===== Sign in flow =====
@@ -3462,6 +3481,26 @@
         }
 
         document.getElementById('rostersDivFilter').addEventListener('change', renderRosters);
+
+        // Settings sidebar
+        function toggleSettings() {
+            document.getElementById('settingsOverlay').classList.toggle('open');
+            document.getElementById('settingsSidebar').classList.toggle('open');
+        }
+
+        // Page loader + enter animations
+        function showLoader() {
+            document.getElementById('pageLoader').classList.add('active');
+        }
+        function hideLoader() {
+            document.getElementById('pageLoader').classList.remove('active');
+        }
+        function animatePage(el) {
+            if (!el) return;
+            el.classList.remove('page-enter');
+            void el.offsetWidth;
+            el.classList.add('page-enter');
+        }
     </script>
 </body>
 </html>
