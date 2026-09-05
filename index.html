@@ -1432,25 +1432,28 @@
             let events = [];
             let stats = [];
             let votes = {};
-            initSupabase();
-            if (supabaseClient) {
-                try {
-                    const { data: rows } = await supabaseClient.from('SiteContent').select('key, value').like('key', prefix + '-%');
-                    const get = (suffix) => { const r = rows?.find(x => x.key === prefix + '-' + suffix); return r ? r.value : ''; };
-                    home = get('home') || home;
-                    away = get('away') || away;
-                    status = get('status') || status;
-                    date = get('date') || '';
-                    result = get('result') || '';
-                    report = get('report') || '';
-                    mvp = get('mvp') || '';
-                    try { homeLineup = JSON.parse(get('home-lineup')) || []; } catch(e) { homeLineup = []; }
-                    try { awayLineup = JSON.parse(get('away-lineup')) || []; } catch(e) { awayLineup = []; }
-                    try { events = JSON.parse(get('events')) || []; } catch(e) { events = []; }
-                    try { stats = JSON.parse(get('stats')) || []; } catch(e) { stats = []; }
-                    try { votes = JSON.parse(get('votes')) || {}; } catch(e) { votes = {}; }
-                } catch(e) { console.warn('[match-detail] load error:', e); }
-            }
+            try {
+                initSupabase();
+                if (supabaseClient) {
+                    const keys = ['home','away','status','date','result','report','mvp','home-lineup','away-lineup','events','stats','votes'];
+                    const { data: rows, error } = await supabaseClient.from('SiteContent').select('key, value').in('key', keys.map(k => prefix + '-' + k));
+                    if (!error && rows) {
+                        const get = (suffix) => { const r = rows.find(x => x.key === prefix + '-' + suffix); return r ? r.value : ''; };
+                        home = get('home') || home;
+                        away = get('away') || away;
+                        status = get('status') || status;
+                        date = get('date') || '';
+                        result = get('result') || '';
+                        report = get('report') || '';
+                        mvp = get('mvp') || '';
+                        try { homeLineup = JSON.parse(get('home-lineup')) || []; } catch(e) { homeLineup = []; }
+                        try { awayLineup = JSON.parse(get('away-lineup')) || []; } catch(e) { awayLineup = []; }
+                        try { events = JSON.parse(get('events')) || []; } catch(e) { events = []; }
+                        try { stats = JSON.parse(get('stats')) || []; } catch(e) { stats = []; }
+                        try { votes = JSON.parse(get('votes')) || {}; } catch(e) { votes = {}; }
+                    }
+                }
+            } catch(e) { console.warn('[match-detail] load error:', e); }
             const hc = TEAMS_OBJ[home]?.color || '#888';
             const ac = TEAMS_OBJ[away]?.color || '#888';
             const sColor = statusColors[status] || 'var(--muted)';
