@@ -1593,7 +1593,7 @@
                 const votedFor = votes[currentUserId] === p.id;
                 const rowBorder = isMotm ? '2px solid #f1c40f' : votedFor ? '2px solid var(--accent)' : '1px solid var(--line)';
                 const rowBg = isMotm ? '#f1c40f12' : votedFor ? 'var(--accent)12' : 'transparent';
-                html += '<button type="button" data-player-id="' + p.id + '" class="mvp-vote-btn" onclick="voteMVP(this.getAttribute(\'data-player-id\'))" style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.8rem;border-radius:8px;border:' + rowBorder + ';background:' + rowBg + ';position:relative;overflow:hidden;cursor:pointer;transition:all 0.15s;width:100%;text-align:left;font-family:inherit;color:var(--text);" onmouseenter="this.style.opacity=\'0.85\'" onmouseleave="this.style.opacity=\'1\'">' +
+                html += '<button type="button" data-player-id="' + p.id + '" class="mvp-vote-btn" style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.8rem;border-radius:8px;border:' + rowBorder + ';background:' + rowBg + ';position:relative;overflow:hidden;cursor:pointer;transition:all 0.15s;width:100%;text-align:left;font-family:inherit;color:var(--text);" onmouseenter="this.style.opacity=\'0.85\'" onmouseleave="this.style.opacity=\'1\'">' +
                     '<div style="position:absolute;top:0;left:0;height:100%;width:' + pct + '%;background:' + (isMotm ? '#f1c40f18' : 'var(--accent)15') + ';border-radius:8px;transition:width 0.4s ease;pointer-events:none;z-index:0;"></div>' +
                     '<span style="position:relative;z-index:1;font-size:0.85rem;">' + (isMotm ? '\u2B50' : votedFor ? '\u2713' : '\u25CB') + '</span>' +
                     '<span style="position:relative;z-index:1;font-weight:600;font-size:0.82rem;color:var(--text);flex:1;">' + p.name + '</span>' +
@@ -1731,6 +1731,16 @@
             html += '</div>';
 
             container.innerHTML = html;
+
+            // Event delegation for MVP vote buttons
+            container.onclick = function(e) {
+                const btn = e.target.closest('.mvp-vote-btn');
+                if (btn) {
+                    const pid = btn.getAttribute('data-player-id');
+                    console.log('[mvp-click] button clicked, pid:', pid);
+                    if (pid) voteMVP(pid);
+                }
+            };
 
             // Fill field slots for both lineups
             const fillFieldSlots = (fieldId, lineup, teamColor) => {
