@@ -3055,11 +3055,12 @@
         function showLoader() {
             _loaderMinDone = false;
             _loaderPageDone = false;
-            document.getElementById('pageLoader').classList.add('active');
+            const el = document.getElementById('pageLoader');
+            el.classList.add('active');
             clearTimeout(_loaderTimer);
             _loaderTimer = setTimeout(function() {
                 _loaderMinDone = true;
-                if (_loaderPageDone) document.getElementById('pageLoader').classList.remove('active');
+                if (_loaderPageDone) el.classList.remove('active');
             }, 1200);
         }
         function hideLoader() {
@@ -3068,17 +3069,14 @@
                 document.getElementById('pageLoader').classList.remove('active');
             }
         }
-        function animatePage(el) {
-            if (!el) return;
-            el.classList.remove('page-enter');
-            void el.offsetWidth;
-            el.classList.add('page-enter');
-        }
-
-        // ===== Hash router =====
         function route() {
             const page = (location.hash.replace('#', '') || '').toLowerCase();
             showLoader();
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    routePage(page);
+                });
+            });
             const pages = {
                 home: 'home',
                 changelog: 'change-page',
