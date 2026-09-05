@@ -3487,19 +3487,22 @@
         }
 
         // Page loader + enter animations
-        let _loaderMinTimer = null;
-        let _loaderDone = false;
+        let _loaderMinDone = false;
+        let _loaderPageDone = false;
+        let _loaderTimer = null;
         function showLoader() {
-            _loaderDone = false;
+            _loaderMinDone = false;
+            _loaderPageDone = false;
             document.getElementById('pageLoader').classList.add('active');
-            _loaderMinTimer = setTimeout(function() {
-                _loaderMinTimer = null;
-                if (_loaderDone) document.getElementById('pageLoader').classList.remove('active');
+            clearTimeout(_loaderTimer);
+            _loaderTimer = setTimeout(function() {
+                _loaderMinDone = true;
+                if (_loaderPageDone) document.getElementById('pageLoader').classList.remove('active');
             }, 1200);
         }
         function hideLoader() {
-            _loaderDone = true;
-            if (!_loaderMinTimer) {
+            _loaderPageDone = true;
+            if (_loaderMinDone) {
                 document.getElementById('pageLoader').classList.remove('active');
             }
         }
