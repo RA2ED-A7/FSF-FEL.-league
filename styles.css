@@ -1064,7 +1064,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 
 /* Page loader */
 .page-loader {
-    position: fixed; inset: 0; background: var(--bg); z-index: 500;
+    position: fixed; inset: 0; background: var(--bg); z-index: 9999;
     display: flex; align-items: center; justify-content: center;
     opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease;
 }
