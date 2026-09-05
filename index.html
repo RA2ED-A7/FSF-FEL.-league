@@ -3473,15 +3473,42 @@
             const glows = document.querySelectorAll('.bg-glow');
             const vw = window.innerWidth;
             const vh = window.innerHeight;
-            function randPos(el) {
-                el.style.top = (Math.random() * vh * 0.8 - vh * 0.2) + 'px';
-                el.style.left = (Math.random() * vw * 0.8 - vw * 0.2) + 'px';
+            const speeds = [0.15, 0.12, 0.18, 0.1, 0.14];
+            const data = [];
+            glows.forEach((g, i) => {
+                const angle = Math.random() * Math.PI * 2;
+                const spd = speeds[i] || 0.12;
+                data.push({
+                    el: g,
+                    x: Math.random() * vw,
+                    y: Math.random() * vh,
+                    vx: Math.cos(angle) * spd,
+                    vy: Math.sin(angle) * spd,
+                    baseOpacity: parseFloat(getComputedStyle(g).opacity) || 1,
+                    nextFlicker: Date.now() + Math.random() * 8000
+                });
+                g.style.left = data[i].x + 'px';
+                g.style.top = data[i].y + 'px';
+            });
+            function animate() {
+                data.forEach(d => {
+                    d.x += d.vx;
+                    d.y += d.vy;
+                    if (d.x > vw + 200) d.x = -400;
+                    else if (d.x < -400) d.x = vw + 200;
+                    if (d.y > vh + 200) d.y = -400;
+                    else if (d.y < -400) d.y = vh + 200;
+                    d.el.style.left = d.x + 'px';
+                    d.el.style.top = d.y + 'px';
+                    if (Date.now() > d.nextFlicker) {
+                        const newOp = 0.3 + Math.random() * 0.7;
+                        d.el.style.opacity = newOp;
+                        d.nextFlicker = Date.now() + 4000 + Math.random() * 8000;
+                    }
+                });
+                requestAnimationFrame(animate);
             }
-            glows.forEach(g => { randPos(g); });
-            setInterval(function() {
-                const el = glows[Math.floor(Math.random() * glows.length)];
-                randPos(el);
-            }, 6000);
+            animate();
         })();
     </script>
 </body>
