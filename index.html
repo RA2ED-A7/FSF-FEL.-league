@@ -886,24 +886,48 @@
     <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
     <div class="settings-sidebar" id="settingsSidebar">
         <h2 data-i18n="settings">Settings <button onclick="toggleSettings()">&times;</button></h2>
-        <div class="settings-item" id="settingDarkMode" onclick="toggleDarkMode()">
-            <span data-i18n="dark_mode">Dark Mode:</span> <span id="darkModeLabel">On</span>
+        <div class="settings-tabs">
+            <button class="settings-tab active" onclick="switchSettingsTab('general')" data-i18n="settings_tab_general">General</button>
+            <button class="settings-tab" onclick="switchSettingsTab('display')" data-i18n="settings_tab_display">Display</button>
+            <button class="settings-tab" onclick="switchSettingsTab('gameday')" data-i18n="settings_tab_gameday">Game Day</button>
         </div>
-        <div class="settings-item" id="settingLanguage" onclick="cycleLanguage()">
-            <span data-i18n="language">Language:</span> <span id="languageLabel">English</span>
+        <div class="settings-panel active" id="settingsPanelGeneral">
+            <div class="settings-item" id="settingDarkMode" onclick="toggleDarkMode()">
+                <span data-i18n="dark_mode">Dark Mode:</span> <span id="darkModeLabel">On</span>
+            </div>
+            <div class="settings-item" id="settingLanguage" onclick="cycleLanguage()">
+                <span data-i18n="language">Language:</span> <span id="languageLabel">English</span>
+            </div>
+            <div class="settings-item" id="settingAnimations" onclick="cycleAnimations()">
+                <span data-i18n="animations">Animations:</span> <span id="animationsLabel">Full</span>
+            </div>
+            <div class="settings-item" id="settingFontSize" onclick="cycleFontSize()">
+                <span data-i18n="font_size">Font Size:</span> <span id="fontSizeLabel">Medium</span>
+            </div>
+            <div class="settings-item" id="settingTimezone" onclick="cycleTimezone()">
+                <span data-i18n="timezone">Timezone:</span> <span id="timezoneLabel">UTC</span>
+            </div>
         </div>
-        <div class="settings-item" id="settingAnimations" onclick="cycleAnimations()">
-            <span data-i18n="animations">Animations:</span> <span id="animationsLabel">Full</span>
+        <div class="settings-panel" id="settingsPanelDisplay">
+            <div class="settings-item" id="settingGlows" onclick="cycleGlows()">
+                <span data-i18n="glow_intensity">Glow Intensity:</span> <span id="glowsLabel">Normal</span>
+            </div>
+            <div class="settings-item" id="settingBgPattern" onclick="cycleBgPattern()">
+                <span data-i18n="bg_pattern">Background Pattern:</span> <span id="bgPatternLabel">Dots</span>
+            </div>
+            <div class="settings-item" id="settingCompactNums" onclick="toggleCompactNums()">
+                <span data-i18n="compact_numbers">Compact Numbers:</span> <span id="compactNumsLabel">Off</span>
+            </div>
         </div>
-        <div class="settings-item" id="settingGlows" onclick="toggleGlows()">
-            <span data-i18n="bg_glows">Background Glows:</span> <span id="glowsLabel">On</span>
+        <div class="settings-panel" id="settingsPanelGameday">
+            <div class="settings-item" id="settingScrollLatest" onclick="toggleScrollLatest()">
+                <span data-i18n="scroll_to_latest">Scroll to Latest:</span> <span id="scrollLatestLabel">On</span>
+            </div>
+            <div class="settings-item" id="settingLoyaltyBadge" onclick="cycleLoyaltyBadge()">
+                <span data-i18n="loyalty_badge">Team Loyalty Badge:</span> <span id="loyaltyBadgeLabel">Off</span>
+            </div>
         </div>
-        <div class="settings-item" id="settingFontSize" onclick="cycleFontSize()">
-            <span data-i18n="font_size">Font Size:</span> <span id="fontSizeLabel">Medium</span>
-        </div>
-        <div class="settings-item" id="settingAccent" onclick="cycleAccent()">
-            <span data-i18n="accent_color">Accent Color:</span> <span id="accentLabel">Teal</span>
-        </div>
+        <button class="settings-save-btn" onclick="saveAllSettings()"><span data-i18n="save_settings">Save Settings</span></button>
     </div>
 
     <!-- Page Loader -->
@@ -3074,7 +3098,10 @@
         const I18N = {
             'English': {
                 settings: 'Settings', dark_mode: 'Dark Mode:', language: 'Language:', animations: 'Animations:', please_wait: 'Please Wait.',
-                bg_glows: 'Background Glows:', font_size: 'Font Size:', accent_color: 'Accent Color:',
+                bg_glows: 'Background Glows:', font_size: 'Font Size:',
+                settings_tab_general: 'General', settings_tab_display: 'Display', settings_tab_gameday: 'Game Day',
+                glow_intensity: 'Glow Intensity:', bg_pattern: 'Background Pattern:', compact_numbers: 'Compact Numbers:',
+                scroll_to_latest: 'Scroll to Latest:', loyalty_badge: 'Team Loyalty Badge:', timezone: 'Timezone:',
                 nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule',
                 nav_teams: 'Teams', nav_rankings: 'Rankings', nav_rosters: 'Rosters', nav_playerstats: 'Player Stats',
                 nav_market: 'Market', nav_freeagents: 'Free Agents', nav_standings: 'Standings', nav_changelog: 'Update Log',
@@ -3129,11 +3156,15 @@
                 any_value: 'Any Value', search_name: 'Search by name...', search_player: 'Search player...',
                 prev: 'Prev', next: 'Next', page: 'Page',
                 home_events: 'Home Events', away_events: 'Away Events', add: '+ Add',
-                not_configured: 'Supabase is not configured yet.', opening_discord: 'Opening Discord...'
+                not_configured: 'Supabase is not configured yet.', opening_discord: 'Opening Discord...',
+                save_settings: 'Save Settings'
             },
             'Fran\u00e7ais': {
                 settings: 'Param\u00e8tres', dark_mode: 'Mode Sombre:', language: 'Langue:', animations: 'Animations:', please_wait: 'Veuillez patienter.',
-                bg_glows: 'Lueurs de Fond:', font_size: 'Taille du Texte:', accent_color: 'Couleur d\'Accent:',
+                bg_glows: 'Lueurs de Fond:', font_size: 'Taille du Texte:',
+                settings_tab_general: 'G\u00e9n\u00e9ral', settings_tab_display: 'Affichage', settings_tab_gameday: 'Jour de Match',
+                glow_intensity: 'Intensit\u00e9 des Lueurs:', bg_pattern: 'Motif de Fond:', compact_numbers: 'Nombres Compacts:',
+                scroll_to_latest: 'D\u00e9filer vers le Dernier:', loyalty_badge: 'Badge de Loyalit\u00e9:', timezone: 'Fuseau Horaire:',
                 nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier',
                 nav_teams: '\u00c9quipes', nav_rankings: 'Classement', nav_rosters: 'Effectifs', nav_playerstats: 'Stats Joueurs',
                 nav_market: 'March\u00e9', nav_freeagents: 'Agents Libres', nav_standings: 'Classement G\u00e9n\u00e9ral', nav_changelog: 'Journal des MAJ',
@@ -3188,7 +3219,8 @@
                 any_value: 'Toute Valeur', search_name: 'Rechercher par nom...', search_player: 'Rechercher un joueur...',
                 prev: 'Pr\u00e9c', next: 'Suiv', page: 'Page',
                 home_events: '\u00c9v\u00e9nements Dom.', away_events: '\u00c9v\u00e9nements Ext.', add: '+ Ajouter',
-                not_configured: 'Supabase n\'est pas configur\u00e9.', opening_discord: 'Ouverture de Discord...'
+                not_configured: 'Supabase n\'est pas configur\u00e9.', opening_discord: 'Ouverture de Discord...',
+                save_settings: 'Enregistrer'
             }
         };
         function applyLanguage(lang) {
@@ -3723,16 +3755,93 @@
             else if (level === 'Disabled') document.body.classList.add('anim-disabled');
         }
 
-        // Background Glows
-        function toggleGlows() {
+        // Settings tabs
+        function switchSettingsTab(tab) {
+            document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+            document.querySelector('[onclick="switchSettingsTab(\'' + tab + '\')"]').classList.add('active');
+            document.getElementById('settingsPanel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+        }
+
+        // Glow Intensity
+        const GLOW_LEVELS = ['Off', 'Subtle', 'Normal', 'Strong'];
+        function cycleGlows() {
             const s = loadSettings();
-            s.glows = s.glows === undefined ? false : !s.glows;
+            const idx = GLOW_LEVELS.indexOf(s.glows || 'Normal');
+            s.glows = GLOW_LEVELS[(idx + 1) % GLOW_LEVELS.length];
             saveSettings(s);
             applyGlows(s.glows);
         }
-        function applyGlows(on) {
-            document.body.classList.toggle('no-glows', !on);
-            document.getElementById('glowsLabel').textContent = on ? 'On' : 'Off';
+        function applyGlows(level) {
+            document.getElementById('glowsLabel').textContent = level;
+            document.body.classList.remove('glow-off', 'glow-subtle', 'glow-strong');
+            if (level === 'Off') document.body.classList.add('glow-off');
+            else if (level === 'Subtle') document.body.classList.add('glow-subtle');
+            else if (level === 'Strong') document.body.classList.add('glow-strong');
+        }
+
+        // Background Pattern
+        const BG_PATTERNS = ['Dots', 'Grid', 'None'];
+        function cycleBgPattern() {
+            const s = loadSettings();
+            const idx = BG_PATTERNS.indexOf(s.bgPattern || 'Dots');
+            s.bgPattern = BG_PATTERNS[(idx + 1) % BG_PATTERNS.length];
+            saveSettings(s);
+            applyBgPattern(s.bgPattern);
+        }
+        function applyBgPattern(pattern) {
+            document.getElementById('bgPatternLabel').textContent = pattern;
+            document.body.classList.remove('bg-dots', 'bg-grid', 'bg-none');
+            document.body.classList.add('bg-' + pattern.toLowerCase());
+        }
+
+        // Compact Numbers
+        function toggleCompactNums() {
+            const s = loadSettings();
+            s.compactNums = s.compactNums === undefined ? false : !s.compactNums;
+            saveSettings(s);
+            applyCompactNums(s.compactNums);
+        }
+        function applyCompactNums(on) {
+            document.body.classList.toggle('compact-nums', on);
+            document.getElementById('compactNumsLabel').textContent = on ? 'On' : 'Off';
+        }
+
+        // Scroll to Latest
+        function toggleScrollLatest() {
+            const s = loadSettings();
+            s.scrollLatest = s.scrollLatest === undefined ? true : !s.scrollLatest;
+            saveSettings(s);
+            applyScrollLatest(s.scrollLatest);
+        }
+        function applyScrollLatest(on) {
+            document.getElementById('scrollLatestLabel').textContent = on ? 'On' : 'Off';
+        }
+
+        // Team Loyalty Badge
+        function cycleLoyaltyBadge() {
+            const s = loadSettings();
+            const current = s.loyaltyBadge || 'Off';
+            s.loyaltyBadge = current === 'Off' ? 'On' : 'Off';
+            saveSettings(s);
+            applyLoyaltyBadge(s.loyaltyBadge);
+        }
+        function applyLoyaltyBadge(on) {
+            document.getElementById('loyaltyBadgeLabel').textContent = on === 'On' ? 'On' : 'Off';
+            document.body.classList.toggle('loyalty-badge', on === 'On');
+        }
+
+        // Timezone
+        const TIMEZONES = ['UTC', 'UTC+1', 'UTC+2', 'UTC+3', 'UTC+4', 'UTC+5', 'UTC+6', 'UTC+7', 'UTC+8', 'UTC+9', 'UTC+10', 'UTC-1', 'UTC-2', 'UTC-3', 'UTC-4', 'UTC-5', 'UTC-6', 'UTC-7', 'UTC-8', 'UTC-9', 'UTC-10'];
+        function cycleTimezone() {
+            const s = loadSettings();
+            const idx = TIMEZONES.indexOf(s.timezone || 'UTC');
+            s.timezone = TIMEZONES[(idx + 1) % TIMEZONES.length];
+            saveSettings(s);
+            applyTimezone(s.timezone);
+        }
+        function applyTimezone(tz) {
+            document.getElementById('timezoneLabel').textContent = tz;
         }
 
         // Font Size
@@ -3746,29 +3855,22 @@
         }
         function applyFontSize(size) {
             document.getElementById('fontSizeLabel').textContent = size;
-            document.body.classList.remove('fs-small', 'fs-medium', 'fs-large');
-            document.body.classList.add('fs-' + size.toLowerCase());
+            document.documentElement.classList.remove('fs-small', 'fs-medium', 'fs-large');
+            document.documentElement.classList.add('fs-' + size.toLowerCase());
         }
 
-        // Accent Color
-        const ACCENTS = ['Teal', 'Blue', 'Purple', 'Red', 'Gold', 'Pink', 'Team Theme'];
-        const TEAM_ACCENTS = { 'Manchester City': 'city', 'FC Barcelona': 'barca', 'Bayern Munchen': 'bayern', 'Paris Saint Germain': 'psg', 'Real Madrid': 'madrid' };
-        function cycleAccent() {
+        // Save all settings
+        function saveAllSettings() {
             const s = loadSettings();
-            const idx = ACCENTS.indexOf(s.accent || 'Teal');
-            s.accent = ACCENTS[(idx + 1) % ACCENTS.length];
             saveSettings(s);
-            applyAccent(s.accent);
-        }
-        function applyAccent(name) {
-            document.getElementById('accentLabel').textContent = name;
-            document.body.classList.remove('accent-teal', 'accent-blue', 'accent-purple', 'accent-red', 'accent-gold', 'accent-pink', 'accent-city', 'accent-barca', 'accent-bayern', 'accent-psg', 'accent-madrid');
-            if (name === 'Team Theme') {
-                const s = loadSettings();
-                const teamClass = TEAM_ACCENTS[s.teamTheme] || 'teal';
-                document.body.classList.add('accent-' + teamClass);
-            } else {
-                document.body.classList.add('accent-' + name.toLowerCase());
+            const btn = document.querySelector('.settings-save-btn');
+            if (btn) {
+                btn.classList.add('saved');
+                btn.textContent = (I18N[s.language || 'English'] || I18N['English']).saved || 'Saved!';
+                setTimeout(() => {
+                    btn.classList.remove('saved');
+                    btn.textContent = (I18N[s.language || 'English'] || I18N['English']).save_settings || 'Save Settings';
+                }, 1500);
             }
         }
 
@@ -3778,9 +3880,13 @@
             applyDarkMode(s.darkMode !== undefined ? s.darkMode : true);
             applyLanguage(s.language || 'English');
             applyAnimations(s.animations || 'Full');
-            applyGlows(s.glows !== undefined ? s.glows : true);
+            applyGlows(s.glows || 'Normal');
+            applyBgPattern(s.bgPattern || 'Dots');
+            applyCompactNums(s.compactNums || false);
+            applyScrollLatest(s.scrollLatest !== undefined ? s.scrollLatest : true);
+            applyLoyaltyBadge(s.loyaltyBadge || 'Off');
+            applyTimezone(s.timezone || 'UTC');
             applyFontSize(s.fontSize || 'Medium');
-            applyAccent(s.accent || 'Teal');
         })();
     </script>
 </body>
