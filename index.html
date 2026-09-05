@@ -30,6 +30,7 @@
                 <div class="dropdown">
                     <a href="#rankings">Rankings</a>
                     <a href="#rosters">Rosters</a>
+                    <a href="#playerstats">Player Stats</a>
                 </div>
             </div>
             <div class="menu-item">
@@ -411,6 +412,18 @@
                     <div class="career-match-row"><span class="cm-date">—</span><span class="cm-teams">No match</span><span class="cm-result">—</span></div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section class="player-stats-page" id="playerStatsPage" style="display:none;">
+        <h2 class="section-title" style="text-align:center;">Player Stats Leaderboard</h2>
+        <div style="display:flex;gap:0.8rem;justify-content:center;margin:1.5rem 0;">
+            <select id="psDivFilter" style="padding:0.4rem 0.8rem;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:0.85rem;" onchange="renderPlayerStats()">
+                <option value="1.FEL">1.FEL</option>
+            </select>
+        </div>
+        <div style="overflow-x:auto;">
+            <table id="psTable" style="width:100%;border-collapse:collapse;min-width:750px;"></table>
         </div>
     </section>
 
@@ -1110,6 +1123,83 @@
                     '</div>';
                 }).join('');
             } catch (e) { console.warn('[free-agents] error:', e); }
+        }
+
+        // ===== Player Stats Leaderboard =====
+        async function renderPlayerStats() {
+            initSupabase();
+            if (!supabaseClient) return;
+            try {
+                const { data: players, error } = await supabaseClient.from('Player').select('*');
+                if (error || !players) return;
+                const divFilter = document.getElementById('psDivFilter').value;
+                let filtered = players;
+                if (divFilter !== 'All') {
+                    const divTeams = TEAMS.filter(t => t.division === divFilter).map(t => t.name);
+                    filtered = players.filter(p => divTeams.includes(p.team));
+                }
+                let avatarMap = {};
+                try {
+                    const { data: avRows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'discord-avatar-%');
+                    if (avRows) avRows.forEach(r => { avatarMap[r.key.replace('discord-avatar-', '')] = r.value; });
+                } catch(e) {}
+                let badgeMap = {};
+                try {
+                    const { data: bRows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'badge-%');
+                    if (bRows) bRows.forEach(r => { badgeMap[r.key.replace('badge-', '')] = r.value; });
+                } catch(e) {}
+                let ratingMap = {};
+                try {
+                    const { data: rRows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'career-%-ratings');
+                    if (rRows) rRows.forEach(r => {
+                        const pid = r.key.replace('career-', '').replace('-ratings', '');
+                        const ratings = r.value.split(',').map(Number).filter(n => !isNaN(n) && n > 0);
+                        if (ratings.length > 0) ratingMap[pid] = (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1);
+                    });
+                } catch(e) {}
+                const scored = filtered.map(p => {
+                    const goals = p.goals || 0;
+                    const assists = p.assists || 0;
+                    const saves = p.saves || 0;
+                    const apps = p.appearances || p.matches || 0;
+                    const avgRating = parseFloat(ratingMap[p.id]) || 0;
+                    return { ...p, goals, assists, saves, apps, avgRating, score: goals * 3 + assists * 2 + saves + apps + avgRating * 2 };
+                });
+                scored.sort((a, b) => b.score - a.score);
+                const top = scored.slice(0, 150);
+                const table = document.getElementById('psTable');
+                let html = '<thead><tr style="border-bottom:2px solid var(--line);text-align:left;">' +
+                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">#</th>' +
+                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Player</th>' +
+                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Team</th>' +
+                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Position</th>' +
+                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Goals</th>' +
+                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Assists</th>' +
+                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Saves</th>' +
+                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Apps</th>' +
+                    '<th style="padding:0.6rem 0.8rem;font-size:0.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;text-align:center;">Avg Rating</th>' +
+                    '</tr></thead><tbody>';
+                top.forEach((p, i) => {
+                    const av = avatarMap[p.id];
+                    const avHtml = av ? '<img src="' + av + '" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.5rem;flex-shrink:0;">' : '';
+                    const badge = badgeMap[p.id];
+                    const badgeHtml = badge ? '<span style="font-size:0.6rem;padding:1px 5px;border-radius:999px;background:rgba(47,214,176,0.15);color:var(--accent);border:1px solid rgba(47,214,176,0.3);margin-left:0.3rem;">' + badge + '</span>' : '';
+                    const ratingColor = p.avgRating >= 8 ? '#4caf50' : p.avgRating >= 6 ? 'var(--accent)' : p.avgRating > 0 ? '#e74c3c' : 'var(--muted)';
+                    html += '<tr style="border-bottom:1px solid var(--line);cursor:pointer;" onclick="location.hash=\'player?id=' + p.id + '\'">' +
+                        '<td style="padding:0.5rem 0.8rem;font-weight:700;color:var(--muted);font-size:0.8rem;">' + (i + 1) + '</td>' +
+                        '<td style="padding:0.5rem 0.8rem;display:flex;align-items:center;">' + avHtml + '<span style="font-weight:600;">' + (p.display_name || 'Player') + badgeHtml + '</span></td>' +
+                        '<td style="padding:0.5rem 0.8rem;font-size:0.85rem;">' + (p.team || '—') + '</td>' +
+                        '<td style="padding:0.5rem 0.8rem;font-size:0.85rem;">' + (p.position || '—') + '</td>' +
+                        '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:600;">' + p.goals + '</td>' +
+                        '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:600;">' + p.assists + '</td>' +
+                        '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:600;">' + p.saves + '</td>' +
+                        '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:600;">' + p.apps + '</td>' +
+                        '<td style="padding:0.5rem 0.8rem;text-align:center;font-weight:700;color:' + ratingColor + ';">' + (p.avgRating > 0 ? p.avgRating : '—') + '</td>' +
+                        '</tr>';
+                });
+                html += '</tbody>';
+                table.innerHTML = html;
+            } catch (e) { console.warn('[player-stats] error:', e); }
         }
 
         const RANK_COLORS = {
@@ -1983,6 +2073,7 @@
                 admin: 'adminPage',
                 rosters: 'rostersPage',
                 freeagents: 'freeAgentsPage',
+                playerstats: 'playerStatsPage',
                 player: 'playerProfilePage',
                 team: 'teamDetailPage'
             };
@@ -2007,6 +2098,7 @@
             adEl.style.display = 'none';
             roEl.style.display = 'none';
             document.getElementById('freeAgentsPage').style.display = 'none';
+            document.getElementById('playerStatsPage').style.display = 'none';
             prEl.style.display = 'none';
             tdEl.style.display = 'none';
 
@@ -2024,6 +2116,9 @@
             } else if (page === 'freeagents') {
                 document.getElementById('freeAgentsPage').style.display = '';
                 renderFreeAgents();
+            } else if (page === 'playerstats') {
+                document.getElementById('playerStatsPage').style.display = '';
+                renderPlayerStats();
             } else if (page.startsWith('player')) {
                 prEl.style.display = '';
                 loadPlayerProfile();
