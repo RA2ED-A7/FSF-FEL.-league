@@ -58,8 +58,8 @@
 
         <div class="stats">
             <div class="stat"><div class="num">5</div><div class="txt" data-i18n="stat_teams">Teams</div></div>
-            <div class="stat"><div class="num">60</div><div class="txt">Players</div></div>
-            <div class="stat"><div class="num">8</div><div class="txt">Game Weeks</div></div>
+            <div class="stat"><div class="num">60</div><div class="txt" data-i18n="stat_players">Players</div></div>
+            <div class="stat"><div class="num">8</div><div class="txt" data-i18n="stat_gameweeks">Game Weeks</div></div>
         </div>
 
         <div class="fixture-tabs">
@@ -70,7 +70,7 @@
 
         <div class="fixture-box" id="fixture1">
             <span class="corner">1. FEL</span>
-            <div class="label">Next Match</div>
+            <div class="label" data-i18n="next_match">Next Match</div>
             <div class="match-row">
                 <div class="team"><span class="crest">N</span><span id="fx1Team1">None</span></div>
                 <div class="score" id="fx1Score">0 - 0</div>
@@ -79,7 +79,7 @@
         </div>
         <div class="fixture-box" id="fixture2" style="display:none;">
             <span class="corner">2. FEL</span>
-            <div class="label">Next Match</div>
+            <div class="label" data-i18n="next_match">Next Match</div>
             <div class="match-row">
                 <div class="team"><span class="crest">N</span><span id="fx2Team1">None</span></div>
                 <div class="score" id="fx2Score">0 - 0</div>
@@ -88,7 +88,7 @@
         </div>
         <div class="fixture-box" id="fixture3" style="display:none;">
             <span class="corner">3. FEL</span>
-            <div class="label">Next Match</div>
+            <div class="label" data-i18n="next_match">Next Match</div>
             <div class="match-row">
                 <div class="team"><span class="crest">N</span><span id="fx3Team1">None</span></div>
                 <div class="score" id="fx3Score">0 - 0</div>
@@ -96,25 +96,25 @@
             </div>
         </div>
 
-        <a class="discord" href="https://discord.gg/9wDJbCf67" target="_blank" rel="noopener">Join Our Discord</a>
+        <a class="discord" href="https://discord.gg/9wDJbCf67" target="_blank" rel="noopener" data-i18n="join_discord">Join Our Discord</a>
 
         <div class="section-tabs">
-            <button class="section-tab active" data-panel="highlights">Highlights</button>
-            <button class="section-tab" data-panel="activity">Activity</button>
+            <button class="section-tab active" data-panel="highlights" data-i18n="tab_highlights">Highlights</button>
+            <button class="section-tab" data-panel="activity" data-i18n="tab_activity">Activity</button>
         </div>
 
         <div id="highlights" class="panel active">
-            <div class="section-title">Season Highlights</div>
+            <div class="section-title" data-i18n="season_highlights">Season Highlights</div>
             <div class="hl-grid">
-                <div class="hl-card"><div class="k">Biggest Win</div><div class="v" id="hlBigWin">--</div><div class="d" id="hlBigWinDesc">Game Week 1</div></div>
-                <div class="hl-card"><div class="k">Top Scorer</div><div class="v" id="hlTopScorer">--</div><div class="d" id="hlTopScorerDesc">0 goals</div></div>
-                <div class="hl-card"><div class="k">Most Assists</div><div class="v" id="hlMostAssists">--</div><div class="d" id="hlMostAssistsDesc">0 assists</div></div>
+                <div class="hl-card"><div class="k" data-i18n="biggest_win">Biggest Win</div><div class="v" id="hlBigWin">--</div><div class="d" id="hlBigWinDesc">Game Week 1</div></div>
+                <div class="hl-card"><div class="k" data-i18n="top_scorer">Top Scorer</div><div class="v" id="hlTopScorer">--</div><div class="d" id="hlTopScorerDesc">0 goals</div></div>
+                <div class="hl-card"><div class="k" data-i18n="most_assists">Most Assists</div><div class="v" id="hlMostAssists">--</div><div class="d" id="hlMostAssistsDesc">0 assists</div></div>
             </div>
 
             <div class="records">
-                <div class="section-title">League Records</div>
+                <div class="section-title" data-i18n="league_records">League Records</div>
                 <div class="records-grid">
-                    <div class="hl-card"><div class="k">First Goal</div><div class="v" id="recFirstGoal">--</div><div class="d" id="recFirstGoalDesc">TBD</div></div>
+                    <div class="hl-card"><div class="k" data-i18n="first_goal">First Goal</div><div class="v" id="recFirstGoal">--</div><div class="d" id="recFirstGoalDesc">TBD</div></div>
                     <div class="hl-card"><div class="k">First Assist</div><div class="v" id="recFirstAssist">--</div><div class="d" id="recFirstAssistDesc">TBD</div></div>
                     <div class="hl-card"><div class="k">First Save</div><div class="v" id="recFirstSave">--</div><div class="d" id="recFirstSaveDesc">TBD</div></div>
                 </div>
