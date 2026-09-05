@@ -1070,11 +1070,12 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 }
 .page-loader.active { opacity: 1; visibility: visible; }
 .spinner {
-    width: 48px; height: 48px; position: relative;
+    width: 80px; height: 80px; position: relative;
     border: 4px solid transparent;
     border-top: 4px solid var(--accent);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+    display: flex; align-items: center; justify-content: center;
 }
 .spinner::after {
     content: '';
@@ -1082,8 +1083,15 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
     border: 4px solid transparent;
     border-bottom: 4px solid var(--accent-2);
     border-radius: 50%;
-    animation: spin 1s linear infinite reverse;
+    animation: spin 1.5s linear infinite reverse;
 }
+.spinner-text {
+    position: relative; z-index: 1;
+    font-size: 1.1rem; font-weight: 800; color: var(--accent);
+    letter-spacing: 2px;
+    animation: counterSpin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+}
+@keyframes counterSpin { to { transform: rotate(-360deg); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes spin { to { transform: rotate(360deg); } }
 
