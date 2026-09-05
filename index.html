@@ -3053,20 +3053,22 @@
         let _loaderPageDone = false;
         let _loaderTimer = null;
         function showLoader() {
+            const el = document.getElementById('pageLoader');
+            if (!el) return;
             _loaderMinDone = false;
             _loaderPageDone = false;
-            const el = document.getElementById('pageLoader');
             el.classList.add('active');
             clearTimeout(_loaderTimer);
             _loaderTimer = setTimeout(function() {
                 _loaderMinDone = true;
                 if (_loaderPageDone) el.classList.remove('active');
-            }, 1200);
+            }, 2500);
         }
         function hideLoader() {
             _loaderPageDone = true;
             if (_loaderMinDone) {
-                document.getElementById('pageLoader').classList.remove('active');
+                const el = document.getElementById('pageLoader');
+                if (el) el.classList.remove('active');
             }
         }
         function animatePage(el) {
