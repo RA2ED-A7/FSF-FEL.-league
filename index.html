@@ -1120,7 +1120,7 @@
                 const rnk = (data.rank || '').toLowerCase();
                 const rnkEl = document.getElementById('statRank');
                 if (RANK_STARS[rnk]) rnkEl.textContent = RANK_STARS[rnk] + ' ' + s(data.rank, '—');
-                document.getElementById('statValue').textContent = '€' + (s(data["Market Value"], 0)).toLocaleString();
+                document.getElementById('statValue').textContent = formatMoney(data["Market Value"]);
                 document.getElementById('statSaves').textContent = s(data.saves, 0);
                 document.getElementById('statLosses').textContent = s(data.Loses, 0);
                 document.getElementById('statApps').textContent = s(data.appearances, 0);
@@ -1221,7 +1221,7 @@
                     const name = p.display_name || 'Player';
                     const av = avatarMap[p.id];
                     const avHtml = av ? '<img src="' + av + '" style="width:22px;height:22px;border-radius:50%;object-fit:cover;margin-right:0.35rem;flex-shrink:0;border:2px solid var(--accent);">' : '';
-                    const html = '<div class="rp" data-tier="' + tier + '" data-pos="' + pos + '" data-team="' + team + '" data-val="' + val + '" data-name="' + name + '" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer;display:flex;align-items:center;"><div class="rp-left" style="display:flex;align-items:center;">' + avHtml + '<span class="rp-name">' + name + '</span><span class="rp-pos">' + posCat + ' · <span class="rp-sub">' + (pos || 'None') + '</span></span></div><div class="rp-right"><span class="rp-team">' + team + '</span><span class="rp-val">€' + val.toLocaleString() + '</span></div></div>';
+                    const html = '<div class="rp" data-tier="' + tier + '" data-pos="' + pos + '" data-team="' + team + '" data-val="' + val + '" data-name="' + name + '" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer;display:flex;align-items:center;"><div class="rp-left" style="display:flex;align-items:center;">' + avHtml + '<span class="rp-name">' + name + loyaltyBadgeHtml(team) + '</span><span class="rp-pos">' + posCat + ' · <span class="rp-sub">' + (pos || 'None') + '</span></span></div><div class="rp-right"><span class="rp-team">' + team + '</span><span class="rp-val">' + formatMoney(val) + '</span></div></div>';
                     const roster = document.querySelector('.rung-roster[data-tier="' + tier + '"]');
                     if (roster) roster.insertAdjacentHTML('beforeend', html);
                 });
@@ -1268,7 +1268,7 @@
                         const val = p["Market Value"] || 0;
                         const av = avatarMap[p.id];
                         const avHtml = av ? '<img src="' + av + '" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;border:2px solid var(--accent);">' : '';
-                        html += '<div class="roster-player" onclick="location.hash=\'player?id=' + p.id + '\'"><span class="roster-rank">#' + (i + 1) + '</span>' + avHtml + '<span class="roster-name">' + (p.display_name || 'Player') + '</span><span class="roster-pos">' + (p.position || 'None') + '</span><span class="roster-val">€' + val.toLocaleString() + '</span></div>';
+                        html += '<div class="roster-player" onclick="location.hash=\'player?id=' + p.id + '\'"><span class="roster-rank">#' + (i + 1) + '</span>' + avHtml + '<span class="roster-name">' + (p.display_name || 'Player') + loyaltyBadgeHtml(p.team) + '</span><span class="roster-pos">' + (p.position || 'None') + '</span><span class="roster-val">' + formatMoney(val) + '</span></div>';
                     });
                     if (teamPlayers.length === 0) html += '<div class="roster-empty">No players yet</div>';
                     html += '</div></div>';
@@ -1303,7 +1303,7 @@
                 const totalValue = players.reduce((s, p) => s + (p["Market Value"] || 0), 0);
                 document.getElementById('faStats').innerHTML =
                     '<div class="fa-stat-box"><div class="fa-stat-val">' + players.length + '</div><div class="fa-stat-lbl">Free Agents</div></div>' +
-                    '<div class="fa-stat-box"><div class="fa-stat-val">€' + totalValue.toLocaleString() + '</div><div class="fa-stat-lbl">Combined Value</div></div>';
+                    '<div class="fa-stat-box"><div class="fa-stat-val">' + formatMoney(totalValue) + '</div><div class="fa-stat-lbl">Combined Value</div></div>';
                 filtered.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
                 if (filtered.length === 0) {
                     document.getElementById('faTable').innerHTML = '<p class="muted" style="text-align:center;padding:2rem;">No results.</p>';
@@ -1314,9 +1314,9 @@
                     const avHtml = av ? '<img src="' + av + '" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;border:2px solid var(--accent);">' : '';
                     return '<div class="fa-row" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer">' +
                     '<span class="fa-rank">#' + (i + 1) + '</span>' + avHtml +
-                    '<span class="fa-name">' + (p.display_name || 'Player') + '</span>' +
+                    '<span class="fa-name">' + (p.display_name || 'Player') + loyaltyBadgeHtml(p.team) + '</span>' +
                     '<span class="fa-pos">' + (p.position || 'None') + '</span>' +
-                    '<span class="fa-val">€' + (p["Market Value"] || 0).toLocaleString() + '</span>' +
+                    '<span class="fa-val">' + formatMoney(p["Market Value"]) + '</span>' +
                     '</div>';
                 }).join('');
             } catch (e) { console.warn('[free-agents] error:', e); }
@@ -1409,7 +1409,7 @@
                     const ratingColor = p.avgRating >= 8 ? '#4caf50' : p.avgRating >= 6 ? 'var(--accent)' : p.avgRating > 0 ? '#e74c3c' : 'var(--muted)';
                     html += '<tr style="border-bottom:1px solid var(--line);cursor:pointer;" onclick="location.hash=\'player?id=' + p.id + '\'">' +
                         '<td style="font-weight:600;font-size:0.82rem;color:var(--muted);">' + (i + 1) + '</td>' +
-                        '<td style="display:flex;align-items:center;">' + avHtml + '<span style="font-weight:600;color:var(--text);">' + (p.display_name || 'Player') + '</span></td>' +
+                        '<td style="display:flex;align-items:center;">' + avHtml + '<span style="font-weight:600;color:var(--text);">' + (p.display_name || 'Player') + loyaltyBadgeHtml(p.team) + '</span></td>' +
                         '<td style="font-size:0.88rem;color:var(--muted);">' + (p.team || '—') + '</td>' +
                         '<td style="font-size:0.88rem;color:var(--muted);">' + (p.position || '—') + '</td>' +
                         '<td style="text-align:center;font-weight:600;font-size:0.9rem;color:var(--text);">' + p.goals + '</td>' +
@@ -1497,7 +1497,7 @@
                     const resultSize = isResult ? '1.8rem' : '1.2rem';
                     const resultWeight = isResult ? '900' : '800';
                     const resultSpacing = isResult ? '4px' : '6px';
-                    const dateStr = match.date ? new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'TBD';
+                    const dateStr = match.date ? formatDate(match.date, true) : 'TBD';
                     html += '<div class="sch-match-card" style="background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:all 0.25s ease;position:relative;" onclick="location.hash=\'schedule-match?gw=' + match.gw + '&idx=' + match.idx + '\'" onmouseenter="this.style.borderColor=\'' + hc + '66\';this.style.boxShadow=\'0 8px 32px \' + hc + \'22\';this.style.transform=\'translateY(-2px)\'" onmouseleave="this.style.borderColor=\'var(--line)\';this.style.boxShadow=\'none\';this.style.transform=\'translateY(0)\'">' +
                         '<div style="background:linear-gradient(135deg,' + hc + '22,transparent 60%);border-bottom:1px solid var(--line);padding:0.7rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">' +
                             '<span style="font-size:0.6rem;font-weight:700;color:' + sColor + ';background:' + sColor + '15;border:1px solid ' + sColor + '33;border-radius:4px;padding:3px 10px;letter-spacing:1px;text-transform:uppercase;">' + status + '</span>' +
@@ -1522,6 +1522,14 @@
                 html += '</div></div>';
             }
             container.innerHTML = html;
+            // Scroll to latest gameweek
+            const s = loadSettings();
+            if (s.scrollLatest !== false) {
+                const cards = container.querySelectorAll('.sch-gw');
+                if (cards.length > 0) {
+                    setTimeout(() => cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+                }
+            }
         }
 
         // ===== Match Detail =====
@@ -1597,7 +1605,7 @@
             const sColor = statusColors[status] || 'var(--muted)';
             const isResult = resultStatuses.includes(status);
             const displayResult = result || (isResult ? '—  —' : 'VS');
-            const dateStr = date ? new Date(date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Date & Time TBD';
+            const dateStr = date ? formatDate(date, true) : 'Date & Time TBD';
 
             let voteCounts = {};
             Object.values(votes).forEach(votedId => { voteCounts[votedId] = (voteCounts[votedId] || 0) + 1; });
@@ -1959,7 +1967,7 @@
                 const sorted = players.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
                 const totalBudget = sorted.reduce((s, p) => s + (p["Market Value"] || 0), 0);
                 document.getElementById('tdPlayerCount').textContent = players.length + ' Players';
-                document.getElementById('tdBudget').textContent = '€' + (parseInt(map['team-' + teamName + '-budget']) || 250000000).toLocaleString();
+                document.getElementById('tdBudget').textContent = formatMoney(map['team-' + teamName + '-budget'] || 250000000);
                 const team = TEAMS.find(t => t.name === teamName);
                 document.getElementById('tdTeamDiv').textContent = team ? team.division : '—';
                 const rosterDiv = document.getElementById('tdRoster');
@@ -1975,7 +1983,7 @@
                         avHtml +
                         '<span class="td-roster-name">#' + (i + 1) + ' ' + (p.display_name || 'Player') + badgeHtml + '</span>' +
                         '<span class="td-roster-pos">' + (p.position || 'None') + '</span>' +
-                        '<span class="td-roster-val">€' + (p["Market Value"] || 0).toLocaleString() + '</span>' +
+                        '<span class="td-roster-val">' + formatMoney(p["Market Value"]) + '</span>' +
                         '</div>';
                     }).join('') + '</div>';
                 }
@@ -2163,7 +2171,7 @@
                 document.getElementById('pStatAssists').textContent = s(p.assists, 0);
                 document.getElementById('pStatWins').textContent = s(p.Wins, 0);
                 document.getElementById('pStatLosses').textContent = s(p.Loses, 0);
-                document.getElementById('pStatValue').textContent = '€' + (s(p["Market Value"], 0)).toLocaleString();
+                document.getElementById('pStatValue').textContent = formatMoney(p["Market Value"]);
                 document.getElementById('pStatSaves').textContent = s(p.saves, 0);
                 document.getElementById('pStatMVP').textContent = s(p.MVP_Awards, 0);
                 document.getElementById('pStatApps').textContent = s(p.appearances, 0);
@@ -3127,6 +3135,7 @@
                 glow_intensity: 'Glow Intensity:', bg_pattern: 'Background Pattern:', compact_numbers: 'Compact Numbers:',
                 scroll_to_latest: 'Scroll to Latest:', loyalty_badge: 'Team Loyalty Badge:', timezone: 'Timezone:',
                 date_format: 'Date Format:', page_transition: 'Page Transition:', back_to_top: 'Back to Top Button:', offline_mode: 'Offline Mode:',
+                header_blur: 'Header Blur:', alt_rows: 'Alternating Rows:', card_blur: 'Card Blur:',
                 nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule',
                 nav_teams: 'Teams', nav_rankings: 'Rankings', nav_rosters: 'Rosters', nav_playerstats: 'Player Stats',
                 nav_market: 'Market', nav_freeagents: 'Free Agents', nav_standings: 'Standings', nav_changelog: 'Update Log',
@@ -3191,6 +3200,7 @@
                 glow_intensity: 'Intensit\u00e9 des Lueurs:', bg_pattern: 'Motif de Fond:', compact_numbers: 'Nombres Compacts:',
                 scroll_to_latest: 'D\u00e9filer vers le Dernier:', loyalty_badge: 'Badge de Loyalit\u00e9:', timezone: 'Fuseau Horaire:',
                 date_format: 'Format de Date:', page_transition: 'Transition de Page:', back_to_top: 'Bouton Retour en Haut:', offline_mode: 'Mode Hors Ligne:',
+                header_blur: 'Flou d\'En-t\u00eate:', alt_rows: 'Lignes Altern\u00e9es:', card_blur: 'Flou des Cartes:',
                 nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier',
                 nav_teams: '\u00c9quipes', nav_rankings: 'Classement', nav_rosters: 'Effectifs', nav_playerstats: 'Stats Joueurs',
                 nav_market: 'March\u00e9', nav_freeagents: 'Agents Libres', nav_standings: 'Classement G\u00e9n\u00e9ral', nav_changelog: 'Journal des MAJ',
@@ -3700,7 +3710,7 @@
             const pageData = bugReportsData.slice(start, start + BUG_REPORTS_PER_PAGE);
             if (pageData.length === 0) { container.innerHTML = '<p class="muted" style="font-size:0.85rem;">No bug reports yet.</p>'; return; }
             container.innerHTML = pageData.map((r, i) => {
-                const date = r.created_at ? new Date(r.created_at).toLocaleString() : 'Unknown date';
+                const date = r.created_at ? formatDate(r.created_at, true) : 'Unknown date';
                 const idx = start + i;
                 return '<div id="br-card-' + idx + '" style="background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:0.8rem 1rem;transition:opacity 0.4s,background 0.4s;">' +
                     '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.4rem;">' +
@@ -3924,12 +3934,15 @@
         function applyDateFormat(fmt) {
             document.getElementById('dateFormatLabel').textContent = fmt;
         }
-        function formatDate(dateStr) {
+        function formatDate(dateStr, includeTime) {
             if (!dateStr) return '';
             const s = loadSettings();
             const fmt = s.dateFormat || 'DD/MM/YYYY';
+            const tz = s.timezone || 'UTC';
+            const tzOffset = parseInt(tz.replace('UTC', '')) || 0;
             const d = new Date(dateStr);
             if (isNaN(d)) return dateStr;
+            const local = new Date(d.getTime() + tzOffset * 3600000);
             if (fmt === 'Relative') {
                 const now = new Date();
                 const diff = Math.floor((now - d) / 1000);
@@ -3937,14 +3950,40 @@
                 if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
                 if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
                 if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
-                return d.toLocaleDateString();
+                return local.toLocaleDateString();
             }
-            const dd = String(d.getDate()).padStart(2, '0');
-            const mm = String(d.getMonth() + 1).padStart(2, '0');
-            const yyyy = d.getFullYear();
-            if (fmt === 'MM/DD/YYYY') return mm + '/' + dd + '/' + yyyy;
-            if (fmt === 'YYYY-MM-DD') return yyyy + '-' + mm + '-' + dd;
-            return dd + '/' + mm + '/' + yyyy;
+            const dd = String(local.getUTCDate()).padStart(2, '0');
+            const mm = String(local.getUTCMonth() + 1).padStart(2, '0');
+            const yyyy = local.getUTCFullYear();
+            let datePart;
+            if (fmt === 'MM/DD/YYYY') datePart = mm + '/' + dd + '/' + yyyy;
+            else if (fmt === 'YYYY-MM-DD') datePart = yyyy + '-' + mm + '-' + dd;
+            else datePart = dd + '/' + mm + '/' + yyyy;
+            if (includeTime) {
+                const hh = String(local.getUTCHours()).padStart(2, '0');
+                const min = String(local.getUTCMinutes()).padStart(2, '0');
+                return datePart + ' ' + hh + ':' + min;
+            }
+            return datePart;
+        }
+
+        function formatMoney(val) {
+            val = parseInt(val) || 0;
+            const s = loadSettings();
+            if (s.compactNums) {
+                if (val >= 1000000000) return '€' + (val / 1000000000).toFixed(1) + 'B';
+                if (val >= 1000000) return '€' + (val / 1000000).toFixed(1) + 'M';
+                if (val >= 1000) return '€' + (val / 1000).toFixed(0) + 'K';
+            }
+            return '€' + val.toLocaleString();
+        }
+
+        function loyaltyBadgeHtml(teamName) {
+            const s = loadSettings();
+            if (s.loyaltyBadge !== 'On' || !teamName || teamName === 'No Team') return '';
+            const c = getTeamColor(teamName);
+            if (!c) return '';
+            return '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + c + ';margin-left:0.3rem;vertical-align:middle;box-shadow:0 0 4px ' + c + ';"></span>';
         }
 
         // Offline Mode
@@ -3957,9 +3996,42 @@
         function applyOfflineMode(on) {
             document.body.classList.toggle('offline-mode', on);
             document.getElementById('offlineModeLabel').textContent = on ? 'On' : 'Off';
-            if (on && 'serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
-            }
+        }
+
+        // Header Blur
+        function toggleHeaderBlur() {
+            const s = loadSettings();
+            s.headerBlur = s.headerBlur === undefined ? true : !s.headerBlur;
+            saveSettings(s);
+            applyHeaderBlur(s.headerBlur);
+        }
+        function applyHeaderBlur(on) {
+            document.body.classList.toggle('header-blur', on);
+            document.getElementById('headerBlurLabel').textContent = on ? 'On' : 'Off';
+        }
+
+        // Alternating Rows
+        function toggleAltRows() {
+            const s = loadSettings();
+            s.altRows = s.altRows === undefined ? true : !s.altRows;
+            saveSettings(s);
+            applyAltRows(s.altRows);
+        }
+        function applyAltRows(on) {
+            document.body.classList.toggle('alt-rows', on);
+            document.getElementById('altRowsLabel').textContent = on ? 'On' : 'Off';
+        }
+
+        // Card Blur
+        function toggleCardBlur() {
+            const s = loadSettings();
+            s.cardBlur = s.cardBlur === undefined ? false : !s.cardBlur;
+            saveSettings(s);
+            applyCardBlur(s.cardBlur);
+        }
+        function applyCardBlur(on) {
+            document.body.classList.toggle('card-blur', on);
+            document.getElementById('cardBlurLabel').textContent = on ? 'On' : 'Off';
         }
 
         // Save all settings
@@ -3994,6 +4066,9 @@
             applyBackToTop(s.backToTop !== undefined ? s.backToTop : true);
             applyDateFormat(s.dateFormat || 'DD/MM/YYYY');
             applyOfflineMode(s.offlineMode !== undefined ? s.offlineMode : true);
+            applyHeaderBlur(s.headerBlur !== undefined ? s.headerBlur : true);
+            applyAltRows(s.altRows !== undefined ? s.altRows : true);
+            applyCardBlur(s.cardBlur || false);
 
             // Back to Top scroll listener
             var btt = document.getElementById('backToTopBtn');

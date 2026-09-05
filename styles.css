@@ -1239,3 +1239,44 @@ body.offline-mode::after {
     letter-spacing: 1px; z-index: 50;
 }
 body:not(.offline-mode) .offline-banner { display: none; }
+
+/* Header Blur */
+header { transition: backdrop-filter 0.3s, background 0.3s; }
+body.header-blur header { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); background: rgba(7,13,15,0.7) !important; }
+body.light-mode.header-blur header { background: rgba(255,255,255,0.7) !important; }
+
+/* Alternating Rows */
+body.alt-rows .rank-row:nth-child(even),
+body.alt-rows .roster-row:nth-child(even),
+body.alt-rows .lb-row:nth-child(even),
+body.alt-rows .admin-bug-card:nth-child(even),
+body.alt-rows .career-section:nth-child(even),
+body.alt-rows .sch-match-card:nth-child(even) { background: rgba(255,255,255,0.03); }
+body.light-mode.alt-rows .rank-row:nth-child(even),
+body.light-mode.alt-rows .roster-row:nth-child(even),
+body.light-mode.alt-rows .lb-row:nth-child(even),
+body.light-mode.alt-rows .sch-match-card:nth-child(even) { background: rgba(0,0,0,0.03); }
+
+/* Card Blur */
+body.card-blur .rank-card,
+body.card-blur .p-card,
+body.card-blur .fixture-box,
+body.card-blur .stat,
+body.card-blur .hl-card,
+body.card-blur .team-card,
+body.card-blur .sch-match-card,
+body.card-blur .cl-box {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: rgba(14,26,29,0.6) !important;
+}
+body.light-mode.card-blur .rank-card,
+body.light-mode.card-blur .p-card,
+body.light-mode.card-blur .fixture-box,
+body.light-mode.card-blur .stat,
+body.light-mode.card-blur .hl-card,
+body.light-mode.card-blur .team-card,
+body.light-mode.card-blur .sch-match-card,
+body.light-mode.card-blur .cl-box {
+    background: rgba(255,255,255,0.6) !important;
+}
