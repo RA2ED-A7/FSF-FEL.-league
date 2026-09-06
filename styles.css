@@ -1252,7 +1252,7 @@ body.trans-instant * { animation-duration: 0s !important; }
 
 /* Back to Top Button */
 .back-to-top {
-    position: fixed; bottom: 80px; right: 20px; width: 42px; height: 42px;
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); width: 42px; height: 42px;
     border-radius: 50%; background: var(--accent); color: #06322a;
     border: none; font-size: 1.2rem; font-weight: 700; cursor: pointer;
     z-index: 90; opacity: 0; pointer-events: none;
@@ -1260,18 +1260,18 @@ body.trans-instant * { animation-duration: 0s !important; }
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 .back-to-top.visible { opacity: 1; pointer-events: auto; }
-.back-to-top:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(47,214,176,0.4); }
+.back-to-top:hover { transform: translateX(-50%) translateY(-3px); box-shadow: 0 6px 20px rgba(47,214,176,0.4); }
 body.no-backtotop .back-to-top { display: none !important; }
 
 /* Offline Mode Indicator */
-body.offline-mode::after {
-    content: 'OFFLINE MODE';
+.offline-banner {
+    display: none;
     position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
     background: #f59e0b; color: #000; padding: 0.3rem 1rem;
     border-radius: 20px; font-size: 0.7rem; font-weight: 700;
     letter-spacing: 1px; z-index: 50;
 }
-body:not(.offline-mode) .offline-banner { display: none; }
+body.offline-mode .offline-banner { display: block; }
 
 /* Header Blur */
 header { transition: backdrop-filter 0.3s, background 0.3s; }
@@ -1279,16 +1279,17 @@ body.header-blur header { backdrop-filter: blur(12px); -webkit-backdrop-filter: 
 body.light-mode.header-blur header { background: rgba(255,255,255,0.7) !important; }
 
 /* Alternating Rows */
-body.alt-rows .rank-row:nth-child(even),
-body.alt-rows .roster-row:nth-child(even),
-body.alt-rows .lb-row:nth-child(even),
-body.alt-rows .admin-bug-card:nth-child(even),
-body.alt-rows .career-section:nth-child(even),
-body.alt-rows .sch-match-card:nth-child(even) { background: rgba(255,255,255,0.03); }
-body.light-mode.alt-rows .rank-row:nth-child(even),
-body.light-mode.alt-rows .roster-row:nth-child(even),
-body.light-mode.alt-rows .lb-row:nth-child(even),
-body.light-mode.alt-rows .sch-match-card:nth-child(even) { background: rgba(0,0,0,0.03); }
+body.alt-rows .rp:nth-child(even),
+body.alt-rows .roster-player:nth-child(even),
+body.alt-rows .sch-match-card:nth-child(even),
+body.alt-rows .td-roster-row:nth-child(even),
+body.alt-rows .fa-row:nth-child(even),
+body.alt-rows .admin-bug-card:nth-child(even) { background: rgba(255,255,255,0.03); }
+body.light-mode.alt-rows .rp:nth-child(even),
+body.light-mode.alt-rows .roster-player:nth-child(even),
+body.light-mode.alt-rows .sch-match-card:nth-child(even),
+body.light-mode.alt-rows .td-roster-row:nth-child(even),
+body.light-mode.alt-rows .fa-row:nth-child(even) { background: rgba(0,0,0,0.03); }
 
 /* Card Blur */
 body.card-blur .rank-card,
