@@ -949,6 +949,10 @@
             <div class="settings-item" id="settingScrollLatest" onclick="toggleScrollLatest()">
                 <span data-i18n="scroll_to_latest">Scroll to Latest:</span> <span id="scrollLatestLabel">On</span>
             </div>
+            <div class="settings-sub" id="scrollLatestSub" style="display:none;padding:0.5rem 0 0.5rem 1rem;border-bottom:1px solid var(--line);">
+                <span data-i18n="scroll_to_gw" style="font-size:0.8rem;color:var(--muted);">Scroll to Gameweek:</span>
+                <div style="display:flex;gap:0.3rem;margin-top:0.4rem;flex-wrap:wrap;" id="scrollGWButtons"></div>
+            </div>
             <div class="settings-item" id="settingLoyaltyBadge" onclick="cycleLoyaltyBadge()">
                 <span data-i18n="loyalty_badge">Team Loyalty Badge:</span> <span id="loyaltyBadgeLabel">Off</span>
             </div>
@@ -1531,12 +1535,17 @@
                 html += '</div></div>';
             }
             container.innerHTML = html;
-            // Scroll to latest gameweek
+            // Scroll to gameweek
             const s = loadSettings();
             if (s.scrollLatest !== false) {
                 const cards = container.querySelectorAll('.sch-gw');
                 if (cards.length > 0) {
-                    setTimeout(() => cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+                    let targetIdx = cards.length - 1;
+                    if (s.scrollGW && s.scrollGW !== 'latest') {
+                        const gwNum = parseInt(s.scrollGW);
+                        targetIdx = Math.max(0, Math.min(gwNum - 1, cards.length - 1));
+                    }
+                    setTimeout(() => cards[targetIdx].scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
                 }
             }
         }
@@ -3142,7 +3151,7 @@
                 bg_glows: 'Background Glows:', font_size: 'Font Size:',
                 settings_tab_general: 'General', settings_tab_display: 'Display', settings_tab_gameday: 'Game Day',
                 glow_intensity: 'Glow Intensity:', bg_pattern: 'Background Pattern:', compact_numbers: 'Compact Numbers:',
-                scroll_to_latest: 'Scroll to Latest:', loyalty_badge: 'Team Loyalty Badge:', timezone: 'Timezone:',
+                scroll_to_latest: 'Scroll to Latest:', scroll_to_gw: 'Scroll to Gameweek:', loyalty_badge: 'Team Loyalty Badge:', timezone: 'Timezone:',
                 date_format: 'Date Format:', page_transition: 'Page Transition:', back_to_top: 'Back to Top Button:', offline_mode: 'Offline Mode:',
                 header_blur: 'Header Blur:', alt_rows: 'Alternating Rows:', card_blur: 'Card Blur:',
                 nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule',
@@ -3207,7 +3216,7 @@
                 bg_glows: 'Lueurs de Fond:', font_size: 'Taille du Texte:',
                 settings_tab_general: 'G\u00e9n\u00e9ral', settings_tab_display: 'Affichage', settings_tab_gameday: 'Jour de Match',
                 glow_intensity: 'Intensit\u00e9 des Lueurs:', bg_pattern: 'Motif de Fond:', compact_numbers: 'Nombres Compacts:',
-                scroll_to_latest: 'D\u00e9filer vers le Dernier:', loyalty_badge: 'Badge de Loyalit\u00e9:', timezone: 'Fuseau Horaire:',
+                scroll_to_latest: 'D\u00e9filer vers le Dernier:', scroll_to_gw: 'D\u00e9filer vers la Journ\u00e9e:', loyalty_badge: 'Badge de Loyalit\u00e9:', timezone: 'Fuseau Horaire:',
                 date_format: 'Format de Date:', page_transition: 'Transition de Page:', back_to_top: 'Bouton Retour en Haut:', offline_mode: 'Mode Hors Ligne:',
                 header_blur: 'Flou d\'En-t\u00eate:', alt_rows: 'Lignes Altern\u00e9es:', card_blur: 'Flou des Cartes:',
                 nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier',
@@ -3918,6 +3927,30 @@
         }
         function applyScrollLatest(on) {
             document.getElementById('scrollLatestLabel').textContent = on ? 'On' : 'Off';
+            const sub = document.getElementById('scrollLatestSub');
+            if (on) {
+                sub.style.display = 'block';
+                renderScrollGWButtons();
+            } else {
+                sub.style.display = 'none';
+            }
+        }
+        function renderScrollGWButtons() {
+            const s = loadSettings();
+            const current = s.scrollGW || 'latest';
+            const container = document.getElementById('scrollGWButtons');
+            if (!container) return;
+            let html = '<button class="settings-sub-btn' + (current === 'latest' ? ' active' : '') + '" onclick="setScrollGW(\'latest\')">Latest</button>';
+            for (let i = 1; i <= 7; i++) {
+                html += '<button class="settings-sub-btn' + (current === String(i) ? ' active' : '') + '" onclick="setScrollGW(\'' + i + '\')">GW' + i + '</button>';
+            }
+            container.innerHTML = html;
+        }
+        function setScrollGW(gw) {
+            const s = loadSettings();
+            s.scrollGW = gw;
+            saveSettings(s);
+            renderScrollGWButtons();
         }
 
         // Team Loyalty Badge

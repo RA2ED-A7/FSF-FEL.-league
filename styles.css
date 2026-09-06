@@ -1198,6 +1198,14 @@ html.fs-large { font-size: 19px; }
 /* Settings item hover */
 .settings-item { user-select: none; }
 .settings-item span:last-child { color: var(--accent); font-weight: 600; }
+.settings-sub { transition: all 0.25s ease; overflow: hidden; }
+.settings-sub-btn {
+    padding: 0.3rem 0.7rem; border-radius: 6px; border: 1px solid var(--line);
+    background: transparent; color: var(--muted); font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+}
+.settings-sub-btn:hover { border-color: var(--accent); color: var(--text); }
+.settings-sub-btn.active { background: var(--accent); color: #06322a; border-color: var(--accent); }
 .settings-save-btn {
     width: 100%;
     margin-top: 1.5rem;
