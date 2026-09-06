@@ -3151,7 +3151,7 @@
                 bg_glows: 'Background Glows:', font_size: 'Font Size:',
                 settings_tab_general: 'General', settings_tab_display: 'Display', settings_tab_gameday: 'Game Day',
                 glow_intensity: 'Glow Intensity:', bg_pattern: 'Background Pattern:', compact_numbers: 'Compact Numbers:',
-                scroll_to_latest: 'Scroll to Latest:', scroll_to_gw: 'Scroll to Gameweek:', loyalty_badge: 'Team Loyalty Badge:', timezone: 'Timezone:',
+                scroll_to_latest: 'Scroll to Latest:', scroll_to_gw: 'Scroll to Gameweek:', loyalty_badge: 'Team Loyalty Badge:', no_team_msg: 'No team assigned!', timezone: 'Timezone:',
                 date_format: 'Date Format:', page_transition: 'Page Transition:', back_to_top: 'Back to Top Button:', offline_mode: 'Offline Mode:',
                 header_blur: 'Header Blur:', alt_rows: 'Alternating Rows:', card_blur: 'Card Blur:',
                 nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule',
@@ -3216,7 +3216,7 @@
                 bg_glows: 'Lueurs de Fond:', font_size: 'Taille du Texte:',
                 settings_tab_general: 'G\u00e9n\u00e9ral', settings_tab_display: 'Affichage', settings_tab_gameday: 'Jour de Match',
                 glow_intensity: 'Intensit\u00e9 des Lueurs:', bg_pattern: 'Motif de Fond:', compact_numbers: 'Nombres Compacts:',
-                scroll_to_latest: 'D\u00e9filer vers le Dernier:', scroll_to_gw: 'D\u00e9filer vers la Journ\u00e9e:', loyalty_badge: 'Badge de Loyalit\u00e9:', timezone: 'Fuseau Horaire:',
+                scroll_to_latest: 'D\u00e9filer vers le Dernier:', scroll_to_gw: 'D\u00e9filer vers la Journ\u00e9e:', loyalty_badge: 'Badge de Loyalit\u00e9:', no_team_msg: 'Aucune \u00e9quipe assign\u00e9e !', timezone: 'Fuseau Horaire:',
                 date_format: 'Format de Date:', page_transition: 'Transition de Page:', back_to_top: 'Bouton Retour en Haut:', offline_mode: 'Mode Hors Ligne:',
                 header_blur: 'Flou d\'En-t\u00eate:', alt_rows: 'Lignes Altern\u00e9es:', card_blur: 'Flou des Cartes:',
                 nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier',
@@ -3957,6 +3957,19 @@
         function cycleLoyaltyBadge() {
             const s = loadSettings();
             const current = s.loyaltyBadge || 'Off';
+            if (current === 'Off') {
+                // Check if user has a team
+                const teamEl = document.getElementById('statTeam');
+                const teamName = teamEl ? teamEl.textContent : '';
+                if (!teamName || teamName === '—' || teamName === 'No Team') {
+                    const msg = document.getElementById('loyaltyBadgeLabel');
+                    const orig = msg.textContent;
+                    msg.textContent = (I18N[s.language || 'English'] || I18N['English']).no_team_msg || 'No team assigned!';
+                    msg.style.color = '#f59e0b';
+                    setTimeout(() => { msg.textContent = orig; msg.style.color = ''; }, 2000);
+                    return;
+                }
+            }
             s.loyaltyBadge = current === 'Off' ? 'On' : 'Off';
             saveSettings(s);
             applyLoyaltyBadge(s.loyaltyBadge);
