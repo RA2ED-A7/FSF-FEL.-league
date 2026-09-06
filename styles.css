@@ -1188,7 +1188,7 @@ body.bg-grid::after { background-image: linear-gradient(rgba(47,214,176,0.04) 1p
 body.compact-nums .stat-val { font-size: 1.1rem; }
 
 /* Loyalty Badge */
-body.loyalty-badge .user-name::after { content: ' ⭐'; font-size: 0.7rem; }
+body.loyalty-badge #userName::after { content: ' ⭐'; font-size: 0.7rem; }
 
 /* Font Size */
 html.fs-small { font-size: 13px; }
@@ -1216,9 +1216,37 @@ html.fs-large { font-size: 19px; }
 .settings-save-btn.saved { background: var(--good); }
 
 /* Page Transitions */
-body.trans-fade #mainContent { animation: fadeIn 0.3s ease both; }
-body.trans-slide #mainContent { animation: slideUp 0.3s ease both; }
-body.trans-instant #mainContent { animation: none; }
+body.trans-fade main:not([style*="display: none"]),
+body.trans-fade section:not([style*="display: none"]),
+body.trans-fade .change-page:not([style*="display: none"]),
+body.trans-fade .sign-page:not([style*="display: none"]),
+body.trans-fade .rank-page:not([style*="display: none"]),
+body.trans-fade .nf-page:not([style*="display: none"]),
+body.trans-fade #careerPage:not([style*="display: none"]),
+body.trans-fade #adminPage:not([style*="display: none"]),
+body.trans-fade #rostersPage:not([style*="display: none"]),
+body.trans-fade #freeAgentsPage:not([style*="display: none"]),
+body.trans-fade #playerStatsPage:not([style*="display: none"]),
+body.trans-fade #schedulePage:not([style*="display: none"]),
+body.trans-fade #matchDetailPage:not([style*="display: none"]),
+body.trans-fade #playerProfilePage:not([style*="display: none"]),
+body.trans-fade #teamDetailPage:not([style*="display: none"]) { animation: fadeIn 0.3s ease both; }
+body.trans-slide main:not([style*="display: none"]),
+body.trans-slide section:not([style*="display: none"]),
+body.trans-slide .change-page:not([style*="display: none"]),
+body.trans-slide .sign-page:not([style*="display: none"]),
+body.trans-slide .rank-page:not([style*="display: none"]),
+body.trans-slide .nf-page:not([style*="display: none"]),
+body.trans-slide #careerPage:not([style*="display: none"]),
+body.trans-slide #adminPage:not([style*="display: none"]),
+body.trans-slide #rostersPage:not([style*="display: none"]),
+body.trans-slide #freeAgentsPage:not([style*="display: none"]),
+body.trans-slide #playerStatsPage:not([style*="display: none"]),
+body.trans-slide #schedulePage:not([style*="display: none"]),
+body.trans-slide #matchDetailPage:not([style*="display: none"]),
+body.trans-slide #playerProfilePage:not([style*="display: none"]),
+body.trans-slide #teamDetailPage:not([style*="display: none"]) { animation: slideUp 0.3s ease both; }
+body.trans-instant * { animation-duration: 0s !important; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 

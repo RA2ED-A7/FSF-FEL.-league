@@ -1486,7 +1486,7 @@
             let html = '';
             for (let gw = 1; gw <= 7; gw++) {
                 const gwMatches = matchData.filter(m => m.gw === gw);
-                html += '<div style="margin-bottom:3.5rem;">' +
+                html += '<div class="sch-gw" style="margin-bottom:3.5rem;">' +
                     '<div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1.5rem;">' +
                         '<div style="font-size:0.85rem;font-weight:800;color:var(--accent);background:rgba(47,214,176,0.08);border:1px solid rgba(47,214,176,0.2);border-radius:6px;padding:4px 14px;letter-spacing:0.5px;">GW ' + gw + '</div>' +
                         '<div style="flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);"></div>' +
