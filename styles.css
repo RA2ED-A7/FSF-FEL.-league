@@ -138,6 +138,66 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
     width: 80px; height: 80px; object-fit: contain;
     filter: drop-shadow(0 4px 12px rgba(47, 214, 176, 0.3));
 }
+
+/* FEL Logo */
+.fel-logo {
+    position: relative; width: 120px; height: 130px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.wreath {
+    position: absolute; top: 0; width: 50px; height: 110px;
+}
+.wreath-left { left: 0; }
+.wreath-right { right: 0; transform: scaleX(-1); }
+.leaf {
+    position: absolute; width: 14px; height: 26px;
+    background: #2e7d32; border-radius: 0 70% 0 70%;
+    transform-origin: bottom center;
+}
+.wreath-left .leaf-1 { left: 18px; top: 0; transform: rotate(-30deg); }
+.wreath-left .leaf-2 { left: 10px; top: 16px; transform: rotate(-25deg); }
+.wreath-left .leaf-3 { left: 5px; top: 34px; transform: rotate(-15deg); }
+.wreath-left .leaf-4 { left: 3px; top: 52px; transform: rotate(-5deg); }
+.wreath-left .leaf-5 { left: 5px; top: 70px; transform: rotate(5deg); }
+.wreath-left .leaf-6 { left: 10px; top: 86px; transform: rotate(15deg); }
+.wreath-left .leaf-7 { left: 18px; top: 100px; transform: rotate(25deg); }
+.wreath-right .leaf-1 { left: 18px; top: 0; transform: rotate(-30deg); }
+.wreath-right .leaf-2 { left: 10px; top: 16px; transform: rotate(-25deg); }
+.wreath-right .leaf-3 { left: 5px; top: 34px; transform: rotate(-15deg); }
+.wreath-right .leaf-4 { left: 3px; top: 52px; transform: rotate(-5deg); }
+.wreath-right .leaf-5 { left: 5px; top: 70px; transform: rotate(5deg); }
+.wreath-right .leaf-6 { left: 10px; top: 86px; transform: rotate(15deg); }
+.wreath-right .leaf-7 { left: 18px; top: 100px; transform: rotate(25deg); }
+.fel-text {
+    position: relative; z-index: 2;
+    font-size: 2rem; font-weight: 900; color: #2e7d32;
+    letter-spacing: 4px; line-height: 1; margin-top: 12px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.ball {
+    position: relative; z-index: 2;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; border: 2px solid #2e7d32;
+    margin-top: 2px; overflow: hidden;
+}
+.ball-patch {
+    position: absolute; top: 3px; left: 50%; transform: translateX(-50%);
+    width: 8px; height: 6px; background: #2e7d32;
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+}
+.ball-patch.bp-2 {
+    top: auto; bottom: 2px; left: 2px; transform: none;
+    width: 6px; height: 5px;
+}
+.ball-patch.bp-3 {
+    top: auto; bottom: 2px; left: auto; right: 2px; transform: none;
+    width: 6px; height: 5px;
+}
+.est-text {
+    position: relative; z-index: 2;
+    font-size: 0.55rem; font-weight: 700; color: #2e7d32;
+    letter-spacing: 3px; margin-top: 1px;
+}
 .region { font-size: 0.75rem; color: var(--muted); letter-spacing: 1px; }
 
 /* Fixture tabs + box */
