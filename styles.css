@@ -134,6 +134,10 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
     font-size: 1.5rem; font-weight: 800; color: #06322a;
     box-shadow: 0 8px 24px rgba(47, 214, 176, 0.35);
 }
+.logo-img {
+    width: 80px; height: 80px; object-fit: contain;
+    filter: drop-shadow(0 4px 12px rgba(47, 214, 176, 0.3));
+}
 .region { font-size: 0.75rem; color: var(--muted); letter-spacing: 1px; }
 
 /* Fixture tabs + box */
