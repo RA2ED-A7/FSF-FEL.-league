@@ -122,7 +122,7 @@
 
         <div id="activity" class="panel">
             <div class="section-title">Activity</div>
-            <p style="color:var(--muted)">No recent activity yet.</p>
+            <p class="empty-state">No recent activity yet.</p>
         </div>
 
         <div class="gw">
@@ -462,7 +462,7 @@
             <div class="td-section">
                 <h3>Next Fixture</h3>
                 <div id="tdFixture" class="td-fixture">
-                    <p class="muted">No fixture scheduled.</p>
+                    <p class="empty-state">No fixture scheduled.</p>
                 </div>
             </div>
         </div>
@@ -470,7 +470,7 @@
             <div class="td-section">
                 <h3>Points Trajectory</h3>
                 <div class="td-traj-box" id="tdTrajectory">
-                    <p class="muted">No data yet.</p>
+                    <p class="empty-state">No data yet.</p>
                 </div>
             </div>
             <div class="td-section">
@@ -501,7 +501,7 @@
             <div class="td-section">
                 <h3>Transfer History</h3>
                 <div id="tdTransfersList">
-                    <p class="muted">No transfers yet.</p>
+                    <p class="empty-state">No transfers yet.</p>
                 </div>
             </div>
         </div>
@@ -1293,7 +1293,7 @@
                         const avHtml = av ? '<img src="' + av + '" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;border:2px solid var(--accent);">' : '';
                         html += '<div class="roster-player" onclick="location.hash=\'player?id=' + p.id + '\'"><span class="roster-rank">#' + (i + 1) + '</span>' + avHtml + '<span class="roster-name">' + (p.display_name || 'Player') + loyaltyBadgeHtml(p.team) + '</span><span class="roster-pos">' + (p.position || 'None') + '</span><span class="roster-val">' + formatMoney(val) + '</span></div>';
                     });
-                    if (teamPlayers.length === 0) html += '<div class="roster-empty">No players yet</div>';
+                    if (teamPlayers.length === 0) html += '<div class="empty-state">No players yet</div>';
                     html += '</div></div>';
                     grid.insertAdjacentHTML('beforeend', html);
                 });
@@ -1309,7 +1309,7 @@
             try {
                 const { data: players } = await supabaseClient.from('Player').select('*').eq('team', '');
                 if (!players || players.length === 0) {
-                    document.getElementById('faTable').innerHTML = '<p class="muted" style="text-align:center;padding:2rem;">No free agents available.</p>';
+                    document.getElementById('faTable').innerHTML = '<p class="empty-state">No free agents available.</p>';
                     document.getElementById('faStats').innerHTML = '';
                     return;
                 }
