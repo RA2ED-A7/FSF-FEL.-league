@@ -2212,7 +2212,7 @@
                 try { tTransfers = JSON.parse(map['team-' + teamName + '-transfers'] || '[]'); } catch (e) {}
                 const tlDiv = document.getElementById('tdTransfersList');
                 if (tTransfers.length === 0) {
-                    tlDiv.innerHTML = '<p class="muted">No transfers yet.</p>';
+                    tlDiv.innerHTML = '<p class="empty-state">No transfers yet.</p>';
                 } else {
                     const typeColors = { 'Signing': '#4caf50', 'Trade': '#2196f3', 'Loan': '#ff9800', 'Release': '#f44336', 'Free Agency': '#9e9e9e' };
                     tlDiv.innerHTML = '<div class="td-transfers-list">' + tTransfers.map(t => {
@@ -2228,7 +2228,7 @@
             const box = document.getElementById('tdTrajectory');
             const raw = map['team-' + teamName + '-trajectory'] || '0,0';
             const points = raw ? raw.split(',').map(Number).filter(n => !isNaN(n)) : [];
-            if (points.length < 2) { box.innerHTML = '<p class="muted">No trajectory data. Add comma-separated points in admin (e.g. "0,3,6,9,12").</p>'; return; }
+            if (points.length < 2) { box.innerHTML = '<p class="empty-state">No trajectory data. Add comma-separated points in admin (e.g. "0,3,6,9,12").</p>'; return; }
             const canvas = document.createElement('canvas');
             canvas.className = 'td-traj-canvas';
             box.innerHTML = '';
