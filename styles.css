@@ -1028,6 +1028,10 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .sch-match-card { position: relative; }
 .sch-match-card:hover { transform: translateY(-2px); }
 
+.thisgw-page { max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; }
+.tgw-match-card { position: relative; }
+.tgw-match-card:hover { transform: translateY(-2px); }
+
 /* Settings Sidebar */
 .settings-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100;
@@ -1132,7 +1136,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .page-enter-delay-3 { animation: fadeSlideUp 0.4s ease 0.3s both; }
 
 /* Card hover animations */
-.rank-card, .p-card, .fixture-box, .stat, .hl-card, .team-card, .sch-match-card {
+.rank-card, .p-card, .fixture-box, .stat, .hl-card, .team-card, .sch-match-card, .tgw-match-card {
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .rank-card:hover, .p-card:hover, .fixture-box:hover, .stat:hover, .hl-card:hover, .team-card:hover {
@@ -1158,7 +1162,7 @@ body.light-mode footer { background: #ffffff; border-top-color: #d0d3d8; }
 /* Animation levels */
 body.anim-reduced .rank-card, body.anim-reduced .p-card, body.anim-reduced .fixture-box,
 body.anim-reduced .stat, body.anim-reduced .hl-card, body.anim-reduced .team-card,
-body.anim-reduced .sch-match-card {
+body.anim-reduced .sch-match-card, body.anim-reduced .tgw-match-card {
     transition: none !important;
     animation: none !important;
 }
@@ -1234,6 +1238,7 @@ body.trans-fade #rostersPage:not([style*="display: none"]),
 body.trans-fade #freeAgentsPage:not([style*="display: none"]),
 body.trans-fade #playerStatsPage:not([style*="display: none"]),
 body.trans-fade #schedulePage:not([style*="display: none"]),
+body.trans-fade #thisGwPage:not([style*="display: none"]),
 body.trans-fade #matchDetailPage:not([style*="display: none"]),
 body.trans-fade #playerProfilePage:not([style*="display: none"]),
 body.trans-fade #teamDetailPage:not([style*="display: none"]) { animation: fadeIn 0.3s ease both; }
@@ -1249,6 +1254,7 @@ body.trans-slide #rostersPage:not([style*="display: none"]),
 body.trans-slide #freeAgentsPage:not([style*="display: none"]),
 body.trans-slide #playerStatsPage:not([style*="display: none"]),
 body.trans-slide #schedulePage:not([style*="display: none"]),
+body.trans-slide #thisGwPage:not([style*="display: none"]),
 body.trans-slide #matchDetailPage:not([style*="display: none"]),
 body.trans-slide #playerProfilePage:not([style*="display: none"]),
 body.trans-slide #teamDetailPage:not([style*="display: none"]) { animation: slideUp 0.3s ease both; }
@@ -1288,12 +1294,14 @@ body.light-mode.header-blur header { background: rgba(255,255,255,0.7) !importan
 body.alt-rows .rp:nth-child(even),
 body.alt-rows .roster-player:nth-child(even),
 body.alt-rows .sch-match-card:nth-child(even),
+body.alt-rows .tgw-match-card:nth-child(even),
 body.alt-rows .td-roster-row:nth-child(even),
 body.alt-rows .fa-row:nth-child(even),
 body.alt-rows .admin-bug-card:nth-child(even) { background: rgba(255,255,255,0.03); }
 body.light-mode.alt-rows .rp:nth-child(even),
 body.light-mode.alt-rows .roster-player:nth-child(even),
 body.light-mode.alt-rows .sch-match-card:nth-child(even),
+body.light-mode.alt-rows .tgw-match-card:nth-child(even),
 body.light-mode.alt-rows .td-roster-row:nth-child(even),
 body.light-mode.alt-rows .fa-row:nth-child(even) { background: rgba(0,0,0,0.03); }
 
@@ -1305,6 +1313,7 @@ body.card-blur .stat,
 body.card-blur .hl-card,
 body.card-blur .team-card,
 body.card-blur .sch-match-card,
+body.card-blur .tgw-match-card,
 body.card-blur .cl-box {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
@@ -1317,6 +1326,7 @@ body.light-mode.card-blur .stat,
 body.light-mode.card-blur .hl-card,
 body.light-mode.card-blur .team-card,
 body.light-mode.card-blur .sch-match-card,
+body.light-mode.card-blur .tgw-match-card,
 body.light-mode.card-blur .cl-box {
     background: rgba(255,255,255,0.6) !important;
 }

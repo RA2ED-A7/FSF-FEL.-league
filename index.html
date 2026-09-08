@@ -21,10 +21,8 @@
             <div class="menu-item">
                 <a href="#notfound" data-i18n="nav_competition">Competition<span class="caret">&#9662;</span></a>
                 <div class="dropdown">
+                    <a href="#thisgameweek" data-i18n="nav_thisgameweek">This Gameweek</a>
                     <a href="#schedule" data-i18n="nav_schedule">Schedule</a>
-                    <a href="#notfound">Placeholder 1</a>
-                    <a href="#notfound">Placeholder 2</a>
-                    <a href="#notfound">Placeholder 3</a>
                 </div>
             </div>
             <div class="menu-item">
@@ -567,9 +565,21 @@
         <div style="display:flex;gap:0.8rem;justify-content:center;margin:1.5rem 0;">
             <select id="schDivFilter" style="padding:0.4rem 0.8rem;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:0.85rem;" onchange="renderSchedule()">
                 <option value="1.FEL">1.FEL</option>
+                <option value="2.FEL">2.FEL</option>
+                <option value="3.FEL">3.FEL</option>
             </select>
         </div>
         <div id="schContent" style="max-width:1400px;margin:0 auto;padding:0 1.5rem;"></div>
+    </section>
+
+    <section class="thisgw-page" id="thisGwPage" style="display:none;">
+        <h2 class="section-title" style="text-align:center;" data-i18n="thisgw_title">This Gameweek</h2>
+        <div style="display:flex;gap:0.8rem;justify-content:center;margin:1.5rem 0;">
+            <select id="tgwDivFilter" style="padding:0.4rem 0.8rem;border-radius:6px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:0.85rem;" onchange="renderThisGameweek()">
+                <option value="1.FEL">1.FEL</option>
+            </select>
+        </div>
+        <div id="tgwContent" style="max-width:1400px;margin:0 auto;padding:0 1.5rem;"></div>
     </section>
 
     <section class="match-detail-page" id="matchDetailPage" style="display:none;">
@@ -1439,12 +1449,21 @@
         // ===== Schedule =====
         async function renderSchedule() {
             const container = document.getElementById('schContent');
+            const divFilter = document.getElementById('schDivFilter');
+            const selectedDiv = divFilter ? divFilter.value : '1.FEL';
             const TEAMS_OBJ = {
                 'Manchester City': { color: '#6CABDD' },
                 'FC Barcelona': { color: '#A50044' },
                 'Bayern Munchen': { color: '#DC052D' },
                 'Paris Saint Germain': { color: '#004170' },
                 'Real Madrid': { color: '#FEBE10' }
+            };
+            const TEAMS_DIV = {
+                'Manchester City': '1.FEL',
+                'FC Barcelona': '1.FEL',
+                'Bayern Munchen': '1.FEL',
+                'Paris Saint Germain': '1.FEL',
+                'Real Madrid': '1.FEL'
             };
             const teamNames = Object.keys(TEAMS_OBJ);
             const defaultStatuses = ['FINISHED', 'SCHEDULED', 'NOT SCHEDULED', 'FORFEIT', 'DOUBLE FORFEIT'];
@@ -1489,9 +1508,15 @@
                     }
                 }
             }
+            matchData = matchData.filter(m => {
+                const hd = TEAMS_DIV[m.home];
+                const ad = TEAMS_DIV[m.away];
+                return hd === selectedDiv || ad === selectedDiv;
+            });
             let html = '';
             for (let gw = 1; gw <= 7; gw++) {
                 const gwMatches = matchData.filter(m => m.gw === gw);
+                if (!gwMatches.length) continue;
                 html += '<div class="sch-gw" style="margin-bottom:3.5rem;">' +
                     '<div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1.5rem;">' +
                         '<div style="font-size:0.85rem;font-weight:800;color:var(--accent);background:rgba(47,214,176,0.08);border:1px solid rgba(47,214,176,0.2);border-radius:6px;padding:4px 14px;letter-spacing:0.5px;">GW ' + gw + '</div>' +
@@ -1534,7 +1559,6 @@
                 html += '</div></div>';
             }
             container.innerHTML = html;
-            // Scroll to gameweek
             const s = loadSettings();
             if (s.scrollLatest !== false) {
                 const cards = container.querySelectorAll('.sch-gw');
@@ -1547,6 +1571,119 @@
                     setTimeout(() => cards[targetIdx].scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
                 }
             }
+        }
+
+        // ===== This Gameweek =====
+        const CURRENT_GW = 1;
+        async function renderThisGameweek() {
+            const container = document.getElementById('tgwContent');
+            const divFilter = document.getElementById('tgwDivFilter');
+            const selectedDiv = divFilter ? divFilter.value : '1.FEL';
+            const TEAMS_OBJ = {
+                'Manchester City': { color: '#6CABDD' },
+                'FC Barcelona': { color: '#A50044' },
+                'Bayern Munchen': { color: '#DC052D' },
+                'Paris Saint Germain': { color: '#004170' },
+                'Real Madrid': { color: '#FEBE10' }
+            };
+            const TEAMS_DIV = {
+                'Manchester City': '1.FEL',
+                'FC Barcelona': '1.FEL',
+                'Bayern Munchen': '1.FEL',
+                'Paris Saint Germain': '1.FEL',
+                'Real Madrid': '1.FEL'
+            };
+            const teamNames = Object.keys(TEAMS_OBJ);
+            const defaultStatuses = ['FINISHED', 'SCHEDULED', 'NOT SCHEDULED', 'FORFEIT', 'DOUBLE FORFEIT'];
+            const statusColors = { 'FINISHED': '#4caf50', 'SCHEDULED': 'var(--accent)', 'NOT SCHEDULED': 'var(--muted)', 'FORFEIT': '#e74c3c', 'DOUBLE FORFEIT': '#ff9800' };
+            const resultStatuses = ['FINISHED', 'FORFEIT', 'DOUBLE FORFEIT'];
+            let matchData = [];
+            initSupabase();
+            if (supabaseClient) {
+                try {
+                    const { data: rows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'match-gw' + CURRENT_GW + '-%');
+                    for (let m = 0; m < 4; m++) {
+                        const prefix = 'match-gw' + CURRENT_GW + '-' + m;
+                        const getKey = (suffix) => {
+                            const r = rows?.find(x => x.key === prefix + '-' + suffix);
+                            return r ? r.value : '';
+                        };
+                        const home = getKey('home') || teamNames[((CURRENT_GW - 1) * 4 + m * 2) % teamNames.length];
+                        const away = getKey('away') || teamNames[((CURRENT_GW - 1) * 4 + m * 2 + 1) % teamNames.length];
+                        matchData.push({
+                            gw: CURRENT_GW, idx: m,
+                            home, away,
+                            status: getKey('status') || defaultStatuses[(CURRENT_GW + m) % defaultStatuses.length],
+                            date: getKey('date') || '',
+                            result: getKey('result') || ''
+                        });
+                    }
+                } catch(e) { console.warn('[thisgameweek] load error:', e); }
+            }
+            if (!matchData.length) {
+                let fixtureIdx = 0;
+                for (let m = 0; m < 4; m++) {
+                    matchData.push({
+                        gw: CURRENT_GW, idx: m,
+                        home: teamNames[fixtureIdx % teamNames.length],
+                        away: teamNames[(fixtureIdx + 1) % teamNames.length],
+                        status: defaultStatuses[(CURRENT_GW + m) % defaultStatuses.length],
+                        date: '', result: ''
+                    });
+                    fixtureIdx += 2;
+                }
+            }
+            matchData = matchData.filter(m => {
+                const hd = TEAMS_DIV[m.home];
+                const ad = TEAMS_DIV[m.away];
+                return hd === selectedDiv || ad === selectedDiv;
+            });
+            let html = '';
+            if (matchData.length) {
+                html += '<div class="sch-gw" style="margin-bottom:2rem;">' +
+                    '<div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1.5rem;">' +
+                        '<div style="font-size:0.9rem;font-weight:800;color:var(--accent);background:rgba(47,214,176,0.08);border:1px solid rgba(47,214,176,0.2);border-radius:6px;padding:5px 16px;letter-spacing:0.5px;">GW ' + CURRENT_GW + '</div>' +
+                        '<div style="flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent);"></div>' +
+                    '</div>' +
+                    '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem;">';
+                matchData.forEach(match => {
+                    const hc = TEAMS_OBJ[match.home]?.color || '#888';
+                    const ac = TEAMS_OBJ[match.away]?.color || '#888';
+                    const status = match.status;
+                    const sColor = statusColors[status] || 'var(--muted)';
+                    const isResult = resultStatuses.includes(status);
+                    const result = match.result || (isResult ? '—  —' : 'VS');
+                    const resultColor = isResult ? 'var(--text)' : 'var(--muted)';
+                    const resultSize = isResult ? '2.2rem' : '1.5rem';
+                    const resultWeight = isResult ? '900' : '800';
+                    const resultSpacing = isResult ? '4px' : '6px';
+                    const dateStr = match.date ? formatDate(match.date, true) : 'TBD';
+                    html += '<div class="tgw-match-card" style="background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:all 0.25s ease;position:relative;" onclick="location.hash=\'schedule-match?gw=' + match.gw + '&idx=' + match.idx + '\'" onmouseenter="this.style.borderColor=\'' + hc + '66\';this.style.boxShadow=\'0 8px 32px \' + hc + \'22\';this.style.transform=\'translateY(-2px)\'" onmouseleave="this.style.borderColor=\'var(--line)\';this.style.boxShadow=\'none\';this.style.transform=\'translateY(0)\'">' +
+                        '<div style="background:linear-gradient(135deg,' + hc + '22,transparent 60%);border-bottom:1px solid var(--line);padding:0.8rem 1.4rem;display:flex;justify-content:space-between;align-items:center;">' +
+                            '<span style="font-size:0.7rem;font-weight:700;color:' + sColor + ';background:' + sColor + '15;border:1px solid ' + sColor + '33;border-radius:5px;padding:4px 12px;letter-spacing:1px;text-transform:uppercase;">' + status + '</span>' +
+                            '<span style="font-size:0.7rem;color:var(--muted);letter-spacing:0.3px;">' + dateStr + '</span>' +
+                        '</div>' +
+                        '<div style="padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;">' +
+                            '<div style="text-align:center;flex:1;min-width:0;">' +
+                                '<div style="width:60px;height:60px;border-radius:50%;background:' + hc + '18;border:2px solid ' + hc + '44;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:' + hc + ';">' + match.home.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                                '<div style="font-size:1.15rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.home + '</div>' +
+                            '</div>' +
+                            '<div style="text-align:center;flex-shrink:0;min-width:70px;">' +
+                                '<div style="font-size:' + resultSize + ';font-weight:' + resultWeight + ';color:' + resultColor + ';letter-spacing:' + resultSpacing + ';line-height:1;">' + result + '</div>' +
+                            '</div>' +
+                            '<div style="text-align:center;flex:1;min-width:0;">' +
+                                '<div style="width:60px;height:60px;border-radius:50%;background:' + ac + '18;border:2px solid ' + ac + '44;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:' + ac + ';">' + match.away.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                                '<div style="font-size:1.15rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.away + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div style="height:4px;background:linear-gradient(90deg,' + hc + ',' + ac + ');opacity:0.6;"></div>' +
+                    '</div>';
+                });
+                html += '</div></div>';
+            } else {
+                html = '<p class="muted" style="text-align:center;padding:3rem;">No matches found for this gameweek in ' + selectedDiv + '.</p>';
+            }
+            container.innerHTML = html;
         }
 
         // ===== Match Detail =====
@@ -2872,6 +3009,31 @@
                 try { _matchAwayLineup = JSON.parse(get('away-lineup')) || []; } catch(e) { _matchAwayLineup = []; }
                 try { _matchEvents = JSON.parse(get('events')) || []; } catch(e) { _matchEvents = []; }
                 try { _matchStatsArr = JSON.parse(get('stats')) || []; } catch(e) { _matchStatsArr = []; }
+                // Remove players that are already in other matches of the same gameweek
+                try {
+                    const { data: gwRows } = await supabaseClient.from('SiteContent').select('key, value').like('key', 'match-gw' + m.gw + '-%');
+                    const otherPlayerIds = new Set();
+                    if (gwRows) {
+                        for (let om = 0; om < 4; om++) {
+                            if (om === m.idx) continue;
+                            const oPrefix = 'match-gw' + m.gw + '-' + om;
+                            const oHomeRow = gwRows.find(x => x.key === oPrefix + '-home-lineup');
+                            const oAwayRow = gwRows.find(x => x.key === oPrefix + '-away-lineup');
+                            try {
+                                const oHome = JSON.parse(oHomeRow?.value || '[]');
+                                oHome.forEach(p => { if (p.id) otherPlayerIds.add(p.id); });
+                            } catch(e) {}
+                            try {
+                                const oAway = JSON.parse(oAwayRow?.value || '[]');
+                                oAway.forEach(p => { if (p.id) otherPlayerIds.add(p.id); });
+                            } catch(e) {}
+                        }
+                    }
+                    if (otherPlayerIds.size > 0) {
+                        _matchHomeLineup = _matchHomeLineup.filter(p => !otherPlayerIds.has(p.id));
+                        _matchAwayLineup = _matchAwayLineup.filter(p => !otherPlayerIds.has(p.id));
+                    }
+                } catch(e) { console.warn('[match-detail-editor] duplicate check error:', e); }
                 populatePlayerSelects();
                 renderEventsList();
                 renderMatchStatsTable(_matchStatsArr);
@@ -3153,7 +3315,7 @@
                 scroll_to_latest: 'Scroll to Latest:', scroll_to_gw: 'Scroll to Gameweek:', loyalty_badge: 'Team Loyalty Badge:', no_team_msg: 'No team assigned!', timezone: 'Timezone:',
                 date_format: 'Date Format:', page_transition: 'Page Transition:', back_to_top: 'Back to Top Button:', offline_mode: 'Offline Mode:',
                 header_blur: 'Header Blur:', alt_rows: 'Alternating Rows:', card_blur: 'Card Blur:',
-                nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule',
+                nav_home: 'Home', nav_career: 'My Career', nav_competition: 'Competition', nav_schedule: 'Schedule', nav_thisgameweek: 'This Gameweek',
                 nav_teams: 'Teams', nav_rankings: 'Rankings', nav_rosters: 'Rosters', nav_playerstats: 'Player Stats',
                 nav_market: 'Market', nav_freeagents: 'Free Agents', nav_standings: 'Standings', nav_changelog: 'Update Log',
                 btn_signin: 'Sign In', btn_signout: 'Sign Out',
@@ -3167,7 +3329,7 @@
                 rankings_title: 'Rankings', rankings_subtitle: 'Season 1 . skill ladder by tier & position',
                 rosters_title: 'Team Rosters', rosters_desc: 'All registered players sorted by team',
                 freeagents_title: 'Free Agents', freeagents_desc: 'Unattached players available for signing',
-                schedule_title: 'Schedule', admin_title: 'Admin Panel',
+                schedule_title: 'Schedule', thisgw_title: 'This Gameweek', admin_title: 'Admin Panel',
                 transfer_history: 'Transfer History', recent_matches: 'Recent Matches',
                 footer_text: 'FEL website by \u00b7 A7M | .Vortex700\u003cbr\u003e\u2014 Freestyle elite league By Gadt \u2014',
                 matches: 'Matches', goals: 'Goals', assists: 'Assists', saves: 'Saves', wins: 'Wins', losses: 'Losses',
@@ -3218,7 +3380,7 @@
                 scroll_to_latest: 'D\u00e9filer vers le Dernier:', scroll_to_gw: 'D\u00e9filer vers la Journ\u00e9e:', loyalty_badge: 'Badge de Loyalit\u00e9:', no_team_msg: 'Aucune \u00e9quipe assign\u00e9e !', timezone: 'Fuseau Horaire:',
                 date_format: 'Format de Date:', page_transition: 'Transition de Page:', back_to_top: 'Bouton Retour en Haut:', offline_mode: 'Mode Hors Ligne:',
                 header_blur: 'Flou d\'En-t\u00eate:', alt_rows: 'Lignes Altern\u00e9es:', card_blur: 'Flou des Cartes:',
-                nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier',
+                nav_home: 'Accueil', nav_career: 'Ma Carri\u00e8re', nav_competition: 'Comp\u00e9tition', nav_schedule: 'Calendrier', nav_thisgameweek: 'Cette Journ\u00e9e',
                 nav_teams: '\u00c9quipes', nav_rankings: 'Classement', nav_rosters: 'Effectifs', nav_playerstats: 'Stats Joueurs',
                 nav_market: 'March\u00e9', nav_freeagents: 'Agents Libres', nav_standings: 'Classement G\u00e9n\u00e9ral', nav_changelog: 'Journal des MAJ',
                 btn_signin: 'Se Connecter', btn_signout: 'D\u00e9connexion',
@@ -3232,7 +3394,7 @@
                 rankings_title: 'Classement', rankings_subtitle: 'Saison 1 . \u00e9chelle de comp\u00e9tence par niveau & poste',
                 rosters_title: 'Effectifs d\u00c9quipe', rosters_desc: 'Tous les joueurs inscrits tri\u00e9s par \u00e9quipe',
                 freeagents_title: 'Agents Libres', freeagents_desc: 'Joueurs disponibles pour signature',
-                schedule_title: 'Calendrier', admin_title: 'Panneau d\'Administration',
+                schedule_title: 'Calendrier', thisgw_title: 'Cette Journ\u00e9e', admin_title: 'Panneau d\'Administration',
                 transfer_history: 'Historique des Transferts', recent_matches: 'Matchs R\u00e9cents',
                 footer_text: 'Site FEL par \u00b7 A7M | .Vortex700\u003cbr\u003e\u2014 Freestyle elite league par Gadt \u2014',
                 matches: 'Matchs', goals: 'Buts', assists: 'Passes', saves: 'Arr\u00eats', wins: 'Victoires', losses: 'D\u00e9faites',
@@ -3378,6 +3540,7 @@
                 freeagents: 'freeAgentsPage',
                 playerstats: 'playerStatsPage',
                 schedule: 'schedulePage',
+                thisgameweek: 'thisGwPage',
                 'schedule-match': 'matchDetailPage',
                 player: 'playerProfilePage',
                 team: 'teamDetailPage'
@@ -3405,6 +3568,7 @@
             document.getElementById('freeAgentsPage').style.display = 'none';
             document.getElementById('playerStatsPage').style.display = 'none';
             document.getElementById('schedulePage').style.display = 'none';
+            document.getElementById('thisGwPage').style.display = 'none';
             document.getElementById('matchDetailPage').style.display = 'none';
             prEl.style.display = 'none';
             tdEl.style.display = 'none';
@@ -3429,6 +3593,9 @@
             } else if (page === 'schedule') {
                 document.getElementById('schedulePage').style.display = '';
                 renderSchedule();
+            } else if (page === 'thisgameweek') {
+                document.getElementById('thisGwPage').style.display = '';
+                renderThisGameweek();
             } else if (page.startsWith('schedule-match')) {
                 document.getElementById('matchDetailPage').style.display = '';
                 renderMatchDetail();
@@ -3462,6 +3629,7 @@
             freeagents: [{ label: 'Home', hash: '' }, { label: 'Free Agents' }],
             playerstats: [{ label: 'Home', hash: '' }, { label: 'Player Stats' }],
             schedule: [{ label: 'Home', hash: '' }, { label: 'Schedule' }],
+            thisgameweek: [{ label: 'Home', hash: '' }, { label: 'This Gameweek' }],
             admin: [{ label: 'Home', hash: '' }, { label: 'Admin' }],
             signin: [{ label: 'Home', hash: '' }, { label: 'Sign In' }],
             changelog: [{ label: 'Home', hash: '' }, { label: 'Update Log' }],
