@@ -4053,7 +4053,7 @@
         }
 
         // Animations
-        const ANIM_LEVELS = ['Full', 'Reduced', 'Disabled'];
+        const ANIM_LEVELS = ['Full', 'Reduced'];
         function cycleAnimations() {
             const s = loadSettings();
             const idx = ANIM_LEVELS.indexOf(s.animations || 'Full');
@@ -4063,9 +4063,8 @@
         }
         function applyAnimations(level) {
             document.getElementById('animationsLabel').textContent = level;
-            document.body.classList.remove('anim-reduced', 'anim-disabled');
+            document.body.classList.remove('anim-reduced');
             if (level === 'Reduced') document.body.classList.add('anim-reduced');
-            else if (level === 'Disabled') document.body.classList.add('anim-disabled');
         }
 
         // Settings tabs
