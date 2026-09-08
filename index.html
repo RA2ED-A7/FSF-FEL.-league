@@ -1329,7 +1329,7 @@
                     '<div class="fa-stat-box"><div class="fa-stat-val">' + formatMoney(totalValue) + '</div><div class="fa-stat-lbl">Combined Value</div></div>';
                 filtered.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
                 if (filtered.length === 0) {
-                    document.getElementById('faTable').innerHTML = '<p class="muted" style="text-align:center;padding:2rem;">No results.</p>';
+                    document.getElementById('faTable').innerHTML = '<p class="empty-state">No results.</p>';
                     return;
                 }
                 document.getElementById('faTable').innerHTML = filtered.map((p, i) => {
