@@ -2127,7 +2127,7 @@
                 document.getElementById('tdTeamDiv').textContent = team ? team.division : '—';
                 const rosterDiv = document.getElementById('tdRoster');
                 if (sorted.length === 0) {
-                    rosterDiv.innerHTML = '<p class="muted">No players on this team yet.</p>';
+                    rosterDiv.innerHTML = '<p class="empty-state">No players on this team yet.</p>';
                 } else {
                     rosterDiv.innerHTML = '<div class="td-roster-list">' + sorted.map((p, i) => {
                         const av = map['discord-avatar-' + p.id];
