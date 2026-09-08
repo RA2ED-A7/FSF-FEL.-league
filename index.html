@@ -2737,7 +2737,7 @@
             listDiv.innerHTML = '';
             
             if (val === 'No transfers yet.' || val === '') {
-                listDiv.innerHTML = '<p class="muted">No transfers to remove.</p>';
+                listDiv.innerHTML = '<p class="empty-state" style="padding:0.5rem 0;">No transfers to remove.</p>';
             } else {
                 const lines = val.split('\n').filter(l => l.trim() !== '');
                 lines.forEach((line, index) => {
@@ -3066,7 +3066,7 @@
         // Lineups
         function renderLineupList(containerId, lineup) {
             const c = document.getElementById(containerId);
-            if (!lineup.length) { c.innerHTML = '<p class="muted" style="font-size:0.75rem;padding:0.5rem;">No players added. Use the + buttons below.</p>'; return; }
+            if (!lineup.length) { c.innerHTML = '<p class="empty-state" style="padding:0.5rem 0;">No players added. Use the + buttons below.</p>'; return; }
             c.innerHTML = lineup.map((p, i) => {
                 const team = containerId === 'homeLineupList' ? _matchHomePlayers : _matchAwayPlayers;
                 return '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0.5rem;border-bottom:1px solid var(--line);font-size:0.8rem;">' +
