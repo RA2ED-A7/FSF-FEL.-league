@@ -1808,7 +1808,7 @@
             // ===== MATCH REPORT =====
             html += '<div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">' +
                 '<h3 style="font-size:0.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 0.8rem;">Match Report</h3>' +
-                '<p style="font-size:0.9rem;color:var(--text);line-height:1.6;margin:0;">' + (report || '<span class="muted">No report yet.</span>') + '</p>' +
+                '<p style="font-size:0.9rem;color:var(--text);line-height:1.6;margin:0;">' + (report || '<span class="empty-state" style="padding:0;font-size:1rem;">No report yet.</span>') + '</p>' +
             '</div>';
 
             // ===== MVP VOTING =====
@@ -1906,7 +1906,7 @@
                         '</div>';
                     });
                 } else {
-                    col += '<p class="muted" style="font-size:0.72rem;margin:0;">No events.</p>';
+                    col += '<p class="empty-state" style="padding:0.5rem 0;">No events.</p>';
                 }
                 col += '</div></div>';
                 return col;
@@ -1962,7 +1962,7 @@
                 });
                 html += '</tbody></table>';
             } else {
-                html += '<p class="muted" style="font-size:0.8rem;margin:0;">No stats recorded.</p>';
+                html += '<p class="empty-state">No stats recorded.</p>';
             }
             html += '</div>';
 
