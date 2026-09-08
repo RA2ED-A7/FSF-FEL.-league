@@ -834,6 +834,7 @@
                         </div>
                         <div class="admin-actions" style="margin-top:1rem;">
                             <button class="admin-save-btn" onclick="saveMatchDetailEditor()">Save Match</button>
+                            <button class="admin-save-btn" style="background:#e74c3c;color:#fff;" onclick="clearMatchPlayers()">Clear Players</button>
                             <span class="admin-msg" id="matchDetailMsg"></span>
                         </div>
                     </div>
@@ -3258,6 +3259,35 @@
                     if (error) { msg.textContent = 'Error: ' + error.message; msg.className = 'admin-msg err'; return; }
                 }
                 msg.textContent = 'Saved!';
+                msg.className = 'admin-msg ok';
+            } catch(e) {
+                msg.textContent = 'Error: ' + e.message;
+                msg.className = 'admin-msg err';
+            }
+        }
+
+        async function clearMatchPlayers() {
+            const idx = document.getElementById('matchEditSelect').value;
+            if (idx === '') return;
+            const m = _matchData[parseInt(idx)];
+            if (!m) return;
+            const prefix = 'match-gw' + m.gw + '-' + m.idx;
+            const msg = document.getElementById('matchDetailMsg');
+            msg.textContent = 'Clearing players...';
+            msg.className = 'admin-msg';
+            initSupabase();
+            if (!supabaseClient) return;
+            try {
+                _matchHomeLineup = [];
+                _matchAwayLineup = [];
+                _matchStatsArr = [];
+                await supabaseClient.from('SiteContent').upsert({ key: prefix + '-home-lineup', value: '[]' }, { onConflict: 'key' });
+                await supabaseClient.from('SiteContent').upsert({ key: prefix + '-away-lineup', value: '[]' }, { onConflict: 'key' });
+                await supabaseClient.from('SiteContent').upsert({ key: prefix + '-stats', value: '[]' }, { onConflict: 'key' });
+                renderLineupList('homeLineupList', _matchHomeLineup);
+                renderLineupList('awayLineupList', _matchAwayLineup);
+                renderMatchStatsTable(_matchStatsArr);
+                msg.textContent = 'Players cleared!';
                 msg.className = 'admin-msg ok';
             } catch(e) {
                 msg.textContent = 'Error: ' + e.message;
