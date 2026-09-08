@@ -3118,7 +3118,7 @@
             const eventLabelMap = { goal: 'GOAL', own_goal: 'OG', yellow_card: 'YC', red_card: 'RC', sub: 'SUB' };
             const buildEventHtml = (events, listId) => {
                 const c = document.getElementById(listId);
-                if (!events.length) { c.innerHTML = '<p class="muted" style="font-size:0.72rem;padding:0.4rem;">No events.</p>'; return; }
+                if (!events.length) { c.innerHTML = '<p class="empty-state" style="padding:0.5rem 0;">No events.</p>'; return; }
                 c.innerHTML = events.map((ev, _) => {
                     const globalIdx = _matchEvents.indexOf(ev);
                     const ec = eventColorMap[ev.type] || 'var(--muted)';
@@ -3980,7 +3980,7 @@
             if (bugReportsPage > totalPages) bugReportsPage = totalPages;
             const start = (bugReportsPage - 1) * BUG_REPORTS_PER_PAGE;
             const pageData = bugReportsData.slice(start, start + BUG_REPORTS_PER_PAGE);
-            if (pageData.length === 0) { container.innerHTML = '<p class="muted" style="font-size:0.85rem;">No bug reports yet.</p>'; return; }
+            if (pageData.length === 0) { container.innerHTML = '<p class="empty-state">No bug reports yet.</p>'; return; }
             container.innerHTML = pageData.map((r, i) => {
                 const date = r.created_at ? formatDate(r.created_at, true) : 'Unknown date';
                 const idx = start + i;
