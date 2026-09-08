@@ -64,8 +64,8 @@ header {
     padding: 0 2rem 0 0;
     background: linear-gradient(180deg, rgba(7, 13, 15, 0.95) 0%, rgba(7, 13, 15, 0.85) 100%);
     backdrop-filter: blur(10px);
-    border-bottom: 2px solid #003399;
-    box-shadow: 0 1px 0 rgba(0,51,153,0.3), 0 4px 24px rgba(0,0,0,0.3);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 0 rgba(47,214,176,0.15), 0 4px 24px rgba(0,0,0,0.3);
 }
 .brand { font-weight: 800; font-size: 1.1rem; letter-spacing: 0.5px; white-space: nowrap; position: relative; display: flex; align-items: center; padding: 0 0.6rem; }
 .brand .season { color: var(--accent); }
@@ -977,7 +977,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 }
 .back-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-    footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.8rem; border-top: 2px solid #003399; box-shadow: 0 -1px 0 rgba(0,51,153,0.3); position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); z-index: 10; letter-spacing: 0.3px; }
+    footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--border); box-shadow: 0 -1px 0 rgba(47,214,176,0.1); position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg); z-index: 10; letter-spacing: 0.3px; }
 
 .bug-report-btn {
     position: absolute; bottom: 12px; left: 20px; z-index: 999;
