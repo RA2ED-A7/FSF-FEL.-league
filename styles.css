@@ -765,7 +765,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .fa-search-input::placeholder { color: var(--muted); }
 .rosters-filter { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.5rem; }
 .rosters-filter label { color: var(--muted); font-size: 0.9rem; }
-.rosters-grid { display: flex; gap: 2rem; justify-content: center; flex-wrap: nowrap; }
+.rosters-grid { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; padding: 0 1rem; }
 .roster-team {
     min-width: 350px; flex: 1; max-width: 500px;
     background: linear-gradient(145deg, var(--surface-2), var(--surface));
