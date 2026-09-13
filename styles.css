@@ -925,7 +925,7 @@ main { flex: 1; max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; width: 1
 .fa-stat-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-top: 0.2rem; }
 .fa-table { width: 100%; min-width: 700px; }
 .fa-row {
-    display: flex; align-items: center; gap: 1rem; padding: 0.7rem 1rem;
+    display: flex; align-items: center; gap: 1rem; padding: 0.9rem 1rem;
     background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
     margin-bottom: 0.4rem; cursor: pointer; transition: background 0.15s;
 }
