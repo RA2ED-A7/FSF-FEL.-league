@@ -414,14 +414,12 @@
                         <th title="Wins">W</th>
                         <th title="Draws">D</th>
                         <th title="Losses">L</th>
-                        <th title="Goals For">GF</th>
-                        <th title="Goals Against">GA</th>
                         <th title="Goal Difference">GD</th>
                         <th title="Points">Pts</th>
                     </tr>
                 </thead>
                 <tbody id="standingsBody">
-                    <tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr>
+                    <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -1486,7 +1484,7 @@
             if (!supabaseClient) return;
             const tbody = document.getElementById('standingsBody');
             if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr>';
             try {
                 const div = (document.getElementById('standingsDivFilter') || {value: '1.FEL'}).value;
                 const divTeamNames = TEAMS.filter(t => t.division === div).map(t => t.name);
@@ -1513,7 +1511,7 @@
                 // Sort: pts desc, then gd desc, then gs desc
                 tableData.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gs - a.gs);
                 if (tableData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--muted);">No teams found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted);">No teams found.</td></tr>';
                     return;
                 }
                 tbody.innerHTML = tableData.map((row, i) => {
@@ -1528,13 +1526,11 @@
                         <td class="st-wins">${row.w}</td>
                         <td class="st-draws">${row.d}</td>
                         <td class="st-losses">${row.l}</td>
-                        <td>${row.gs}</td>
-                        <td>${row.gc}</td>
                         <td class="${row.gd > 0 ? 'st-gd-pos' : row.gd < 0 ? 'st-gd-neg' : ''}">${gdStr}</td>
                         <td class="st-pts">${row.pts}</td>
                     </tr>`;
                 }).join('');
-            } catch (e) { console.warn('[standings] error:', e); tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--muted);">Error loading standings.</td></tr>'; }
+            } catch (e) { console.warn('[standings] error:', e); tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted);">Error loading standings.</td></tr>'; }
         }
 
         // ===== Market Values =====
@@ -1649,23 +1645,19 @@
                 const safeId = team.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
                 const w = parseInt(document.getElementById(`st_${safeId}_wins`)?.value) || 0;
                 const d = parseInt(document.getElementById(`st_${safeId}_draws`)?.value) || 0;
-                const l = parseInt(document.getElementById(`st_${safeId}_losses`) || 0) || 0;
-                const gs = parseInt(document.getElementById(`st_${safeId}_gs`)?.value) || 0;
-                const gc = parseInt(document.getElementById(`st_${safeId}_gc`)?.value) || 0;
+                const l = parseInt(document.getElementById(`st_${safeId}_losses`)) || 0) || 0;
+                const gd = parseInt(document.getElementById(`st_${safeId}_gd`)?.value) || 0;
                 const p = w + d + l;
-                const gd = gs - gc;
                 const pts = w * 3 + d;
-                return { name: team.name, safeId, w, d, l, p, gs, gc, gd, pts, color: team.color };
+                return { name: team.name, safeId, w, d, l, p, gd, pts, color: team.color };
             });
-            data.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gs - a.gs);
+            data.sort((a, b) => b.pts - a.pts || b.gd - a.gd);
             data.forEach((row, i) => {
                 const posEl = document.getElementById(`st_${row.safeId}_pos`);
                 const pEl = document.getElementById(`st_${row.safeId}_p`);
-                const gdEl = document.getElementById(`st_${row.safeId}_gd`);
                 const ptsEl = document.getElementById(`st_${row.safeId}_pts`);
                 if (posEl) posEl.textContent = i + 1;
                 if (pEl) pEl.textContent = row.p;
-                if (gdEl) { gdEl.textContent = (row.gd > 0 ? '+' : '') + row.gd; gdEl.style.color = row.gd > 0 ? '#4caf50' : row.gd < 0 ? '#e74c3c' : 'var(--muted)'; }
                 if (ptsEl) ptsEl.textContent = row.pts;
             });
         }
@@ -1697,16 +1689,14 @@
                         <strong style="font-size:1rem;">${team.name}</strong>
                         <span style="margin-left:auto;font-size:0.85rem;color:var(--muted);">Pos <strong id="st_${safeId}_pos" style="color:var(--text);font-size:1.1rem;">-</strong></span>
                     </div>
-                    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:0.6rem;margin-bottom:0.8rem;">
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;margin-bottom:0.8rem;">
                         <div class="admin-field"><label>Wins</label><input id="st_${safeId}_wins" type="number" min="0" class="admin-input" value="${s.wins || 0}" oninput="_calcStandingsLive()"></div>
                         <div class="admin-field"><label>Draws</label><input id="st_${safeId}_draws" type="number" min="0" class="admin-input" value="${s.draws || 0}" oninput="_calcStandingsLive()"></div>
                         <div class="admin-field"><label>Losses</label><input id="st_${safeId}_losses" type="number" min="0" class="admin-input" value="${s.losses || 0}" oninput="_calcStandingsLive()"></div>
-                        <div class="admin-field"><label>Goals For</label><input id="st_${safeId}_gs" type="number" min="0" class="admin-input" value="${s.gs || 0}" oninput="_calcStandingsLive()"></div>
-                        <div class="admin-field"><label>Goals Against</label><input id="st_${safeId}_gc" type="number" min="0" class="admin-input" value="${s.gc || 0}" oninput="_calcStandingsLive()"></div>
+                        <div class="admin-field"><label>Goal Diff</label><input id="st_${safeId}_gd" type="number" class="admin-input" value="${s.gd || 0}" oninput="_calcStandingsLive()"></div>
                     </div>
                     <div style="display:flex;gap:1.5rem;font-size:0.82rem;color:var(--muted);">
                         <span>P: <strong id="st_${safeId}_p" style="color:var(--text);">0</strong></span>
-                        <span>GD: <strong id="st_${safeId}_gd" style="color:var(--muted);">0</strong></span>
                         <span>Pts: <strong id="st_${safeId}_pts" style="color:var(--accent);">0</strong></span>
                     </div>
                 </div>`;
@@ -1723,7 +1713,7 @@
             const upserts = [];
             div1Teams.forEach(team => {
                 const safeId = team.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
-                ['wins','draws','losses','gs','gc'].forEach(field => {
+                ['wins','draws','losses','gd'].forEach(field => {
                     const el = document.getElementById(`st_${safeId}_${field}`);
                     const val = el ? el.value : '0';
                     // key format: standings-{teamName}-{field}
@@ -3601,7 +3591,7 @@
             const awayP = _matchAwayPlayers;
             const buildRows = (players, teamName, teamColor) => {
                 if (!players.length) return '';
-                let r = '<tr><td colspan="10" style="padding:0.4rem 0.6rem;font-size:0.72rem;font-weight:700;color:' + teamColor + ';text-transform:uppercase;letter-spacing:0.5px;background:var(--surface-2);border-bottom:1px solid var(--line);">' + teamName + '</td></tr>';
+                let r = '<tr><td colspan="8" style="padding:0.4rem 0.6rem;font-size:0.72rem;font-weight:700;color:' + teamColor + ';text-transform:uppercase;letter-spacing:0.5px;background:var(--surface-2);border-bottom:1px solid var(--line);">' + teamName + '</td></tr>';
                 players.forEach(p => {
                     const existing = statsArr.find(s => s.id === p.id) || {};
                     r += '<tr data-player-id="' + p.id + '" data-team="' + teamName + '" data-team-color="' + teamColor + '">' +
