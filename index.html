@@ -1534,7 +1534,7 @@
                         <td class="st-pts">${row.pts}</td>
                     </tr>`;
                 }).join('');
-            } catch (e) { console.warn('[standings] error:', e); tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted);">Error loading standings.</td></tr>'; }
+            } catch (e) { console.warn('[standings] error:', e); tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--muted);">Error loading standings.</td></tr>'; }
         }
 
         // ===== Market Values =====
