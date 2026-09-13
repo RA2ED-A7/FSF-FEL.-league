@@ -1898,14 +1898,14 @@
                         '</div>' +
                         '<div style="padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;">' +
                             '<div style="text-align:center;flex:1;min-width:0;">' +
-                                '<div style="width:48px;height:48px;border-radius:50%;background:' + hc + '18;border:2px solid ' + hc + '44;margin:0 auto 0.6rem;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:' + hc + ';">' + match.home.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                                '<div style="width:48px;height:48px;border-radius:50%;background:' + hc + '18;border:2px solid ' + hc + '44;margin:0 auto 0.6rem;display:flex;align-items:center;justify-content:center;">' + teamLogoHtml(match.home, 32) + '</div>' +
                                 '<div style="font-size:0.95rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.home + '</div>' +
                             '</div>' +
                             '<div style="text-align:center;flex-shrink:0;min-width:60px;">' +
                                 '<div style="font-size:' + resultSize + ';font-weight:' + resultWeight + ';color:' + resultColor + ';letter-spacing:' + resultSpacing + ';line-height:1;">' + result + '</div>' +
                             '</div>' +
                             '<div style="text-align:center;flex:1;min-width:0;">' +
-                                '<div style="width:48px;height:48px;border-radius:50%;background:' + ac + '18;border:2px solid ' + ac + '44;margin:0 auto 0.6rem;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:' + ac + ';">' + match.away.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                                '<div style="width:48px;height:48px;border-radius:50%;background:' + ac + '18;border:2px solid ' + ac + '44;margin:0 auto 0.6rem;display:flex;align-items:center;justify-content:center;">' + teamLogoHtml(match.away, 32) + '</div>' +
                                 '<div style="font-size:0.95rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.away + '</div>' +
                             '</div>' +
                         '</div>' +
@@ -2021,14 +2021,14 @@
                         '</div>' +
                         '<div style="padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;">' +
                             '<div style="text-align:center;flex:1;min-width:0;">' +
-                                '<div style="width:60px;height:60px;border-radius:50%;background:' + hc + '18;border:2px solid ' + hc + '44;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:' + hc + ';">' + match.home.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                                '<div style="width:60px;height:60px;border-radius:50%;background:' + hc + '18;border:2px solid ' + hc + '44;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;">' + teamLogoHtml(match.home, 40) + '</div>' +
                                 '<div style="font-size:1.15rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.home + '</div>' +
                             '</div>' +
                             '<div style="text-align:center;flex-shrink:0;min-width:70px;">' +
                                 '<div style="font-size:' + resultSize + ';font-weight:' + resultWeight + ';color:' + resultColor + ';letter-spacing:' + resultSpacing + ';line-height:1;">' + result + '</div>' +
                             '</div>' +
                             '<div style="text-align:center;flex:1;min-width:0;">' +
-                                '<div style="width:60px;height:60px;border-radius:50%;background:' + ac + '18;border:2px solid ' + ac + '44;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:' + ac + ';">' + match.away.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                                '<div style="width:60px;height:60px;border-radius:50%;background:' + ac + '18;border:2px solid ' + ac + '44;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;">' + teamLogoHtml(match.away, 40) + '</div>' +
                                 '<div style="font-size:1.15rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + match.away + '</div>' +
                             '</div>' +
                         '</div>' +
@@ -2144,7 +2144,7 @@
                 '</div>' +
                 '<div style="padding:2rem 2.5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;">' +
                     '<div style="text-align:center;flex:1;">' +
-                        '<div style="width:72px;height:72px;border-radius:50%;background:' + hc + '18;border:3px solid ' + hc + '55;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:' + hc + ';">' + home.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                        '<div style="width:72px;height:72px;border-radius:50%;background:' + hc + '18;border:3px solid ' + hc + '55;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;">' + teamLogoHtml(home, 48) + '</div>' +
                         '<div style="font-size:1.3rem;font-weight:700;color:var(--text);">' + home + '</div>' +
                         (mvpTeamSide === 'home' ? mvpHtml : '') +
                     '</div>' +
@@ -2152,7 +2152,7 @@
                         '<div style="font-size:3rem;font-weight:900;color:var(--text);letter-spacing:6px;line-height:1;">' + displayResult + '</div>' +
                     '</div>' +
                     '<div style="text-align:center;flex:1;">' +
-                        '<div style="width:72px;height:72px;border-radius:50%;background:' + ac + '18;border:3px solid ' + ac + '55;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:' + ac + ';">' + away.split(' ').map(w=>w[0]).join('').slice(0,3) + '</div>' +
+                        '<div style="width:72px;height:72px;border-radius:50%;background:' + ac + '18;border:3px solid ' + ac + '55;margin:0 auto 0.8rem;display:flex;align-items:center;justify-content:center;">' + teamLogoHtml(away, 48) + '</div>' +
                         '<div style="font-size:1.3rem;font-weight:700;color:var(--text);">' + away + '</div>' +
                         (mvpTeamSide === 'away' ? mvpHtml : '') +
                     '</div>' +
@@ -2461,7 +2461,7 @@
             const nameMatch = hash.match(/name=([^&]+)/);
             if (!nameMatch) return;
             const teamName = decodeURIComponent(nameMatch[1]);
-            document.getElementById('tdTeamName').textContent = teamName;
+            document.getElementById('tdTeamName').innerHTML = teamLogoHtml(teamName, 32) + teamName;
             const savedTeamTab = sessionStorage.getItem('teamTab') || 'overview';
             switchTeamTab(savedTeamTab);
             try {
@@ -2561,7 +2561,7 @@
                 const score = map['team-' + teamName + '-score'] || '0 - 0';
                 const fxDate = map['team-' + teamName + '-date'] || '';
                 const dateHtml = fxDate ? '<div class="td-fixture-date">' + fxDate + '</div>' : '';
-                fxDiv.innerHTML = '<div class="td-fixture-box"><span class="td-fixture-corner">' + (team ? team.division : '') + '</span><div class="td-fixture-label">Next Match</div><div class="td-fixture-match"><div class="td-fixture-team"><div class="td-fixture-crest">' + home.charAt(0) + '</div>' + home + '</div><div class="td-fixture-score">' + score + '</div><div class="td-fixture-team">' + away + '<div class="td-fixture-crest">' + away.charAt(0) + '</div></div></div>' + dateHtml + '</div>';
+                fxDiv.innerHTML = '<div class="td-fixture-box"><span class="td-fixture-corner">' + (team ? team.division : '') + '</span><div class="td-fixture-label">Next Match</div><div class="td-fixture-match"><div class="td-fixture-team"><div class="td-fixture-crest">' + teamLogoHtml(home, 28) + '</div>' + home + '</div><div class="td-fixture-score">' + score + '</div><div class="td-fixture-team">' + away + '<div class="td-fixture-crest">' + teamLogoHtml(away, 28) + '</div></div></div>' + dateHtml + '</div>';
                 // Team transfers
                 let tTransfers = [];
                 try { tTransfers = JSON.parse(map['team-' + teamName + '-transfers'] || '[]'); } catch (e) {}
