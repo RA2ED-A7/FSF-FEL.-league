@@ -1486,7 +1486,7 @@
             if (!supabaseClient) return;
             const tbody = document.getElementById('standingsBody');
             if (!tbody) return;
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr>';
             try {
                 const div = (document.getElementById('standingsDivFilter') || {value: '1.FEL'}).value;
                 const divTeamNames = TEAMS.filter(t => t.division === div).map(t => t.name);
