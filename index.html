@@ -1513,7 +1513,7 @@
                 // Sort: pts desc, then gd desc, then gs desc
                 tableData.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gs - a.gs);
                 if (tableData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted);">No teams found.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--muted);">No teams found.</td></tr>';
                     return;
                 }
                 tbody.innerHTML = tableData.map((row, i) => {
