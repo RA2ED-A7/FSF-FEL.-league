@@ -2903,6 +2903,13 @@
             }
         }
 
+        function setPodTeam(id, teamName) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const logo = teamName ? teamLogoHtml(teamName, 22) : '';
+            el.innerHTML = logo + (teamName || 'Team Name');
+        }
+
         function updateFixtureCrests(t1, t2, t3, t4, t5, t6) {
             const teams = [t1, t2, t3, t4, t5, t6];
             const ids = ['fixture1', 'fixture2', 'fixture3'];
