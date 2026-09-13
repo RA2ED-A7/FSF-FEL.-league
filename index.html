@@ -1569,7 +1569,7 @@
                         `<span class="fa-rank" style="color:${RANK_COLORS[rnk] || 'var(--muted)'}">#${i + 1}</span>` + avHtml +
                         `<span class="fa-name">${p.display_name || 'Player'}${loyaltyBadgeHtml(p.team)}</span>` +
                         `<span class="fa-pos">${p.position || 'None'}</span>` +
-                        `<span class="fa-pos" style="color:${teamColor};display:flex;align-items:center;min-width:160px;">` + logoHtml + `${p.team || '— Free Agent'}</span>` +
+                        `<span class="fa-pos" style="color:${teamColor};display:flex;align-items:center;min-width:160px;font-size:0.95rem;font-weight:700;">` + logoHtml + `${p.team || '— Free Agent'}</span>` +
                         `<span class="fa-pos" style="color:${RANK_COLORS[rnk] || 'var(--muted)'};">${rankStars} ${p.rank || 'Unranked'}</span>` +
                         `<span class="fa-val">${formatMoney(p['Market Value'])}</span>` +
                         `</div>`;
