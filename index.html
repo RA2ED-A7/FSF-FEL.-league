@@ -1265,7 +1265,7 @@
                 document.getElementById('statSaves').textContent = s(data.saves, 0);
                 document.getElementById('statLosses').textContent = s(data.Loses, 0);
                 document.getElementById('statApps').textContent = s(data.appearances, 0);
-                document.getElementById('statTeam').textContent = s(data.team, '—');
+                document.getElementById('statTeam').innerHTML = teamLogoHtml(s(data.team, '—'), 16) + s(data.team, '—');
                 document.getElementById('statPosition').textContent = s(data.position, '—');
                 posChangePlayerId = u.id;
                 const posChanges = data.position_changes || 0;
@@ -1362,7 +1362,7 @@
                     const name = p.display_name || 'Player';
                     const av = avatarMap[p.id];
                     const avHtml = av ? '<img src="' + av + '" style="width:22px;height:22px;border-radius:50%;object-fit:cover;margin-right:0.35rem;flex-shrink:0;border:2px solid var(--accent);">' : '';
-                    const html = '<div class="rp" data-tier="' + tier + '" data-pos="' + pos + '" data-team="' + team + '" data-val="' + val + '" data-name="' + name + '" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer;display:flex;align-items:center;"><div class="rp-left" style="display:flex;align-items:center;">' + avHtml + '<span class="rp-name">' + name + loyaltyBadgeHtml(team) + '</span><span class="rp-pos">' + posCat + ' · <span class="rp-sub">' + (pos || 'None') + '</span></span></div><div class="rp-right"><span class="rp-team">' + team + '</span><span class="rp-val">' + formatMoney(val) + '</span></div></div>';
+                    const html = '<div class="rp" data-tier="' + tier + '" data-pos="' + pos + '" data-team="' + team + '" data-val="' + val + '" data-name="' + name + '" onclick="location.hash=\'player?id=' + p.id + '\'" style="cursor:pointer;display:flex;align-items:center;"><div class="rp-left" style="display:flex;align-items:center;">' + avHtml + '<span class="rp-name">' + name + loyaltyBadgeHtml(team) + '</span><span class="rp-pos">' + posCat + ' · <span class="rp-sub">' + (pos || 'None') + '</span></span></div><div class="rp-right"><span class="rp-team" style="display:flex;align-items:center;">' + teamLogoHtml(team, 16) + team + '</span><span class="rp-val">' + formatMoney(val) + '</span></div></div>';
                     const roster = document.querySelector('.rung-roster[data-tier="' + tier + '"]');
                     if (roster) roster.insertAdjacentHTML('beforeend', html);
                 });
@@ -1382,6 +1382,20 @@
         function getTeamColor(teamName) {
             const t = TEAMS.find(t => t.name === teamName);
             return t ? t.color : null;
+        }
+
+        const TEAM_LOGOS = {
+            'Manchester City': 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg',
+            'FC Barcelona': 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
+            'Bayern Munchen': 'https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg',
+            'Paris Saint Germain': 'https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg',
+            'Real Madrid': 'https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg'
+        };
+        function teamLogoHtml(teamName, size) {
+            size = size || 20;
+            const url = TEAM_LOGOS[teamName];
+            if (!url) return '';
+            return '<img src="' + url + '" alt="' + teamName + '" style="width:' + size + 'px;height:' + size + 'px;object-fit:contain;margin-right:0.4rem;flex-shrink:0;vertical-align:middle;">';
         }
 
         async function renderRosters() {
@@ -1404,7 +1418,7 @@
                 filteredTeams.forEach(team => {
                     const teamPlayers = players.filter(p => p.team === team.name);
                     const sorted = teamPlayers.sort((a, b) => (b["Market Value"] || 0) - (a["Market Value"] || 0));
-                    let html = '<div class="roster-team"><div class="roster-team-head"><h3 class="roster-team-name" onclick="location.hash=\'team?name=' + encodeURIComponent(team.name) + '\'" style="cursor:pointer">' + team.name + '</h3><span class="roster-team-div">' + team.division + '</span></div><div class="roster-list">';
+                    let html = '<div class="roster-team"><div class="roster-team-head"><h3 class="roster-team-name" onclick="location.hash=\'team?name=' + encodeURIComponent(team.name) + '\'" style="cursor:pointer;display:flex;align-items:center;gap:0.4rem;">' + teamLogoHtml(team.name, 24) + team.name + '</h3><span class="roster-team-div">' + team.division + '</span></div><div class="roster-list">';
                     sorted.forEach((p, i) => {
                         const val = p["Market Value"] || 0;
                         const av = avatarMap[p.id];
@@ -1506,7 +1520,7 @@
                     const accent = row.color || 'var(--accent)';
                     return `<tr class="st-row${isTop3 ? ' st-top3' : ''}">
                         <td class="st-pos-cell"><span class="st-pos-num${isTop3 ? ' st-top3-num' : ''}">${pos}</span></td>
-                        <td class="st-team-cell"><span class="st-team-dot" style="background:${accent}"></span><span class="st-team-name-txt">${row.name}</span></td>
+                        <td class="st-team-cell"><span class="st-team-dot" style="background:${accent}"></span>${teamLogoHtml(row.name, 18)}<span class="st-team-name-txt">${row.name}</span></td>
                         <td>${row.p}</td>
                         <td class="st-wins">${row.w}</td>
                         <td class="st-draws">${row.d}</td>
@@ -1547,12 +1561,15 @@
                     const av = avatarMap[p.id];
                     const avHtml = av ? `<img src="${av}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;border:2px solid var(--accent);">` : '';
                     const teamColor = getTeamColor(p.team) || 'var(--muted)';
+                    const rnk = (p.rank || '').toLowerCase();
+                    const rankStars = RANK_STARS[rnk] || '—';
+                    const logoHtml = p.team ? teamLogoHtml(p.team, 18) : '';
                     return `<div class="fa-row" onclick="location.hash='player?id=${p.id}'" style="cursor:pointer">` +
                         `<span class="fa-rank">#${i + 1}</span>` + avHtml +
                         `<span class="fa-name">${p.display_name || 'Player'}${loyaltyBadgeHtml(p.team)}</span>` +
                         `<span class="fa-pos" style="min-width:50px;">${p.position || 'None'}</span>` +
-                        `<span class="fa-pos" style="min-width:160px;color:${teamColor};">${p.team || '— Free Agent'}</span>` +
-                        `<span class="fa-pos" style="min-width:90px;color:var(--muted);">${p.rank || 'Unranked'}</span>` +
+                        `<span class="fa-pos" style="min-width:160px;color:${teamColor};display:flex;align-items:center;">` + logoHtml + `${p.team || '— Free Agent'}</span>` +
+                        `<span class="fa-pos" style="min-width:90px;color:var(--muted);">${rankStars} ${p.rank || 'Unranked'}</span>` +
                         `<span class="fa-val">${formatMoney(p['Market Value'])}</span>` +
                         `</div>`;
                 }).join('');
@@ -1771,7 +1788,7 @@
                     html += '<tr style="border-bottom:1px solid var(--line);cursor:pointer;" onclick="location.hash=\'player?id=' + p.id + '\'">' +
                         '<td style="font-weight:600;font-size:0.82rem;color:var(--muted);">' + (i + 1) + '</td>' +
                         '<td style="display:flex;align-items:center;">' + avHtml + '<span style="font-weight:600;color:var(--text);">' + (p.display_name || 'Player') + loyaltyBadgeHtml(p.team) + '</span></td>' +
-                        '<td style="font-size:0.88rem;color:var(--muted);">' + (p.team || '—') + '</td>' +
+                        '<td style="font-size:0.88rem;color:var(--muted);display:flex;align-items:center;">' + teamLogoHtml(p.team, 16) + (p.team || '—') + '</td>' +
                         '<td style="font-size:0.88rem;color:var(--muted);">' + (p.position || '—') + '</td>' +
                         '<td style="text-align:center;font-weight:600;font-size:0.9rem;color:var(--text);">' + p.goals + '</td>' +
                         '<td style="text-align:center;font-weight:600;font-size:0.9rem;color:var(--text);">' + p.assists + '</td>' +
@@ -2646,7 +2663,7 @@
                         pImg.onerror = function() { pImg.style.display = 'none'; pFallback.style.display = 'flex'; };
                     }
                 } catch(e) { console.log('[avatar] profile load failed:', e); }
-                document.getElementById('profileTeam').textContent = p.team || 'No Team';
+                document.getElementById('profileTeam').innerHTML = teamLogoHtml(p.team, 16) + (p.team || 'No Team');
                 document.getElementById('profilePosition').textContent = p.position || 'None';
                 const rank = (p.rank || 'Unranked').toLowerCase();
                 const rankEl = document.getElementById('profileRank');
@@ -2886,12 +2903,32 @@
             }
         }
 
+        function updateFixtureCrests(t1, t2, t3, t4, t5, t6) {
+            const teams = [t1, t2, t3, t4, t5, t6];
+            const ids = ['fixture1', 'fixture2', 'fixture3'];
+            ids.forEach((fxId, fi) => {
+                const box = document.getElementById(fxId);
+                if (!box) return;
+                const crests = box.querySelectorAll('.crest');
+                const idx1 = fi * 2, idx2 = fi * 2 + 1;
+                if (crests[0] && teams[idx1]) {
+                    const url = TEAM_LOGOS[teams[idx1]];
+                    if (url) crests[0].innerHTML = '<img src="' + url + '" alt="' + teams[idx1] + '" style="width:24px;height:24px;object-fit:contain;">';
+                }
+                if (crests[1] && teams[idx2]) {
+                    const url = TEAM_LOGOS[teams[idx2]];
+                    if (url) crests[1].innerHTML = '<img src="' + url + '" alt="' + teams[idx2] + '" style="width:24px;height:24px;object-fit:contain;">';
+                }
+            });
+        }
+
         function applySiteContent(map) {
             const c = Object.assign({}, DEFAULT_CONTENT, map);
             const s = (id, t) => { const el = document.getElementById(id); if (el && t !== undefined) el.textContent = t; };
             s('fx1Team1', c['fx1']); s('fx1Score', c['fx-score1']); s('fx1Team2', c['fx2']);
             s('fx2Team1', c['f2x1']); s('fx2Score', c['f2x-score']); s('fx2Team2', c['f2x2']);
             s('fx3Team1', c['f3x1']); s('fx3Score', c['f3x-score']); s('fx3Team2', c['f3x2']);
+            updateFixtureCrests(c['fx1'], c['fx2'], c['f2x1'], c['f2x2'], c['f3x1'], c['f3x2']);
             s('hlBigWin', c['hl-bigwin']); s('hlBigWinDesc', c['hl-bigwin-desc']);
             s('hlTopScorer', c['hl-scorer']); s('hlTopScorerDesc', c['hl-scorer-desc']);
             s('hlMostAssists', c['hl-assists']); s('hlMostAssistsDesc', c['hl-assists-desc']);
@@ -2904,9 +2941,9 @@
             s('rr1TeamA', c['rr1-teams']); s('rr1Score', c['rr1-score']); s('rr1TeamB', c['rr1-teams2']); s('rr1Date', c['rr1-date']);
             s('rr2TeamA', c['rr2-teams']); s('rr2Score', c['rr2-score']); s('rr2TeamB', c['rr2-teams2']); s('rr2Date', c['rr2-date']);
             s('rr3TeamA', c['rr3-teams']); s('rr3Score', c['rr3-score']); s('rr3TeamB', c['rr3-teams2']); s('rr3Date', c['rr3-date']);
-            s('pod1Team', c['pod1-team']); s('pod1Pts', c['pod1-pts']);
-            s('pod2Team', c['pod2-team']); s('pod2Pts', c['pod2-pts']);
-            s('pod3Team', c['pod3-team']); s('pod3Pts', c['pod3-pts']);
+            setPodTeam('pod1Team', c['pod1-team']); s('pod1Pts', c['pod1-pts']);
+            setPodTeam('pod2Team', c['pod2-team']); s('pod2Pts', c['pod2-pts']);
+            setPodTeam('pod3Team', c['pod3-team']); s('pod3Pts', c['pod3-pts']);
         }
 
         function loadContentEditor(data) {
