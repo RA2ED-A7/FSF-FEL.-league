@@ -1560,17 +1560,17 @@
                 if (filtered.length === 0) { container.innerHTML = '<p class="empty-state">No players found.</p>'; return; }
                 container.innerHTML = filtered.map((p, i) => {
                     const av = avatarMap[p.id];
-                    const avHtml = av ? `<img src="${av}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;border:2px solid var(--accent);">` : '';
+                    const avHtml = av ? `<img src="${av}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:0.4rem;flex-shrink:0;border:2px solid var(--accent);">` : '';
                     const teamColor = getTeamColor(p.team) || 'var(--muted)';
                     const rnk = (p.rank || '').toLowerCase();
                     const rankStars = RANK_STARS[rnk] || '—';
                     const logoHtml = p.team ? teamLogoHtml(p.team, 18) : '';
                     return `<div class="fa-row" onclick="location.hash='player?id=${p.id}'" style="cursor:pointer">` +
-                        `<span class="fa-rank">#${i + 1}</span>` + avHtml +
+                        `<span class="fa-rank" style="color:${RANK_COLORS[rnk] || 'var(--muted)'}">#${i + 1}</span>` + avHtml +
                         `<span class="fa-name">${p.display_name || 'Player'}${loyaltyBadgeHtml(p.team)}</span>` +
-                        `<span class="fa-pos" style="min-width:50px;">${p.position || 'None'}</span>` +
-                        `<span class="fa-pos" style="min-width:160px;color:${teamColor};display:flex;align-items:center;">` + logoHtml + `${p.team || '— Free Agent'}</span>` +
-                        `<span class="fa-pos" style="min-width:90px;color:var(--muted);">${rankStars} ${p.rank || 'Unranked'}</span>` +
+                        `<span class="fa-pos">${p.position || 'None'}</span>` +
+                        `<span class="fa-pos" style="color:${teamColor};display:flex;align-items:center;min-width:160px;">` + logoHtml + `${p.team || '— Free Agent'}</span>` +
+                        `<span class="fa-pos" style="color:${RANK_COLORS[rnk] || 'var(--muted)'};">${rankStars} ${p.rank || 'Unranked'}</span>` +
                         `<span class="fa-val">${formatMoney(p['Market Value'])}</span>` +
                         `</div>`;
                 }).join('');
