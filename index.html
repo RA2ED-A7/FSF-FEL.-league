@@ -414,16 +414,18 @@
                         <th title="Wins">W</th>
                         <th title="Draws">D</th>
                         <th title="Losses">L</th>
+                        <th title="Goals For">GF</th>
+                        <th title="Goals Against">GA</th>
                         <th title="Goal Difference">GD</th>
                         <th title="Points">Pts</th>
                     </tr>
                 </thead>
                 <tbody id="standingsBody">
-                    <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr>
+                    <tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--muted);">Loading...</td></tr>
                 </tbody>
             </table>
         </div>
-        <div class="standings-legend">
+        <div class="st-legend">
             <span class="sl-item"><span class="sl-dot sl-dot-top3"></span> Top 3 · Promotion</span>
             <span class="sl-item sl-sep">·</span>
             <span class="sl-item sl-note">GD = Goals Scored minus Goals Conceded (higher = better)</span>
@@ -1521,12 +1523,14 @@
                     const accent = row.color || 'var(--accent)';
                     return `<tr class="st-row${isTop3 ? ' st-top3' : ''}">
                         <td class="st-pos-cell"><span class="st-pos-num${isTop3 ? ' st-top3-num' : ''}">${pos}</span></td>
-                        <td class="st-team-cell"><span class="st-team-dot" style="background:${accent}"></span>${teamLogoHtml(row.name, 18)}<span class="st-team-name-txt">${row.name}</span></td>
+                        <td class="st-team-cell"><span class="st-team-dot" style="background:${accent}"></span>${teamLogoHtml(row.name, 20)}<span class="st-team-name-txt">${row.name}</span></td>
                         <td>${row.p}</td>
                         <td class="st-wins">${row.w}</td>
                         <td class="st-draws">${row.d}</td>
                         <td class="st-losses">${row.l}</td>
-                        <td class="${row.gd >= 0 ? 'st-gd-pos' : 'st-gd-neg'}">${gdStr}</td>
+                        <td>${row.gs}</td>
+                        <td>${row.gc}</td>
+                        <td class="${row.gd > 0 ? 'st-gd-pos' : row.gd < 0 ? 'st-gd-neg' : ''}">${gdStr}</td>
                         <td class="st-pts">${row.pts}</td>
                     </tr>`;
                 }).join('');
