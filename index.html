@@ -272,7 +272,7 @@
                     <option value="FC Barcelona">FC Barcelona</option>
                     <option value="Bayern Munchen">Bayern Munchen</option>
                     <option value="Paris Saint Germain">Paris Saint Germain</option>
-                    <option value="Real Madrid">Real Madrid</option>
+                    <option value="Real Madrid">Real Madrid</option><option value="Liverpool FC">Liverpool FC</option>
                 </select>
                 <select id="lbValFilter" class="lb-select">
                     <option value="all">Any Value</option>
@@ -444,7 +444,7 @@
                 <option value="FC Barcelona">FC Barcelona</option>
                 <option value="Bayern Munchen">Bayern Munchen</option>
                 <option value="Paris Saint Germain">Paris Saint Germain</option>
-                <option value="Real Madrid">Real Madrid</option>
+                <option value="Real Madrid">Real Madrid</option><option value="Liverpool FC">Liverpool FC</option>
                 <option value="">Free Agents</option>
             </select>
             <select id="mvPosFilter" class="lb-select" onchange="renderMarketValues()">
@@ -796,7 +796,7 @@
                     <option value="FC Barcelona">FC Barcelona</option>
                     <option value="Bayern Munchen">Bayern Munchen</option>
                     <option value="Paris Saint Germain">Paris Saint Germain</option>
-                    <option value="Real Madrid">Real Madrid</option>
+                    <option value="Real Madrid">Real Madrid</option><option value="Liverpool FC">Liverpool FC</option>
                 </select>
             </div>
             <div id="teamEditContent" style="display:none;">
@@ -1846,14 +1846,14 @@
                 'FC Barcelona': { color: '#A50044' },
                 'Bayern Munchen': { color: '#DC052D' },
                 'Paris Saint Germain': { color: '#004170' },
-                'Real Madrid': { color: '#FEBE10' }
+                'Real Madrid': { color: '#FEBE10' }, 'Liverpool FC': { color: '#C8102E' }
             };
             const TEAMS_DIV = {
                 'Manchester City': '1.FEL',
                 'FC Barcelona': '1.FEL',
                 'Bayern Munchen': '1.FEL',
                 'Paris Saint Germain': '1.FEL',
-                'Real Madrid': '1.FEL'
+                'Real Madrid': '1.FEL', 'Liverpool FC': '1.FEL'
             };
             const teamNames = Object.keys(TEAMS_OBJ);
             const defaultStatuses = ['FINISHED', 'SCHEDULED', 'NOT SCHEDULED', 'FORFEIT', 'DOUBLE FORFEIT'];
@@ -1974,14 +1974,14 @@
                 'FC Barcelona': { color: '#A50044' },
                 'Bayern Munchen': { color: '#DC052D' },
                 'Paris Saint Germain': { color: '#004170' },
-                'Real Madrid': { color: '#FEBE10' }
+                'Real Madrid': { color: '#FEBE10' }, 'Liverpool FC': { color: '#C8102E' }
             };
             const TEAMS_DIV = {
                 'Manchester City': '1.FEL',
                 'FC Barcelona': '1.FEL',
                 'Bayern Munchen': '1.FEL',
                 'Paris Saint Germain': '1.FEL',
-                'Real Madrid': '1.FEL'
+                'Real Madrid': '1.FEL', 'Liverpool FC': '1.FEL'
             };
             const teamNames = Object.keys(TEAMS_OBJ);
             const defaultStatuses = ['FINISHED', 'SCHEDULED', 'NOT SCHEDULED', 'FORFEIT', 'DOUBLE FORFEIT'];
@@ -2104,7 +2104,7 @@
                 'FC Barcelona': { color: '#A50044' },
                 'Bayern Munchen': { color: '#DC052D' },
                 'Paris Saint Germain': { color: '#004170' },
-                'Real Madrid': { color: '#FEBE10' }
+                'Real Madrid': { color: '#FEBE10' }, 'Liverpool FC': { color: '#C8102E' }
             };
             const teamNames = Object.keys(TEAMS_OBJ);
             const statusColors = { 'FINISHED': '#4caf50', 'SCHEDULED': 'var(--accent)', 'NOT SCHEDULED': 'var(--muted)', 'FORFEIT': '#e74c3c', 'DOUBLE FORFEIT': '#ff9800' };
@@ -3122,7 +3122,7 @@
 
         async function syncCareerTransferToTeam(playerId, playerName, from, to, transferType, status, date) {
             if (!initSupabase() || !supabaseClient) return;
-            const TEAMS_LIST = ['Manchester City', 'FC Barcelona', 'Bayern Munchen', 'Paris Saint Germain', 'Real Madrid'];
+            const TEAMS_LIST = ['Manchester City', 'FC Barcelona', 'Bayern Munchen', 'Paris Saint Germain', 'Real Madrid', 'Liverpool FC'];
             const finalType = status === 'Declined' ? 'Declined' : status === 'Cancelled' ? 'Cancelled' : transferType;
             try {
                 const { data } = await supabaseClient.from('SiteContent').select('*');
@@ -3632,7 +3632,7 @@
             html += '</tbody>';
             document.getElementById('matchStatsTable').innerHTML = html;
         }
-        const TEAMS_OBJ_MAP = { 'Manchester City': '#6CABDD', 'FC Barcelona': '#A50044', 'Bayern Munchen': '#DC052D', 'Paris Saint Germain': '#004170', 'Real Madrid': '#FEBE10' };
+        const TEAMS_OBJ_MAP = { 'Manchester City': '#6CABDD', 'FC Barcelona': '#A50044', 'Bayern Munchen': '#DC052D', 'Paris Saint Germain': '#004170', 'Real Madrid': '#FEBE10', 'Liverpool FC': '#C8102E' };
 
         async function saveMatchDetailEditor() {
             const idx = document.getElementById('matchEditSelect').value;
