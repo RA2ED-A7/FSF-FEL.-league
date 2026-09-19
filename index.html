@@ -1645,7 +1645,7 @@
                 const safeId = team.name.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
                 const w = parseInt(document.getElementById(`st_${safeId}_wins`)?.value) || 0;
                 const d = parseInt(document.getElementById(`st_${safeId}_draws`)?.value) || 0;
-                const l = parseInt(document.getElementById(`st_${safeId}_losses`)) || 0) || 0;
+                const l = parseInt(document.getElementById(`st_${safeId}_losses`)?.value) || 0;
                 const gd = parseInt(document.getElementById(`st_${safeId}_gd`)?.value) || 0;
                 const p = w + d + l;
                 const pts = w * 3 + d;
